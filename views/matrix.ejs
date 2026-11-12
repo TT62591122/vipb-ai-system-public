@@ -1,0 +1,201 @@
+<%- include('partials/header') %>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="mb-0">🎯 矩阵任务中心</h4><small class="text-muted">采集 · 筛选 · 群控 — 统一管理</small></div>
+    <button class="btn btn-purple" onclick="showCreateTaskModal()">➕ 新建任务</button>
+  </div>
+
+  <!-- 统计卡片 -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number"><%= (stats.totalTasks||0) %></div><div class="stat-label">总任务</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number"><%= (stats.byStatus?.running||0) %></div><div class="stat-label">运行中</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number"><%= (stats.byStatus?.queued||0) %></div><div class="stat-label">排队中</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number"><%= (stats.byStatus?.completed||0) %></div><div class="stat-label">已完成</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number"><%= (stats.totalCollected||0) %></div><div class="stat-label">采集数据</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number"><%= (stats.runningNow||0) %>/<%= (stats.maxConcurrency||5) %></div><div class="stat-label">并发</div></div></div>
+  </div>
+
+  <!-- Tab 切换 -->
+  <ul class="nav nav-tabs mb-3" id="taskTabs">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#all">全部</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#collect">🔍 采集</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#filter">🔬 筛选</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#control">🎮 群控</a></li>
+  </ul>
+
+  <!-- 任务列表 -->
+  <div class="card">
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0" id="taskTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>任务名</th>
+            <th>类型</th>
+            <th>平台</th>
+            <th>状态</th>
+            <th>进度</th>
+            <th>创建时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% (tasks||[]).forEach(t => { %>
+          <tr data-type="<%= t.task_type %>">
+            <td><%= t.id %></td>
+            <td><%= t.name || (t.platform+'/'+t.action) %></td>
+            <td>
+              <% if(t.task_type==='collect') { %><span class="badge bg-info">采集</span>
+              <% } else if(t.task_type==='filter') { %><span class="badge bg-warning">筛选</span>
+              <% } else { %><span class="badge bg-success">群控</span><% } %>
+            </td>
+            <td><%= t.platform %></td>
+            <td>
+              <% if(t.status==='running') { %><span class="badge bg-primary">运行中</span>
+              <% } else if(t.status==='completed') { %><span class="badge bg-success">完成</span>
+              <% } else if(t.status==='failed') { %><span class="badge bg-danger">失败</span>
+              <% } else if(t.status==='paused') { %><span class="badge bg-secondary">暂停</span>
+              <% } else if(t.status==='queued') { %><span class="badge bg-info">排队</span>
+              <% } else { %><span class="badge bg-light text-dark">待执行</span><% } %>
+            </td>
+            <td>
+              <div class="progress" style="height:18px;min-width:80px">
+                <% const pct = t.total_items > 0 ? Math.round(t.processed_items/t.total_items*100) : 0; %>
+                <div class="progress-bar" style="width:<%= pct %>%"><%= pct %>%</div>
+              </div>
+              <small class="text-muted"><%= t.success_items %>✓ <%= t.failed_items %>✗</small>
+            </td>
+            <td><small><%= new Date(t.created_at).toLocaleString('zh-CN') %></small></td>
+            <td>
+              <% if(t.status==='pending') { %>
+                <button class="btn btn-sm btn-primary" onclick="taskAction(<%= t.id %>,'start')">▶</button>
+              <% } else if(t.status==='running') { %>
+                <button class="btn btn-sm btn-warning" onclick="taskAction(<%= t.id %>,'pause')">⏸</button>
+              <% } else if(t.status==='paused') { %>
+                <button class="btn btn-sm btn-primary" onclick="taskAction(<%= t.id %>,'resume')">▶</button>
+              <% } %>
+              <button class="btn btn-sm btn-outline-danger" onclick="taskAction(<%= t.id %>,'delete')">🗑</button>
+            </td>
+          </tr>
+          <% }) %>
+          <% if(!tasks||tasks.length===0) { %>
+          <tr><td colspan="8" class="text-center text-muted py-4">暂无任务，点击右上角"新建任务"开始</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 新建任务模态框 -->
+<div class="modal fade" id="createTaskModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header"><h5>➕ 新建矩阵任务</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">任务类型</label>
+            <select class="form-select" id="newTaskType">
+              <option value="collect">🔍 采集</option>
+              <option value="filter">🔬 筛选</option>
+              <option value="control">🎮 群控</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">平台</label>
+            <select class="form-select" id="newTaskPlatform">
+              <option value="google_maps">Google Maps</option>
+              <option value="facebook">Facebook</option>
+              <option value="tiktok">TikTok</option>
+              <option value="instagram">Instagram</option>
+              <option value="linkedin">LinkedIn</option>
+              <option value="twitter">Twitter</option>
+              <option value="youtube">YouTube</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="alibaba">Alibaba</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">动作</label>
+            <input class="form-control" id="newTaskAction" placeholder="例如：collect_contacts, send_message">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">任务名称</label>
+            <input class="form-control" id="newTaskName" placeholder="例如：Google Maps采集电表客户">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">输入参数 (JSON)</label>
+            <textarea class="form-control" id="newTaskInput" rows="3" placeholder='{"keyword": "electric meter", "maxResults": 100}'></textarea>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">优先级 (1-10)</label>
+            <input type="number" class="form-control" id="newTaskPriority" value="5" min="1" max="10">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">最小间隔(秒)</label>
+            <input type="number" class="form-control" id="newTaskIntervalMin" value="30">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">最大间隔(秒)</label>
+            <input type="number" class="form-control" id="newTaskIntervalMax" value="120">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-purple" onclick="createTask()">创建任务</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showCreateTaskModal() {
+  new bootstrap.Modal(document.getElementById('createTaskModal')).show();
+}
+
+async function createTask() {
+  const data = {
+    task_type: document.getElementById('newTaskType').value,
+    platform: document.getElementById('newTaskPlatform').value,
+    action: document.getElementById('newTaskAction').value,
+    name: document.getElementById('newTaskName').value,
+    priority: parseInt(document.getElementById('newTaskPriority').value),
+    interval_min_sec: parseInt(document.getElementById('newTaskIntervalMin').value),
+    interval_max_sec: parseInt(document.getElementById('newTaskIntervalMax').value)
+  };
+  try {
+    data.input_data = JSON.parse(document.getElementById('newTaskInput').value || '{}');
+  } catch(e) { data.input_data = {}; }
+
+  const res = await fetch('/api/matrix/tasks', {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)
+  });
+  const result = await res.json();
+  if (result.success) { reloadKeepTab(); }
+  else { alert('创建失败: ' + result.error); }
+}
+
+async function taskAction(id, action) {
+  if (action === 'delete' && !confirm('确定删除?')) return;
+  const method = action === 'delete' ? 'DELETE' : 'POST';
+  const url = action === 'delete' ? `/api/matrix/tasks/${id}` : `/api/matrix/tasks/${id}/${action}`;
+  const res = await fetch(url, { method });
+  const result = await res.json();
+  if (result.success) reloadKeepTab();
+  else alert(result.error);
+}
+
+// Tab 过滤
+document.querySelectorAll('#taskTabs a').forEach(tab => {
+  tab.addEventListener('click', function() {
+    const type = this.getAttribute('href').replace('#','');
+    document.querySelectorAll('#taskTable tbody tr').forEach(row => {
+      if (type === 'all' || row.dataset.type === type) row.style.display = '';
+      else row.style.display = 'none';
+    });
+  });
+});
+</script>
+<%- include('partials/footer') %>

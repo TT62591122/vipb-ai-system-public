@@ -1,0 +1,1000 @@
+﻿<%- include('partials/header') %>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="mb-0">🔧 渠道工具中心</h4><small class="text-muted">5渠道优化 — 邮件·序列·预热·报价·待办</small></div>
+    <button class="btn btn-outline-primary btn-sm" onclick="refreshAll()">🔄 刷新全部</button>
+  </div>
+
+  <!-- 顶部统计 -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number" id="stat-pending">-</div><div class="stat-label">待处理</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number" id="stat-quotes">-</div><div class="stat-label">活跃报价</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number" id="stat-sequences">-</div><div class="stat-label">运行序列</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number" id="stat-warmup">-</div><div class="stat-label">预热账号</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number" id="stat-blocked">-</div><div class="stat-label">已拦截</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number" id="stat-winrate">-</div><div class="stat-label">成交率</div></div></div>
+  </div>
+
+  <!-- 标签页 -->
+  <ul class="nav nav-tabs mb-3" id="toolTabs">
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-dashboard">&#128202; 数据分析</a></li>
+<li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-pending">🔔 待办管理</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-quotes">💰 报价跟踪</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-sequences">📧 序列管理</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-warmup">🔥 邮件预热</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-spam">🛡️ 邮件安全</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-auth">&#128274; 域名认证</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-unsub">&#128493; 退订管理</a></li>
+  </ul>
+
+  <div class="tab-content">
+
+    <!-- ========== 待办管理 ========== -->
+        <!-- ========== 数据分析仪表盘 ========== -->
+    <div class="tab-pane fade" id="tab-dashboard">
+      <div class="row g-3 mb-3">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">&#128202; 渠道数据分析</h5>
+          <select class="form-select form-select-sm" style="width:auto" id="dash-period" onchange="loadDashboard()">
+            <option value="7">最近7天</option>
+            <option value="30" selected>最近30天</option>
+            <option value="90">最近90天</option>
+          </select>
+        </div>
+      </div>
+      <!-- 邮件指标 -->
+      <div class="card mb-3">
+        <div class="card-header">&#128231; 邮件渠道</div>
+        <div class="card-body">
+          <div class="row text-center" id="dash-email">
+            <div class="col"><strong id="de-sent">-</strong><br><small class="text-muted">发送</small></div>
+            <div class="col"><strong id="de-opened">-</strong><br><small class="text-muted">打开</small></div>
+            <div class="col"><strong id="de-clicked">-</strong><br><small class="text-muted">点击</small></div>
+            <div class="col"><strong id="de-replied">-</strong><br><small class="text-muted">回复</small></div>
+            <div class="col"><strong id="de-openrate">-</strong><br><small class="text-muted">打开率</small></div>
+            <div class="col"><strong id="de-clickrate">-</strong><br><small class="text-muted">点击率</small></div>
+            <div class="col"><strong id="de-replyrate">-</strong><br><small class="text-muted">回复率</small></div>
+            <div class="col"><strong id="de-blocked">-</strong><br><small class="text-muted">已拦截</small></div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-3 mb-3">
+        <!-- WhatsApp -->
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">&#128172; WhatsApp</div>
+            <div class="card-body text-center">
+              <div class="row">
+                <div class="col-4"><strong id="dw-sent">-</strong><br><small>发送</small></div>
+                <div class="col-4"><strong id="dw-recv">-</strong><br><small>收到</small></div>
+                <div class="col-4"><strong id="dw-conv">-</strong><br><small>会话</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 社媒 -->
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">&#128241; 社媒</div>
+            <div class="card-body text-center">
+              <div class="row">
+                <div class="col-6"><strong id="ds-posts">-</strong><br><small>发帖</small></div>
+                <div class="col-6"><strong id="ds-leads">-</strong><br><small>获客</small></div>
+              </div>
+              <div id="ds-platforms" class="mt-2 small text-muted"></div>
+            </div>
+          </div>
+        </div>
+        <!-- 报价 -->
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header">&#128176; 报价转化</div>
+            <div class="card-body text-center">
+              <div class="row">
+                <div class="col-4"><strong id="dq-total">-</strong><br><small>总报价</small></div>
+                <div class="col-4"><strong id="dq-won">-</strong><br><small>成交</small></div>
+                <div class="col-4"><strong id="dq-rate">-</strong><br><small>成交率</small></div>
+              </div>
+              <div class="mt-2"><strong id="dq-amount">-</strong><br><small>成交金额</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 意图检测 -->
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>&#127919; 意图检测日志</span>
+          <button class="btn btn-outline-primary btn-sm" onclick="loadIntentLogs()">&#128260; 刷新</button>
+        </div>
+        <div class="card-body p-0" style="max-height:400px;overflow-y:auto">
+          <table class="table table-sm table-hover mb-0">
+            <thead><tr><th>时间</th><th>渠道</th><th>客户</th><th>意图</th><th>置信度</th><th>拦截</th><th>关键词</th></tr></thead>
+            <tbody id="intent-log-body"><tr><td colspan="7" class="text-center text-muted py-3">加载中...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+<div class="tab-pane fade show active" id="tab-pending">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>📋 待处理事项（需人工介入）</span>
+          <div>
+            <select class="form-select form-select-sm d-inline-block" style="width:auto" id="pending-filter" onchange="loadPending()">
+              <option value="all">全部</option>
+              <option value="pricing">报价请求</option>
+              <option value="complaint">投诉</option>
+              <option value="urgent">紧急</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0" id="pending-table">
+            <thead><tr><th>时间</th><th>类型</th><th>客户</th><th>摘要</th><th>升级</th><th>操作</th></tr></thead>
+            <tbody id="pending-body"><tr><td colspan="6" class="text-center text-muted py-3">加载中...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- 升级提醒 -->
+      <div class="card mt-3" id="escalation-card" style="display:none">
+        <div class="card-header bg-warning text-dark">⚠️ 升级提醒</div>
+        <div class="card-body p-0">
+          <table class="table table-sm mb-0">
+            <thead><tr><th>事项</th><th>等待时长</th><th>升级级别</th></tr></thead>
+            <tbody id="escalation-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 报价跟踪 ========== -->
+    <div class="tab-pane fade" id="tab-quotes">
+      <div class="row g-3 mb-3">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span>💰 报价列表</span>
+              <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#quoteModal">+ 新报价</button>
+            </div>
+            <div class="card-body p-0">
+              <table class="table table-hover mb-0">
+                <thead><tr><th>客户</th><th>产品</th><th>金额</th><th>状态</th><th>有效期</th><th>操作</th></tr></thead>
+                <tbody id="quotes-body"><tr><td colspan="6" class="text-center text-muted py-3">加载中...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card mb-3">
+            <div class="card-header">📊 报价统计</div>
+            <div class="card-body" id="quote-stats">
+              <div class="text-center text-muted">加载中...</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header text-danger">⏰ 即将过期</div>
+            <div class="card-body p-0">
+              <div id="expiring-quotes" class="p-2 text-center text-muted">加载中...</div>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <div class="card-header text-warning">📞 需要跟进</div>
+            <div class="card-body p-0">
+              <div id="followup-quotes" class="p-2 text-center text-muted">加载中...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 序列管理 ========== -->
+    <div class="tab-pane fade" id="tab-sequences">
+      <div class="row g-3">
+        <div class="col-md-5">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span>📋 序列模板</span>
+              <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#seqModal">+ 新序列</button>
+            </div>
+            <div class="card-body p-0">
+              <div id="seq-list" class="list-group list-group-flush">
+                <div class="text-center text-muted py-3">加载中...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-7">
+          <div class="card">
+            <div class="card-header">👥 活跃加入</div>
+            <div class="card-body p-0">
+              <table class="table table-sm table-hover mb-0">
+                <thead><tr><th>客户邮箱</th><th>序列</th><th>步骤</th><th>下次触发</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody id="enrollment-body"><tr><td colspan="6" class="text-center text-muted py-3">加载中...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <div class="card-header">📜 执行日志（最近20条）</div>
+            <div class="card-body p-0" style="max-height:300px;overflow-y:auto">
+              <table class="table table-sm mb-0">
+                <thead><tr><th>时间</th><th>邮箱</th><th>步骤</th><th>渠道</th><th>状态</th></tr></thead>
+                <tbody id="seq-log-body"><tr><td colspan="5" class="text-center text-muted py-3">加载中...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 邮件预热 ========== -->
+    <div class="tab-pane fade" id="tab-warmup">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span>🔥 预热账号管理</span>
+              <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#warmupModal">+ 添加预热</button>
+            </div>
+            <div class="card-body p-0">
+              <table class="table table-hover mb-0">
+                <thead><tr><th>邮箱账号</th><th>阶段</th><th>今日发送</th><th>开始日期</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody id="warmup-body"><tr><td colspan="6" class="text-center text-muted py-3">加载中...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <div class="card-header">📈 预热日志（最近20条）</div>
+            <div class="card-body p-0" style="max-height:300px;overflow-y:auto">
+              <table class="table table-sm mb-0">
+                <thead><tr><th>时间</th><th>账号</th><th>收件人</th><th>方向</th><th>状态</th></tr></thead>
+                <tbody id="warmup-log-body"><tr><td colspan="5" class="text-center text-muted py-3">加载中...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">📊 预热阶段说明</div>
+            <div class="card-body">
+              <div class="mb-2"><span class="badge bg-secondary">week1</span> 2封/天 — 建立基础信誉</div>
+              <div class="mb-2"><span class="badge bg-info">week2</span> 5封/天 — 稳步提升</div>
+              <div class="mb-2"><span class="badge bg-primary">week3</span> 10封/天 — 加速阶段</div>
+              <div class="mb-2"><span class="badge bg-warning text-dark">week4</span> 15封/天 — 冲刺阶段</div>
+              <div><span class="badge bg-success">week5+</span> 20封/天 — 维持信誉</div>
+              <hr>
+              <small class="text-muted">预热使用独立SMTP连接，不影响业务邮件发送。建议持续运行4-6周。</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 邮件安全 ========== -->
+    <div class="tab-pane fade" id="tab-spam">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">🛡️ 邮件内容检测</div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">主题</label>
+                <input type="text" class="form-control" id="spam-subject" placeholder="邮件主题">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">正文</label>
+                <textarea class="form-control" id="spam-body" rows="5" placeholder="粘贴邮件正文..."></textarea>
+              </div>
+              <button class="btn btn-primary" onclick="checkSpam()">🔍 检测垃圾邮件风险</button>
+              <div id="spam-result" class="mt-3" style="display:none"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">📧 邮箱验证</div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">邮箱地址</label>
+                <input type="email" class="form-control" id="verify-email" placeholder="输入要验证的邮箱">
+              </div>
+              <button class="btn btn-primary" onclick="verifyEmail()">✅ 验证邮箱</button>
+              <div id="verify-result" class="mt-3" style="display:none"></div>
+              <hr>
+              <label class="form-label">批量验证</label>
+              <textarea class="form-control mb-2" id="verify-batch" rows="3" placeholder="每行一个邮箱地址..."></textarea>
+              <button class="btn btn-outline-primary btn-sm" onclick="verifyBatch()">🔍 批量验证</button>
+              <div id="batch-result" class="mt-3" style="display:none"></div>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <div class="card-header">🎯 意图检测</div>
+            <div class="card-body">
+              <textarea class="form-control mb-2" id="intent-text" rows="3" placeholder="粘贴客户消息..."></textarea>
+              <button class="btn btn-primary btn-sm" onclick="detectIntent()">🔍 检测意图</button>
+              <div id="intent-result" class="mt-3" style="display:none"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  
+    <!-- ========== 域名认证检测 ========== -->
+    <div class="tab-pane fade" id="tab-auth">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">🔒 SPF/DKIM/DMARC 检测</div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">发件域名</label>
+                <input type="text" class="form-control" id="auth-domain" placeholder="example.com">
+                <small class="text-muted">输入域名检查邮件认证DNS记录</small>
+              </div>
+              <button class="btn btn-primary" onclick="checkDomainAuth()">🔍 检测域名认证</button>
+              <div id="auth-result" class="mt-3" style="display:none"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">📖 邮件认证说明</div>
+            <div class="card-body">
+              <h6>SPF（Sender Policy Framework）</h6>
+              <p class="text-muted small">指定哪些IP/服务器可以代表你的域名发邮件。没有SPF，邮件会被当成伪造。</p>
+              <h6>DKIM（DomainKeys Identified Mail）</h6>
+              <p class="text-muted small">对邮件内容进行数字签名，接收方可验证邮件未被篡改。</p>
+              <h6>DMARC（Domain-based Message Authentication）</h6>
+              <p class="text-muted small">告诉接收方如何处理SPF/DKIM验证失败的邮件（拒收/隔离/放行）。</p>
+              <hr>
+              <div class="alert alert-warning mb-0"><strong>2026年Gmail/Outlook要求：</strong>发送超过5000封/天的域名必须同时配置SPF+DKIM+DMARC，否则直接拒收。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 退订管理 ========== -->
+    <div class="tab-pane fade" id="tab-unsub">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span>📭 退订列表</span>
+              <button class="btn btn-outline-primary btn-sm" onclick="loadUnsubs()">🔄 刷新</button>
+            </div>
+            <div class="card-body p-0">
+              <table class="table table-hover mb-0">
+                <thead><tr><th>邮箱</th><th>退订时间</th><th>原因</th><th>来源</th><th>操作</th></tr></thead>
+                <tbody id="unsub-body"><tr><td colspan="5" class="text-center text-muted py-3">加载中...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">🔗 生成退订链接</div>
+            <div class="card-body">
+              <input type="email" class="form-control mb-2" id="unsub-gen-email" placeholder="输入客户邮箱">
+              <button class="btn btn-primary btn-sm" onclick="genUnsubLink()">生成链接</button>
+              <div id="unsub-link-result" class="mt-2" style="display:none"></div>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <div class="card-header">💡 退订机制说明</div>
+            <div class="card-body small text-muted">
+              <p>✅ 每封邮件自动附加退订链接</p>
+              <p>✅ 支持RFC 8058一键退订头</p>
+              <p>✅ 退订后自动加入黑名单</p>
+              <p>✅ 支持6种语言退订文案</p>
+              <p>✅ 符合CAN-SPAM/GDPR要求</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div><!-- /tab-content -->
+</div><!-- /main-content -->
+
+<!-- 新报价弹窗 -->
+<div class="modal fade" id="quoteModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">新建报价</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">客户邮箱 *</label><input type="email" class="form-control" id="q-email"></div>
+        <div class="mb-3"><label class="form-label">客户名称</label><input type="text" class="form-control" id="q-name"></div>
+        <div class="mb-3"><label class="form-label">产品</label><input type="text" class="form-control" id="q-product" placeholder="如: 智能电表 DDS686"></div>
+        <div class="row">
+          <div class="col-6 mb-3"><label class="form-label">金额(USD)</label><input type="number" class="form-control" id="q-amount" step="0.01"></div>
+          <div class="col-6 mb-3"><label class="form-label">有效天数</label><input type="number" class="form-control" id="q-days" value="30"></div>
+        </div>
+        <div class="mb-3"><label class="form-label">备注</label><textarea class="form-control" id="q-notes" rows="2"></textarea></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">取消</button><button class="btn btn-primary" onclick="createQuote()">创建报价</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 新序列弹窗-->
+<div class="modal fade" id="seqModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">新建序列</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">序列名称 *</label><input type="text" class="form-control" id="s-name" placeholder="如: 智能电表新客跟进"></div>
+        <div class="mb-3">
+          <label class="form-label">步骤配置 <small class="text-muted">(JSON格式)</small></label>
+          <textarea class="form-control" id="s-steps" rows="8" placeholder='[
+  {"channel":"email","delay_days":0,"subject":"Introduction","template":"Hi {{name}}, ..."},
+  {"channel":"email","delay_days":3,"subject":"Follow up","template":"Just checking in..."},
+  {"channel":"whatsapp","delay_days":7,"template":"Hi {{name}}, did you see our email?"}
+]'></textarea>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">取消</button><button class="btn btn-primary" onclick="createSequence()">创建</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 预热配置弹窗 -->
+<div class="modal fade" id="warmupModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">添加预热账号</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">邮箱账号ID *</label><input type="number" class="form-control" id="w-account" placeholder="email_accounts表的ID"></div>
+        <div class="mb-3"><label class="form-label">互热伙伴邮箱</label><input type="email" class="form-control" id="w-partner" placeholder="对方预热邮箱（可选）"></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">取消</button><button class="btn btn-primary" onclick="startWarmup()">开始预热</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '/api/channel-tools';
+
+// ===== 页面加载 =====
+document.addEventListener('DOMContentLoaded', () => { refreshAll(); });
+
+function refreshAll() {
+  loadStats();
+  loadPending();
+  loadQuotes();
+  loadSequences();
+  loadWarmup();
+}
+
+// ===== 顶部统计 =====
+async function loadStats() {
+  try {
+    const [pendRes, quoteRes] = await Promise.all([
+      fetch(API + '/pending-actions/stats').then(r=>r.json()),
+      fetch(API + '/quotes/stats').then(r=>r.json())
+    ]);
+    if (pendRes.success) {
+      const s = pendRes.data;
+      document.getElementById('stat-pending').textContent = s.total || 0;
+      document.getElementById('stat-blocked').textContent = s.byType?.pricing || 0;
+    }
+    if (quoteRes.success) {
+      const s = quoteRes.data;
+      document.getElementById('stat-quotes').textContent = (s.pending || 0) + (s.quoted || 0);
+      document.getElementById('stat-winrate').textContent = s.winRate ? s.winRate + '%' : '0%';
+    }
+  } catch(e) { console.error('loadStats', e); }
+}
+
+// ===== 待办管理 =====
+async function loadPending() {
+  try {
+    const filter = document.getElementById('pending-filter').value;
+    const url = filter === 'all' ? API + '/pending-actions' : API + '/pending-actions?type=' + filter;
+    const res = await fetch(url).then(r=>r.json());
+    const tbody = document.getElementById('pending-body');
+    if (!res.success || !res.data?.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">🎉 暂无待处理事项</td></tr>';
+      return;
+    }
+    tbody.innerHTML = res.data.map(a => `
+      <tr>
+        <td><small>${formatTime(a.created_at)}</small></td>
+        <td><span class="badge ${typeBadge(a.type)}">${a.type}</span></td>
+        <td>${esc(a.customer_email || '-')}</td>
+        <td>${esc(a.summary || '')}</td>
+        <td>${a.escalation_level ? '<span class="badge bg-danger">L'+a.escalation_level+'</span>' : '-'}</td>
+        <td>
+          <button class="btn btn-success btn-sm" onclick="resolveAction(${a.id})" title="已处理">✅</button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="dismissAction(${a.id})" title="忽略">✖</button>
+        </td>
+      </tr>
+    `).join('');
+    // 加载升级提醒
+    loadEscalation();
+  } catch(e) { console.error('loadPending', e); }
+}
+
+async function loadEscalation() {
+  try {
+    const res = await fetch(API + '/pending-actions/escalation').then(r=>r.json());
+    const card = document.getElementById('escalation-card');
+    if (!res.success || !res.data?.length) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    document.getElementById('escalation-body').innerHTML = res.data.map(e => `
+      <tr class="table-warning"><td>${esc(e.summary||'')}</td><td>${e.hours_waiting||0}h</td><td><span class="badge bg-danger">L${e.escalation_level}</span></td></tr>
+    `).join('');
+  } catch(e) {}
+}
+
+async function resolveAction(id) {
+  if (!confirm('确认已处理此事项？)) return;
+  const note = prompt('处理备注（可选）：) || '';
+  await fetch(API + '/pending-actions/' + id + '/resolve', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({note}) });
+  loadPending(); loadStats();
+}
+async function dismissAction(id) {
+  if (!confirm('确认忽略此事项？')) return;
+  await fetch(API + '/pending-actions/' + id + '/dismiss', { method:'POST' });
+  loadPending(); loadStats();
+}
+
+// ===== 报价跟踪 =====
+async function loadQuotes() {
+  try {
+    const [listRes, statsRes, expRes, fuRes] = await Promise.all([
+      fetch(API + '/quotes').then(r=>r.json()),
+      fetch(API + '/quotes/stats').then(r=>r.json()),
+      fetch(API + '/quotes/expiring').then(r=>r.json()),
+      fetch(API + '/quotes/need-followup').then(r=>r.json())
+    ]);
+    // 列表
+    const tbody = document.getElementById('quotes-body');
+    if (!listRes.success || !listRes.data?.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">暂无报价</td></tr>';
+    } else {
+      tbody.innerHTML = listRes.data.map(q => `
+        <tr>
+          <td>${esc(q.customer_name||q.customer_email||'-')}</td>
+          <td>${esc(q.product||'-')}</td>
+          <td>$${(q.amount||0).toLocaleString()}</td>
+          <td><span class="badge ${statusBadge(q.status)}">${q.status}</span></td>
+          <td><small>${q.expires_at ? formatTime(q.expires_at) : '-'}</small></td>
+          <td>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-success" onclick="updateQuoteStatus(${q.id},'quoted')" title="已报价">📤</button>
+              <button class="btn btn-outline-primary" onclick="updateQuoteStatus(${q.id},'following_up')" title="跟进中">📞</button>
+              <button class="btn btn-outline-warning" onclick="updateQuoteStatus(${q.id},'won')" title="成交">🎉</button>
+              <button class="btn btn-outline-danger" onclick="updateQuoteStatus(${q.id},'lost')" title="丢失">❌</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+    // 统计
+    if (statsRes.success) {
+      const s = statsRes.data;
+      document.getElementById('quote-stats').innerHTML = `
+        <div class="row text-center">
+          <div class="col-6 mb-2"><strong>${s.total||0}</strong><br><small class="text-muted">总报价</small></div>
+          <div class="col-6 mb-2"><strong>${s.pending||0}</strong><br><small class="text-muted">待报价</small></div>
+          <div class="col-6 mb-2"><strong>${s.won||0}</strong><br><small class="text-muted">已成交</small></div>
+          <div class="col-6 mb-2"><strong>${s.winRate||0}%</strong><br><small class="text-muted">成交率</small></div>
+          <div class="col-12"><strong>$${(s.totalAmount||0).toLocaleString()}</strong><br><small class="text-muted">总金额</small></div>
+        </div>
+      `;
+    }
+    // 即将过期
+    const expDiv = document.getElementById('expiring-quotes');
+    if (expRes.success && expRes.data?.length) {
+      expDiv.innerHTML = '<div class="list-group list-group-flush">' + expRes.data.map(q => `
+        <div class="list-group-item list-group-item-danger py-1 px-2"><small>${esc(q.customer_email)} — $${q.amount} — ${formatTime(q.expires_at)}</small></div>
+      `).join('') + '</div>';
+    } else { expDiv.innerHTML = '<div class="text-center text-muted py-2">暂无</div>'; }
+    // 需跟进
+    const fuDiv = document.getElementById('followup-quotes');
+    if (fuRes.success && fuRes.data?.length) {
+      fuDiv.innerHTML = '<div class="list-group list-group-flush">' + fuRes.data.map(q => `
+        <div class="list-group-item list-group-item-warning py-1 px-2"><small>${esc(q.customer_email)} — $${q.amount}</small></div>
+      `).join('') + '</div>';
+    } else { fuDiv.innerHTML = '<div class="text-center text-muted py-2">暂无</div>'; }
+  } catch(e) { console.error('loadQuotes', e); }
+}
+
+async function createQuote() {
+  const data = {
+    customer_email: document.getElementById('q-email').value,
+    customer_name: document.getElementById('q-name').value,
+    product: document.getElementById('q-product').value,
+    amount: parseFloat(document.getElementById('q-amount').value) || 0,
+    valid_days: parseInt(document.getElementById('q-days').value) || 30,
+    notes: document.getElementById('q-notes').value
+  };
+  if (!data.customer_email) return alert('请填写客户邮箱);
+  const res = await fetch(API + '/quotes', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) }).then(r=>r.json());
+  if (res.success) {
+    bootstrap.Modal.getInstance(document.getElementById('quoteModal')).hide();
+    loadQuotes(); loadStats();
+    alert('报价创建成功');
+  } else { alert(res.error || '创建失败'); }
+}
+
+async function updateQuoteStatus(id, status) {
+  await fetch(API + '/quotes/' + id + '/status', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({status}) }).then(r=>r.json());
+  loadQuotes(); loadStats();
+}
+
+// ===== 序列管理 =====
+async function loadSequences() {
+  try {
+    const res = await fetch(API + '/sequences').then(r=>r.json());
+    const list = document.getElementById('seq-list');
+    if (!res.success || !res.data?.length) {
+      list.innerHTML = '<div class="text-center text-muted py-3">暂无序列</div>';
+    } else {
+      list.innerHTML = res.data.map(s => `
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>${esc(s.name)}</strong>
+            <br><small class="text-muted">${JSON.parse(s.steps||'[]').length}个步骤 · ${s.status||'active'}</small>
+          </div>
+          <div>
+            <button class="btn btn-outline-primary btn-sm" onclick="showEnroll(${s.id})" title="加入客户">👤+</button>
+          </div>
+        </div>
+      `).join('');
+      document.getElementById('stat-sequences').textContent = res.data.filter(s=>s.status==='active').length;
+    }
+    // 加载enrollments
+    loadEnrollments();
+  } catch(e) { console.error('loadSequences', e); }
+}
+
+async function loadEnrollments() {
+  try {
+    const res = await fetch(API + '/sequences/enrollments').then(r=>r.json());
+    const tbody = document.getElementById('enrollment-body');
+    if (!res.success || !res.data?.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">暂无活跃加入</td></tr>';
+    } else {
+      tbody.innerHTML = res.data.map(e => `
+        <tr>
+          <td>${esc(e.customer_email)}</td>
+          <td>${esc(e.sequence_name||'#'+e.sequence_id)}</td>
+          <td>${e.current_step}/${e.total_steps||'?'}</td>
+          <td><small>${e.next_trigger_at ? formatTime(e.next_trigger_at) : '-'}</small></td>
+          <td><span class="badge ${e.status==='active'?'bg-success':'bg-secondary'}">${e.status}</span></td>
+          <td>
+            <button class="btn btn-outline-warning btn-sm" onclick="pauseEnroll(${e.id})" title="暂停">⏸</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    // 加载日志
+    loadSeqLog();
+  } catch(e) {}
+}
+
+async function loadSeqLog() {
+  try {
+    const res = await fetch(API + '/sequences/logs?limit=20').then(r=>r.json());
+    const tbody = document.getElementById('seq-log-body');
+    if (!res.success || !res.data?.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">暂无日志</td></tr>';
+    } else {
+      tbody.innerHTML = res.data.map(l => `
+        <tr><td><small>${formatTime(l.executed_at)}</small></td><td>${esc(l.customer_email||'')}</td><td>${l.step_index||0}</td><td>${esc(l.channel||'')}</td><td><span class="badge ${l.status==='sent'?'bg-success':'bg-danger'}">${l.status}</span></td></tr>
+      `).join('');
+    }
+  } catch(e) {}
+}
+
+async function createSequence() {
+  const name = document.getElementById('s-name').value;
+  const stepsRaw = document.getElementById('s-steps').value;
+  if (!name) return alert('请填写序列名称);
+  let steps;
+  try { steps = JSON.parse(stepsRaw); } catch(e) { return alert('步骤JSON格式错误: ' + e.message); }
+  const res = await fetch(API + '/sequences', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name, steps}) }).then(r=>r.json());
+  if (res.success) {
+    bootstrap.Modal.getInstance(document.getElementById('seqModal')).hide();
+    loadSequences();
+    alert('序列创建成功');
+  } else { alert(res.error || '创建失败'); }
+}
+
+function showEnroll(seqId) {
+  const email = prompt('输入客户邮箱:');
+  if (!email) return;
+  fetch(API + '/sequences/' + seqId + '/enroll', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({customer_email:email}) })
+    .then(r=>r.json()).then(res => {
+      if (res.success) { loadEnrollments(); alert('加入成功'); }
+      else alert(res.error || '加入失败');
+    });
+}
+async function pauseEnroll(id) {
+  await fetch(API + '/sequences/enrollments/' + id + '/pause', { method:'POST' });
+  loadEnrollments();
+}
+
+// ===== 邮件预热 =====
+async function loadWarmup() {
+  try {
+    const res = await fetch(API + '/warmup/configs').then(r=>r.json());
+    const tbody = document.getElementById('warmup-body');
+    if (!res.success || !res.data?.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">暂无预热账号</td></tr>';
+      document.getElementById('stat-warmup').textContent = 0;
+    } else {
+      document.getElementById('stat-warmup').textContent = res.data.filter(w=>w.enabled).length;
+      tbody.innerHTML = res.data.map(w => `
+        <tr>
+          <td>${esc(w.account_email || '#'+w.account_id)}</td>
+          <td><span class="badge ${stageBadge(w.stage)}">${w.stage||'week1'}</span></td>
+          <td>${w.daily_sent_today||0}</td>
+          <td><small>${w.started_at ? formatTime(w.started_at) : '-'}</small></td>
+          <td>${w.enabled ? '<span class="badge bg-success">运行中</span>' : '<span class="badge bg-secondary">已暂停</span>'}</td>
+          <td>
+            <button class="btn btn-sm ${w.enabled?'btn-outline-warning':'btn-outline-success'}" onclick="toggleWarmup(${w.account_id},${!w.enabled})">${w.enabled?'⏸暂停:'▶启动}</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    loadWarmupLog();
+  } catch(e) { console.error('loadWarmup', e); }
+}
+
+async function loadWarmupLog() {
+  try {
+    const res = await fetch(API + '/warmup/logs?limit=30').then(r=>r.json());
+    const tbody = document.getElementById('warmup-log-body');
+    if (!res.success || !res.data?.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">暂无日志</td></tr>';
+    } else {
+      tbody.innerHTML = res.data.map(l => `
+        <tr><td><small>${formatTime(l.sent_at||l.created_at)}</small></td><td>${esc(l.from_email||'')}</td><td>${esc(l.to_email||'')}</td><td>${l.direction||'out'}</td><td><span class="badge ${l.status==='sent'?'bg-success':'bg-danger'}">${l.status}</span></td></tr>
+      `).join('');
+    }
+  } catch(e) {}
+}
+
+async function startWarmup() {
+  const accountId = parseInt(document.getElementById('w-account').value);
+  const partner = document.getElementById('w-partner').value;
+  if (!accountId) return alert('请填写邮箱账号ID');
+  const res = await fetch(API + '/warmup/start', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({account_id:accountId, partner_email:partner||undefined}) }).then(r=>r.json());
+  if (res.success) {
+    bootstrap.Modal.getInstance(document.getElementById('warmupModal')).hide();
+    loadWarmup(); alert('预热已启动);
+  } else { alert(res.error || '启动失败'); }
+}
+async function toggleWarmup(accountId, enable) {
+  await fetch(API + '/warmup/' + accountId + '/' + (enable?'start':'stop'), { method:'POST' });
+  loadWarmup();
+}
+
+// ===== 邮件安全工具 =====
+async function checkSpam() {
+  const subject = document.getElementById('spam-subject').value;
+  const body = document.getElementById('spam-body').value;
+  if (!body) return alert('请输入邮件正文);
+  const res = await fetch(API + '/spam-check', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({subject, body}) }).then(r=>r.json());
+  const div = document.getElementById('spam-result');
+  div.style.display = '';
+  if (res.success) {
+    const d = res.data;
+    const color = d.score >= 80 ? 'success' : d.score >= 50 ? 'warning' : 'danger';
+    div.innerHTML = `
+      <div class="alert alert-${color}">
+        <strong>评分: ${d.score}/100</strong> — ${d.level==='safe'?'✅安全':d.level==='warning'?'⚠️有风险':'🚨高危'}
+        ${d.issues?.length ? '<hr><ul class="mb-0">' + d.issues.map(i=>'<li>'+esc(i)+'</li>').join('') + '</ul>' : ''}
+        ${d.suggestions?.length ? '<hr><strong>建议:</strong><ul class="mb-0">' + d.suggestions.map(s=>'<li>'+esc(s)+'</li>').join('') + '</ul>' : ''}
+      </div>
+    `;
+  } else { div.innerHTML = '<div class="alert alert-danger">检测失败 '+esc(res.error||'')+'</div>'; }
+}
+
+async function verifyEmail() {
+  const email = document.getElementById('verify-email').value;
+  if (!email) return alert('请输入邮箱);
+  const div = document.getElementById('verify-result');
+  div.style.display = ''; div.innerHTML = '<div class="text-muted">验证中...</div>';
+  const res = await fetch(API + '/verify-email', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email}) }).then(r=>r.json());
+  if (res.success) {
+    const d = res.data;
+    const color = d.valid ? 'success' : 'danger';
+    div.innerHTML = `
+      <div class="alert alert-${color}">
+        <strong>${d.valid?'✅有效':'❌无效'}</strong> — ${esc(d.reason||'')}
+        <br><small>格式:${d.format?'✅':'❌'} MX:${d.mx?'✅':'❌'} SMTP:${d.smtp===undefined?'跳过':d.smtp?'✅':'❌'} 一次性: ${d.disposable?'⚠️是':'否'} 角色账号:${d.role?'⚠️是':'否'}</small>
+      </div>
+    `;
+  } else { div.innerHTML = '<div class="alert alert-danger">'+esc(res.error||'验证失败')+'</div>'; }
+}
+
+async function verifyBatch() {
+  const raw = document.getElementById('verify-batch').value;
+  const emails = raw.split('\n').map(e=>e.trim()).filter(Boolean);
+  if (!emails.length) return alert('请输入邮箱);
+  const div = document.getElementById('batch-result');
+  div.style.display = ''; div.innerHTML = '<div class="text-muted">批量验证中 '+emails.length+'封...</div>';
+  const res = await fetch(API + '/verify-email/batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({emails}) }).then(r=>r.json());
+  if (res.success && res.data) {
+    div.innerHTML = '<table class="table table-sm"><thead><tr><th>邮箱</th><th>结果</th><th>原因</th></tr></thead><tbody>' +
+      res.data.map(r => `<tr class="${r.valid?'':'table-danger'}"><td>${esc(r.email)}</td><td>${r.valid?'✅':'❌'}</td><td><small>${esc(r.reason||'')}</small></td></tr>`).join('') +
+      '</tbody></table>';
+  } else { div.innerHTML = '<div class="alert alert-danger">'+esc(res.error||'批量验证失败')+'</div>'; }
+}
+
+async function detectIntent() {
+  const text = document.getElementById('intent-text').value;
+  if (!text) return alert('请输入消息);
+  const div = document.getElementById('intent-result');
+  div.style.display = ''; div.innerHTML = '<div class="text-muted">分析中...</div>';
+  const res = await fetch(API + '/detect-intent', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text}) }).then(r=>r.json());
+  if (res.success) {
+    const d = res.data;
+    const color = d.shouldBlock ? 'danger' : d.intent==='pricing' ? 'warning' : 'info';
+    div.innerHTML = `
+      <div class="alert alert-${color}">
+        <strong>意图: ${esc(d.intent||'unknown')}</strong> (${(d.confidence*100).toFixed(0)}%)
+        ${d.shouldBlock ? '<br>🚨 <strong>需要人工介入！AI不应自动回复此消息。</strong>' : ''}
+        ${d.keywords?.length ? '<br><small>触发词: ' + d.keywords.map(k=>esc(k)).join(', ') + '</small>' : ''}
+        ${d.language ? '<br><small>检测语言: ' + esc(d.language) + '</small>' : ''}
+      </div>
+    `;
+  } else { div.innerHTML = '<div class="alert alert-danger">'+esc(res.error||'检测失败)+'</div>'; }
+}
+
+// ===== 工具函数 =====
+function formatTime(t) {
+  if (!t) return '-';
+  const d = new Date(t);
+  if (isNaN(d)) return t;
+  return d.toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function typeBadge(t) { return {pricing:'bg-danger',complaint:'bg-warning text-dark',urgent:'bg-danger',inquiry:'bg-info',technical:'bg-primary'}[t]||'bg-secondary'; }
+function statusBadge(s) { return {pending:'bg-warning text-dark',quoted:'bg-info',following_up:'bg-primary',won:'bg-success',lost:'bg-danger',expired:'bg-secondary'}[s]||'bg-secondary'; }
+function stageBadge(s) { return {week1:'bg-secondary',week2:'bg-info',week3:'bg-primary',week4:'bg-warning text-dark','week5+':'bg-success'}[s]||'bg-secondary'; }
+
+// ===== 域名认证检测 =====
+async function checkDomainAuth() {
+  const domain = document.getElementById('auth-domain').value;
+  if (!domain) return alert('请输入域名');
+  const div = document.getElementById('auth-result');
+  div.style.display = ''; div.innerHTML = '<div class="text-muted">检测中...</div>';
+  try {
+    const res = await fetch(API + '/check-domain-auth', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({domain}) }).then(r=>r.json());
+    if (res.success) {
+      const d = res.data;
+      const color = d.level === 'good' ? 'success' : d.level === 'warning' ? 'warning' : 'danger';
+      div.innerHTML = `
+        <div class="alert alert-${color}">
+          <h5>域名: ${esc(d.domain)} — 评分: ${d.score}/100</h5>
+          <div class="row mt-2">
+            <div class="col-6"><strong>MX:</strong> ${d.mx?.found?'✅ '+esc((d.mx.records||[])[0]?.exchange||''):'❌ 未找到'}</div>
+            <div class="col-6"><strong>SPF:</strong> ${d.spf?.found?'✅':'❌ 未找到'}</div>
+            <div class="col-6"><strong>DKIM:</strong> ${d.dkim?.found?'✅ selector: '+esc(d.dkim.selector||''):'❌ 未找到'}</div>
+            <div class="col-6"><strong>DMARC:</strong> ${d.dmarc?.found?'✅ policy: '+esc(d.dmarc.policy||''):'❌ 未找到'}</div>
+          </div>
+          ${d.spf?.record ? '<div class="mt-2"><small><strong>SPF记录:</strong> '+esc(d.spf.record)+'</small></div>' : ''}
+          ${d.dmarc?.record ? '<div><small><strong>DMARC记录:</strong> '+esc(d.dmarc.record)+'</small></div>' : ''}
+          ${d.issues?.length ? '<hr><strong>问题:</strong><ul class="mb-0">'+d.issues.map(i=>'<li>'+esc(i)+'</li>').join('')+'</ul>' : ''}
+          ${d.suggestions?.length ? '<hr><strong>修复建议:</strong><ul class="mb-0">'+d.suggestions.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>' : ''}
+        </div>
+      `;
+    } else { div.innerHTML = '<div class="alert alert-danger">'+esc(res.error)+'</div>'; }
+  } catch(e) { div.innerHTML = '<div class="alert alert-danger">'+e.message+'</div>'; }
+}
+
+// ===== 退订管理 =====
+async function loadUnsubs() {
+  try {
+    const res = await fetch(API + '/unsubscribes').then(r=>r.json());
+    const tbody = document.getElementById('unsub-body');
+    if (!res.success || !res.data?.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">暂无退订记录</td></tr>';
+    } else {
+      tbody.innerHTML = res.data.map(u => `
+        <tr>
+          <td>${esc(u.email)}</td>
+          <td><small>${formatTime(u.unsubscribed_at)}</small></td>
+          <td><small>${esc(u.reason||'-')}</small></td>
+          <td>${esc(u.source||'link')}</td>
+          <td><button class="btn btn-outline-success btn-sm" onclick="resubscribe('${esc(u.email)}')">重新订阅</button></td>
+        </tr>
+      `).join('');
+    }
+  } catch(e) { console.error(e); }
+}
+
+async function resubscribe(email) {
+  if (!confirm('确认重新订阅 '+email+'?')) return;
+  await fetch(API + '/unsubscribes/resubscribe', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email}) });
+  loadUnsubs();
+}
+
+async function genUnsubLink() {
+  const email = document.getElementById('unsub-gen-email').value;
+  if (!email) return alert('请输入邮箱');
+  const res = await fetch(API + '/unsubscribe-link?email=' + encodeURIComponent(email)).then(r=>r.json());
+  const div = document.getElementById('unsub-link-result');
+  div.style.display = '';
+  if (res.success) {
+    div.innerHTML = '<div class="alert alert-info"><small><strong>退订链接:</strong><br><a href="'+esc(res.data.url)+'" target="_blank">'+esc(res.data.url)+'</a><br><br><strong>邮件头:</strong><br><code>List-Unsubscribe: '+esc(res.data.headers['List-Unsubscribe'])+'</code></small></div>';
+  }
+}
+
+// Tab切换时加载数据
+document.querySelectorAll('#toolTabs a[data-bs-toggle="tab"]').forEach(tab => {
+  tab.addEventListener('shown.bs.tab', function(e) {
+    const target = e.target.getAttribute('href');
+    if (target === '#tab-unsub') loadUnsubs();
+  });
+});
+
+// ===== 数据分析仪表盘 =====
+async function loadDashboard() {
+  const days = document.getElementById('dash-period').value;
+  try {
+    const res = await fetch('/api/analytics-dashboard/dashboard?days=' + days).then(r=>r.json());
+    if (!res.success) return;
+    const d = res.data;
+    // 邮件
+    document.getElementById('de-sent').textContent = d.email.sent;
+    document.getElementById('de-opened').textContent = d.email.opened;
+    document.getElementById('de-clicked').textContent = d.email.clicked;
+    document.getElementById('de-replied').textContent = d.email.replied;
+    document.getElementById('de-openrate').textContent = d.email.openRate + '%';
+    document.getElementById('de-clickrate').textContent = d.email.clickRate + '%';
+    document.getElementById('de-replyrate').textContent = d.email.replyRate + '%';
+    document.getElementById('de-blocked').textContent = d.email.blocked;
+    // WhatsApp
+    document.getElementById('dw-sent').textContent = d.whatsapp.sent;
+    document.getElementById('dw-recv').textContent = d.whatsapp.received;
+    document.getElementById('dw-conv').textContent = d.whatsapp.conversations;
+    // 社媒
+    document.getElementById('ds-posts').textContent = d.social.posts;
+    document.getElementById('ds-leads').textContent = d.social.leads;
+    document.getElementById('ds-platforms').textContent = (d.social.byPlatform||[]).map(p=>p.platform+':'+p.c).join(' | ');
+    // 报价
+    document.getElementById('dq-total').textContent = d.quotes.total||0;
+    document.getElementById('dq-won').textContent = d.quotes.won||0;
+    document.getElementById('dq-rate').textContent = (d.quotes.winRate||0)+'%';
+    document.getElementById('dq-amount').textContent = '$'+(d.quotes.totalAmount||0).toLocaleString();
+  } catch(e) { console.error(e); }
+}
+
+async function loadIntentLogs() {
+  try {
+    const res = await fetch('/api/analytics-dashboard/intent-logs?limit=50').then(r=>r.json());
+    const tbody = document.getElementById('intent-log-body');
+    if (!res.success || !res.data?.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">暂无意图检测记录</td></tr>';
+    } else {
+      tbody.innerHTML = res.data.map(l => {
+        let kw = '';
+        try { kw = JSON.parse(l.matched_keywords||'[]').join(', '); } catch(e) { kw = l.matched_keywords||''; }
+        return `<tr>
+          <td><small>${formatTime(l.created_at)}</small></td>
+          <td>${esc(l.channel||'-')}</td>
+          <td>${esc(l.customer_email||'-')}</td>
+          <td><span class="badge ${l.intent==='pricing'?'bg-danger':l.intent==='inquiry'?'bg-info':'bg-secondary'}">${esc(l.intent)}</span></td>
+          <td>${((l.confidence||0)*100).toFixed(0)}%</td>
+          <td>${l.handled===0?'<span class="badge bg-danger">是</span>':'-'}</td>
+          <td><small>${esc(kw)}</small></td>
+        </tr>`;
+      }).join('');
+    }
+  } catch(e) {}
+}
+
+// Tab切换加载dashboard
+document.querySelectorAll('#toolTabs a[data-bs-toggle="tab"]').forEach(tab => {
+  tab.addEventListener('shown.bs.tab', function(e) {
+    const target = e.target.getAttribute('href');
+    if (target === '#tab-dashboard') { loadDashboard(); loadIntentLogs(); }
+  });
+});
+</script>
+
+<%- include('partials/footer') %>

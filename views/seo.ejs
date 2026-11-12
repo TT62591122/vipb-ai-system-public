@@ -1,0 +1,142 @@
+<%- include('partials/header') %>
+<style>
+  .score-circle { width: 160px; height: 160px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; position: relative; }
+  .score-circle svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+  .score-circle .score-text { font-size: 42px; font-weight: bold; z-index: 1; }
+  .issue-critical { border-left: 4px solid #dc3545; }
+  .issue-warning { border-left: 4px solid #ffc107; }
+  .issue-info { border-left: 4px solid #0dcaf0; }
+</style>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="mb-0">🔍 SEO分析工具</h4><small class="text-muted">网站优化 · 关键词研究 · 排名追踪</small></div>
+  </div>
+
+  <!-- URL输入 -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="input-group input-group-lg">
+        <span class="input-group-text"><i class="bi bi-globe"></i></span>
+        <input class="form-control" id="seoUrl" placeholder="输入网址，如 https://example.com" onkeydown="if(event.key==='Enter')analyzeSEO()">
+        <button class="btn btn-purple" onclick="analyzeSEO()" id="analyzeBtn">🔍 分析</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab -->
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabAnalysis">📊 SEO分析</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabKeywords">🔑 关键词研究</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- 分析结果 -->
+    <div class="tab-pane fade show active" id="tabAnalysis">
+      <div id="seoResults" style="display:none">
+        <div class="row g-4 mb-4">
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body text-center">
+                <h6 class="text-muted">总体评分</h6>
+                <div class="score-circle">
+                  <svg width="160" height="160"><circle cx="80" cy="80" r="70" fill="none" stroke="#eee" stroke-width="10"/><circle id="scoreArc" cx="80" cy="80" r="70" fill="none" stroke="#7c3aed" stroke-width="10" stroke-dasharray="0 440" stroke-linecap="round"/></svg>
+                  <span class="score-text text-purple" id="scoreValue">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="row g-3">
+              <div class="col-6"><div class="stat-card text-center"><div class="stat-number text-danger" id="criticalCount">0</div><div class="stat-label">严重问题</div></div></div>
+              <div class="col-6"><div class="stat-card text-center"><div class="stat-number text-warning" id="warningCount">0</div><div class="stat-label">警告</div></div></div>
+              <div class="col-6"><div class="stat-card text-center"><div class="stat-number text-info" id="infoCount">0</div><div class="stat-label">建议</div></div></div>
+              <div class="col-6"><div class="stat-card text-center"><div class="stat-number text-success" id="passedCount">0</div><div class="stat-label">已通过</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card"><div class="card-header"><h6 class="mb-0">问题详情</h6></div><div class="card-body p-0"><div id="issueList" class="list-group list-group-flush"></div></div></div>
+      </div>
+      <div id="seoEmpty" class="text-center text-muted py-5">
+        <i class="bi bi-search" style="font-size:48px"></i>
+        <p class="mt-2">输入网址开始SEO分析</p>
+      </div>
+    </div>
+
+    <!-- 关键词研究 -->
+    <div class="tab-pane fade" id="tabKeywords">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="input-group">
+            <input class="form-control" id="kwInput" placeholder="输入种子关键词，如 electric meter" onkeydown="if(event.key==='Enter')researchKeywords()">
+            <button class="btn btn-purple" onclick="researchKeywords()">🔑 研究</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead><tr><th>关键词</th><th>搜索量</th><th>难度</th><th>CPC</th><th>趋势</th></tr></thead>
+            <tbody id="kwResults"><tr><td colspan="5" class="text-center text-muted py-4">输入关键词开始研究</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function analyzeSEO() {
+  const url = document.getElementById('seoUrl').value.trim();
+  if (!url) return alert('请输入网址');
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 分析中...';
+  try {
+    const res = await fetch('/api/seo/analyze', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url}) });
+    const data = await res.json();
+    const result = data.result || data;
+    document.getElementById('seoEmpty').style.display = 'none';
+    document.getElementById('seoResults').style.display = '';
+    const score = result.score || 0;
+    document.getElementById('scoreValue').textContent = score;
+    const circumference = 2 * Math.PI * 70;
+    document.getElementById('scoreArc').setAttribute('stroke-dasharray', `${circumference * score / 100} ${circumference}`);
+    document.getElementById('scoreArc').setAttribute('stroke', score >= 80 ? '#198754' : score >= 50 ? '#ffc107' : '#dc3545');
+    const issues = result.issues || [];
+    let critical=0, warning=0, info=0, passed=0;
+    issues.forEach(i => { if(i.severity==='critical') critical++; else if(i.severity==='warning') warning++; else info++; });
+    passed = result.passed || 0;
+    document.getElementById('criticalCount').textContent = critical;
+    document.getElementById('warningCount').textContent = warning;
+    document.getElementById('infoCount').textContent = info;
+    document.getElementById('passedCount').textContent = passed;
+    document.getElementById('issueList').innerHTML = issues.length ? issues.map(i => `
+      <div class="list-group-item issue-${i.severity}">
+        <div class="d-flex justify-content-between">
+          <strong>${i.title || i.message}</strong>
+          <span class="badge bg-${i.severity==='critical'?'danger':i.severity==='warning'?'warning':'info'}">${i.severity}</span>
+        </div>
+        <small class="text-muted">${i.description || ''}</small>
+      </div>
+    `).join('') : '<div class="text-center text-muted py-3">没有发现问题 🎉</div>';
+  } catch(e) { alert('分析失败: ' + e.message); }
+  btn.disabled = false; btn.innerHTML = '🔍 分析';
+}
+
+async function researchKeywords() {
+  const kw = document.getElementById('kwInput').value.trim();
+  if (!kw) return;
+  try {
+    const res = await fetch('/api/seo/keywords', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({keyword:kw}) });
+    const data = await res.json();
+    const keywords = data.keywords || data.data || [];
+    const tbody = document.getElementById('kwResults');
+    if (!keywords.length) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">未找到相关关键词</td></tr>'; return; }
+    tbody.innerHTML = keywords.map(k => `<tr>
+      <td>${k.keyword}</td><td>${(k.volume||0).toLocaleString()}</td>
+      <td><div class="progress" style="height:18px;min-width:60px"><div class="progress-bar bg-${k.difficulty>70?'danger':k.difficulty>40?'warning':'success'}" style="width:${k.difficulty||0}%">${k.difficulty||0}</div></div></td>
+      <td>$${(k.cpc||0).toFixed(2)}</td><td>${k.trend||'-'}</td>
+    </tr>`).join('');
+  } catch(e) { alert('研究失败: ' + e.message); }
+}
+</script>
+<%- include('partials/footer') %>

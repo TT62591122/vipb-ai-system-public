@@ -1,0 +1,51 @@
+{
+  "followers": {
+    "follower_card": "div[data-e2e='user-card'], div[class*='UserListItem'], div[class*='follower-item']",
+    "follower_name": "span[data-e2e='user-card-nickname'], span[class*='UserTitle'], a[data-e2e='user-card-user-link'] span",
+    "follower_username": "span[data-e2e='user-card-uniqueid'], a[data-e2e='user-card-user-link']",
+    "follower_avatar": "img[class*='Avatar'], img[data-e2e='user-card-avatar']",
+    "follower_link": "a[data-e2e='user-card-user-link'], a[href*='/@']"
+  },
+  "video_commenters": {
+    "comment_block": "div[data-e2e='comment-list-item'], div[class*='CommentListItem'], div[class*='comment-item']",
+    "commenter_name": "span[data-e2e='comment-username-1'], a[data-e2e='comment-avatar-1'] + div span",
+    "commenter_link": "a[data-e2e='comment-avatar-1'], a[href*='/@']",
+    "comment_text": "span[data-e2e='comment-level-1'], p[data-e2e='comment-level-1']",
+    "view_more_comments": "p[data-e2e='view-more-1'], div[class*='ViewMore']",
+    "expand_replies": "p[data-e2e='view-more-2']"
+  },
+  "hashtag": {
+    "video_card": "div[data-e2e='challenge-item'], div[class*='DivItemContainer'], div[data-e2e='search_top-item']",
+    "video_link": "a[href*='/video/']",
+    "author_link": "a[href*='/@']",
+    "author_name": "span[data-e2e='challenge-item-username'], h3[data-e2e='search-card-user-unique-id']",
+    "author_avatar": "img[class*='Avatar']"
+  },
+  "actions": {
+    "follow_button": "button[data-e2e='follow-button'], button[class*='FollowButton'], div[data-e2e='follow-button']",
+    "like_button": "span[data-e2e='like-icon'], button[data-e2e='like-icon'], div[class*='like-icon']",
+    "comment_input": "div[data-e2e='comment-input'], div[contenteditable='true'][class*='comment'], br[data-e2e='comment-input']",
+    "comment_post": "div[data-e2e='comment-post'], button[data-e2e='comment-post']",
+    "dm_button": "button[data-e2e='message-button'], a[href*='/messages']",
+    "dm_input": "div[class*='message-input'] div[contenteditable='true'], div[data-e2e='message-input']",
+    "dm_send": "button[data-e2e='send-message'], div[class*='send-btn']",
+    "search_input": "input[data-e2e='search-user-input'], input[type='search']",
+    "user_search_result": "div[data-e2e='search-user-container'] a, a[href*='/@']"
+  },
+  "profile": {
+    "followers_tab": "a[data-e2e='followers-tab'], span[data-e2e='followers-count']",
+    "following_tab": "a[data-e2e='following-tab']",
+    "video_tab": "a[data-e2e='video-tab']",
+    "username": "h1[data-e2e='user-title'], span[data-e2e='user-title']",
+    "display_name": "h2[data-e2e='user-subtitle'], span[data-e2e='user-subtitle']",
+    "bio": "h2[data-e2e='user-bio'], span[data-e2e='user-bio']",
+    "follower_count": "strong[data-e2e='followers-count']",
+    "following_count": "strong[data-e2e='following-count']"
+  },
+  "common": {
+    "scroll_container": "div[class*='DivBrowserModeContainer'], main, #app",
+    "loading_spinner": "div[class*='Loading'], svg[class*='loading']",
+    "login_modal": "div[class*='LoginModal'], div[data-e2e='modal']",
+    "captcha": "div[class*='captcha'], div[id*='captcha']"
+  }
+}

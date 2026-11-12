@@ -1,0 +1,37 @@
+{
+  "subscribers": {
+    "subscriber_card": "ytd-channel-renderer, ytd-grid-renderer #items ytd-grid-channel-renderer",
+    "subscriber_name": "#channel-title, #text",
+    "subscriber_link": "a#main-link, a.channel-link",
+    "subscriber_count": "#subscribers, #subscriber-count"
+  },
+  "video_commenters": {
+    "comment_block": "ytd-comment-thread-renderer, ytd-comment-renderer",
+    "commenter_name": "#author-text",
+    "commenter_link": "#author-text a, a#author-text",
+    "commenter_avatar": "#author-thumbnail a",
+    "comment_text": "#content-text, yt-formatted-string#content-text",
+    "show_more_replies": "#more-replies button, ytd-continuation-item-renderer button",
+    "sort_comments": "#sort-menu tp-yt-paper-listbox"
+  },
+  "channel_videos": {
+    "video_card": "ytd-grid-video-renderer, ytd-rich-item-renderer",
+    "video_title": "#video-title, h3 a#video-title-link",
+    "video_link": "a#video-title-link, a#thumbnail",
+    "video_views": "#metadata-line span:first-child",
+    "video_date": "#metadata-line span:nth-child(2)"
+  },
+  "actions": {
+    "subscribe_button": "#subscribe-button button, ytd-subscribe-button-renderer button, tp-yt-paper-button.ytd-subscribe-button-renderer",
+    "like_button": "ytd-menu-renderer button[aria-label*='like'], ytd-toggle-button-renderer#button:first-of-type button, like-button-view-model button",
+    "comment_input": "#placeholder-area, #contenteditable-root, ytd-comment-simplebox-renderer #simplebox-placeholder",
+    "comment_box": "#creation-box #contenteditable-root, div[contenteditable='true']",
+    "comment_submit": "#submit-button button, ytd-button-renderer#submit-button button",
+    "notification_bell": "#notification-preference-button button"
+  },
+  "common": {
+    "scroll_container": "ytd-app",
+    "loading_spinner": "tp-yt-paper-spinner, yt-page-navigation-progress",
+    "cookie_accept": "button[aria-label*='Accept'], tp-yt-paper-button.ytd-consent-bump-v2-lightbox"
+  }
+}

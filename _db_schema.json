@@ -1,0 +1,6596 @@
+{
+  "account_personalities": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "account_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "template_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "mouse_speed",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "mouse_precision",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "mouse_curve_intensity",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "typing_speed_wpm",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "typing_error_rate",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "typing_pause_freq",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "typing_burst_mode",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "scroll_speed",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "avg_page_view_sec",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "likes_ratio",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "comment_ratio",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "preferred_start_hour",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "preferred_end_hour",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "lunch_break_start",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "lunch_break_end",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "avg_session_minutes",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_mobile",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "screen_dpi",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "activity_log": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "entity_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "entity_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "details",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "user_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ip_address",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 332
+  },
+  "agent_action_log": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "action_type",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "triggered_by",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "target_customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "decision_reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "decision_score",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action_detail",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "result",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "experience_extracted",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cost",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "agent_action_log_archive": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "action_type",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "triggered_by",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "target_customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "decision_reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "decision_score",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action_detail",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "result",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "experience_extracted",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cost",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "agent_autonomy": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "current_level",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_upgrade_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_rejected_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "reject_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "experiences_at_last_reject",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "experiences_required_for_retry",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "upgrade_history",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 1
+  },
+  "agent_customer_profiles": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "language_preference",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "communication_style",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "interests",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "best_contact_time",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "response_pattern",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "deal_stage",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "reply_rate",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "avg_reply_hours",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_interactions",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_positive_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "agent_experiences": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "category",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "situation",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "action",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "result",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "result_sentiment",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "lesson",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "confidence",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "times_applied",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_valid",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "source",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "agent_scan_results": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "scan_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "trigger_type",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "trigger_reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "priority",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "decision",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "decision_reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action_detail",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cost",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "executed_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "agent_strategies": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "target_segment",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "rules",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "performance",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "agent_upgrade_requests": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "from_level",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "to_level",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "metrics",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "user_response",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "responded_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "ai_conversations": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "role",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "task_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 78
+  },
+  "ai_logs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "agent",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "model",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "prompt_tokens",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "completion_tokens",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cost",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "task",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "result",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cached",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 9
+  },
+  "ai_task_steps": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "task_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "step_order",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "agent",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "engine",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "action",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "input",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "output",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "provider_used",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cost",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "tokens",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "started_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "completed_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 81
+  },
+  "ai_tasks": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "user_input",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "parsed_intent",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sub_tasks",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "result",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_cost",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_tokens",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "brain_provider",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "started_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "completed_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 40
+  },
+  "alerts": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "level",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "message",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "data",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 1
+  },
+  "automation_settings": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "key",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "config",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "behavior_logs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "account_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "action_type",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "duration_ms",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "details",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "browser_profiles": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "proxy_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "fingerprint",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cookies",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "health_score",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_used",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "browser_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "external_profile_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 1
+  },
+  "collected_data": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "task_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "data_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "external_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "username",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "display_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "profile_url",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "avatar_url",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "bio",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "phone",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "website",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "country",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "gender",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "age_range",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "followers_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "following_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "posts_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "engagement_rate",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_active_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "raw_data",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "tags",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "content_calendar": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "title",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "content_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "media_urls",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "hashtags",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "target_audience",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "language",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "scheduled_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "published_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ai_generated",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "engagement",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_by",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "approved_by",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "content_templates": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "category",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "variables",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "use_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "reference_only",
+        "type": "BOOLEAN",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 26
+  },
+  "conversion_events": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "event_type",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "campaign",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "revenue",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "metadata",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "customer_identifiers": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "identifier",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "verified",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 2
+  },
+  "customers": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "company",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "contact_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "phone",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "country",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "source",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "lead_score",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "stage",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "tags",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ai_summary",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "lead_grade",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "score_updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "preferred_email_account_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "preferred_social_accounts",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 2
+  },
+  "deals": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "inquiry_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "title",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "amount",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "currency",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "stage",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "products",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "quote_data",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "pi_number",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "shipping_info",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "payment_info",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ai_generated",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ai_analysis",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "digital_human_videos": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "human_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "title",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "video_path",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "language",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "duration",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "digital_humans": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "avatar_url",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "voice_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "voice_provider",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "settings",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "email_accounts": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "display_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "smtp_host",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "smtp_port",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "smtp_user",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "smtp_pass",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "imap_host",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "imap_port",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "warmup_stage",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "daily_sent",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "daily_limit",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "health_score",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "auth_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "oauth_credentials",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "gmail_client_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "gmail_client_secret",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 2
+  },
+  "email_blacklist": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "bounced_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "email_sequences": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "steps",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "target_industry",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "stats",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "email_tracking_events": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "email_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "event_type",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "url",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ip",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "user_agent",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "email_verification_cache": {
+    "columns": [
+      {
+        "name": "email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "valid",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "score",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "mx_host",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "checked_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "expires_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 5
+  },
+  "email_warmup_config": {
+    "columns": [
+      {
+        "name": "account_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "enabled",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "stage",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "started_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "partner_email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "daily_sent_today",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_sent_date",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "email_warmup_log": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "account_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "direction",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "to_addr",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "from_addr",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "subject",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "error",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "emails": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "account_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "direction",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "from_addr",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "to_addr",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "subject",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "body",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sequence_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sequence_step",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "opened",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "clicked",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "bounced",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "spam_score",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sent_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "open_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "click_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "first_opened_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "first_clicked_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "scheduled_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "retry_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_retry_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "attachments",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "inline_images",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "source",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 19
+  },
+  "esim_providers": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "code",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "countries",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "config_fields",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "website",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 8
+  },
+  "followup_logs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "plan_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "step",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "result",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "followup_plans": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "step",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "delay_days",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "template_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "next_run_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_run_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "inbox_canned_responses": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "shortcut",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "title",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "language",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "use_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "inbox_conversations": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "channel_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "contact_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "contact_avatar",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_message",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_message_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_direction",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "unread_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "priority",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "assigned_to",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "labels",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "metadata",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "category",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 4
+  },
+  "inbox_messages": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "conversation_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "direction",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sender_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "media_url",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "metadata",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "read_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 54
+  },
+  "inbox_sync_state": {
+    "columns": [
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "last_cursor",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_sync_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "error",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "inquiries": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "subject",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "product",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "quantity",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "priority",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ai_score",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ai_analysis",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "intent_detections": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "message_text",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "intent",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "confidence",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "matched_keywords",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "handled",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 1
+  },
+  "journey_enrollments": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "journey_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "current_step",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "entered_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "next_action_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "completed_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "data",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "journey_logs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "journey_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "step_index",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action_detail",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "result",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "journeys": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "trigger_type",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "trigger_config",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "steps",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_entered",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_completed",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_converted",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "knowledge_base": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "category",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "key",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "value",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 111
+  },
+  "lead_score_events": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "event_type",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "score_delta",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "source",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "details",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "expires_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "li_action_logs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "prospect_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sequence_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "step_index",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "error",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "li_prospects": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "linkedin_url",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "full_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "headline",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "company",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "location",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "industry",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "connection_status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "tags",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sequence_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sequence_step",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_action",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_action_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "next_action",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "next_action_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "reply_received",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "li_sequences": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "target_industry",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "target_region",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "steps",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_enrolled",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_replied",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_connected",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "marketing_spend": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "campaign",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "amount",
+        "type": "REAL",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "currency",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "period",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "matrix_task_items": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "task_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "account_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "target",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action_data",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "result",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "error",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "executed_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "matrix_tasks": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "task_type",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "action",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "priority",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "account_ids",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "input_data",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "input_source_task_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "schedule_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "scheduled_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cron_expression",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "max_concurrency",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "interval_min_sec",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "interval_max_sec",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "daily_limit",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "time_window_start",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "time_window_end",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_items",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "processed_items",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "success_items",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "failed_items",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "output_data",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "output_file",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_by",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "started_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "completed_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "error_log",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "outlook_send_log": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "account_email",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "recipient",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "subject",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "error_msg",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sent_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "pending_actions": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "type",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "priority",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "title",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "source_message",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "source_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "escalation_level",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_reminded_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "handled_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "handled_by",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "source",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "auto_expire_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "phone_numbers": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "number",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "country",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "provider",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "esim_provider_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "credentials",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sms_enabled",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_sms_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sms_today",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "products": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "category",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "model",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ai_description",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "specs",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "price_100",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "price_500",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "price_1000",
+        "type": "REAL",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "moq",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "currency",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "images",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "certifications",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "video_script",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 2
+  },
+  "proxies": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "host",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "port",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "username",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "password",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "country",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "provider",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_alive",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "speed_ms",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_checked",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "role",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "protocol",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "label",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "subscription_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "share_link",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "extra_config",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "latency_ms",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_latency_test",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "group_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sort_order",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 175
+  },
+  "proxy_chains": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "frontend_proxy_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "vpn_proxy_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "landing_proxy_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "proxy_subscriptions": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "url",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "node_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_updated",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "auto_update",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "upload_bytes",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "download_bytes",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_bytes",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "expire_time",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 2
+  },
+  "quotes": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "products",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "quantity",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "quoted_price",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "currency",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "incoterm",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "payment_terms",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "validity_days",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "pending_action_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "quoted_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "followed_up_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "closed_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "close_reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "received_emails": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "account_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "message_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "from_email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "from_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "to_email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "subject",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "body_text",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "body_html",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "in_reply_to",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "references_header",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "uid",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "flags",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_read",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_replied",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ai_reply_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "folder",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "received_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 48
+  },
+  "restream_logs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "session_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "target_platform",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "event",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "data",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "restream_sessions": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "source_url",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "targets",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "overlay_config",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "scheduled_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "started_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "stopped_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "scheduled_tasks": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cron",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "handler",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "params",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_run",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "next_run",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "sequence_enrollments": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "sequence_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "current_step",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "pause_reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "variables",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "next_execute_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_executed_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "completed_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 1
+  },
+  "sequence_step_log": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "enrollment_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "step_index",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "channel",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "action",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "result",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "error",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "executed_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "sequences": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "steps",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 2
+  },
+  "settings": {
+    "columns": [
+      {
+        "name": "key",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "value",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 27
+  },
+  "sms_logs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "phone_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "direction",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "from_number",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "to_number",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "provider_msg_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "error",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "social_accounts": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "account_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "display_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "phone",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "password",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "proxy",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cookies",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "access_token",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "account_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "warmup_days",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "warmup_start",
+        "type": "DATE",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "daily_limit",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "today_sent",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "tags",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_active_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "login_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "proxy_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "browser_fingerprint",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "health_score",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_error",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "execution_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "proxy_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "profile_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "phone_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "chain_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "platform_user_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "refresh_token",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "token_expires_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "browser_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "social_execution_log": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "account_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "action",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "details",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ip_used",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "social_leads": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "post_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "username",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "profile_url",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "message",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "social_posts": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "platform",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "media_urls",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "scheduled_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "published_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "engagement",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "leads_collected",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "sqlite_sequence": {
+    "columns": [
+      {
+        "name": "name",
+        "type": "",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "seq",
+        "type": "",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 37
+  },
+  "unsubscribes": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "email",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "token",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "reason",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "source",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "unsubscribed_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "users": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "username",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "password",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "email",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "role",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_login",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 2
+  },
+  "wa_auto_replies": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "trigger_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "trigger_value",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "reply_content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "reply_media",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_ai",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "ai_agent",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "conditions",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_active",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "match_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "wa_broadcast_lists": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "contacts",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "tags",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "wa_broadcast_logs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "broadcast_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "template_content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "total_contacts",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sent",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "delivered",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "read_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "replied",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "failed",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "started_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "completed_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "wa_conversations": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "chat_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "contact_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "contact_phone",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "contact_avatar",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "unread_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_message",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "last_message_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "labels",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_pinned",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_archived",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "assigned_to",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "wa_messages": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "msg_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "chat_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "direction",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sender_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "sender_phone",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "media_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "media_url",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "media_filename",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "msg_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_forwarded",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "quoted_msg_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "wa_number_cache": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "phone",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "chat_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "is_valid",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "checked_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "source",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "wa_quick_replies": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "shortcut",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "title",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "category",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "media_path",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "use_count",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "whatsapp_messages": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "customer_id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "phone",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "direction",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "media_url",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "widget_configs": {
+    "columns": [
+      {
+        "name": "site_id",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "company_name",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "welcome_message",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "theme_color",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "position",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "avatar_url",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "auto_reply_enabled",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "auto_reply_message",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "workflow_runs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "workflow_id",
+        "type": "INTEGER",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "step_results",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "started_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "completed_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "error",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  },
+  "workflows": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "notnull": 0,
+        "pk": 1
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 1,
+        "pk": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "steps",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "trigger_type",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "cron_expression",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_by",
+        "type": "TEXT",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "notnull": 0,
+        "pk": 0
+      }
+    ],
+    "rowCount": 0
+  }
+}

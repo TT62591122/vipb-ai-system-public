@@ -1,0 +1,474 @@
+<%- include('partials/header') %>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="mb-0">🎵 TikTok Video Publisher</h4>
+      <small class="text-muted">VIPB Video Publisher · Upload & Publish to TikTok</small>
+    </div>
+    <div>
+      <button class="btn btn-outline-secondary btn-sm" onclick="refreshAuthStatus()"><i class="bi bi-arrow-clockwise me-1"></i>Refresh Status</button>
+    </div>
+  </div>
+
+  <!-- Connection Status -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="stat-card text-center" id="statusCard">
+        <div id="connectionIcon" style="font-size: 2rem;">⏳</div>
+        <div class="stat-label mt-2" id="connectionStatus">Checking connection...</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card text-center">
+        <div class="stat-number" id="publishedCount">0</div>
+        <div class="stat-label">Videos Published</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card text-center">
+        <div class="stat-number" id="accountName">—</div>
+        <div class="stat-label">TikTok Account</div>
+      </div>
+    </div>
+  </div>
+
+<!-- Authorized Accounts -->
+<div class="card mb-4" id="accountsSection">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h6 class="mb-0">👥 Authorized TikTok Accounts</h6>
+    <button class="btn btn-sm btn-dark" onclick="connectTikTok()"><i class="bi bi-plus-lg me-1"></i>Add Account</button>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th>User ID</th>
+          <th style="width:100px;">Status</th>
+          <th style="width:160px;">Token Expires</th>
+          <th style="width:80px;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="accountsList">
+        <tr><td colspan="5" class="text-center text-muted py-3">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  <!-- Video Upload Section (only visible when connected) -->
+  <div class="card mb-4" id="uploadSection" style="display: none;">
+    <div class="card-header">
+      <h6 class="mb-0">📤 Upload & Publish Video</h6>
+    </div>
+    <div class="card-body">
+      <form id="publishForm" enctype="multipart/form-data">
+        <div class="row">
+          <div class="col-md-6">
+            <!-- Video File Upload -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Video File <span class="text-danger">*</span></label>
+              <div class="upload-area border rounded-3 p-4 text-center" id="dropZone" style="border-style: dashed !important; cursor: pointer; background: #fafbfc; transition: all 0.2s;">
+                <input type="file" id="videoFile" name="video" accept="video/mp4,video/webm,video/quicktime" class="d-none">
+                <div id="uploadPlaceholder">
+                  <i class="bi bi-cloud-arrow-up" style="font-size: 3rem; color: #6c757d;"></i>
+                  <p class="text-muted mt-2 mb-1">Drag & drop your video here, or <strong class="text-primary">click to browse</strong></p>
+                  <small class="text-muted">Supported formats: MP4, WebM, MOV · Max 287MB</small>
+                </div>
+                <div id="fileSelected" class="d-none">
+                  <i class="bi bi-file-earmark-play" style="font-size: 2.5rem; color: #198754;"></i>
+                  <p class="text-success fw-semibold mt-2 mb-0" id="fileName"></p>
+                  <small class="text-muted" id="fileSize"></small>
+                  <br><a href="#" class="text-danger small mt-1" onclick="clearFile(event)">Remove file</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Video Preview -->
+            <div class="mb-3 d-none" id="previewContainer">
+              <label class="form-label fw-semibold">Preview</label>
+              <video id="videoPreview" controls class="w-100 rounded-3" style="max-height: 300px; background: #000;"></video>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <!-- Title -->
+            <div class="mb-3">
+              <label for="videoTitle" class="form-label fw-semibold">Title / Caption <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="videoTitle" name="title" rows="3" maxlength="150" placeholder="Enter video title or caption (max 150 characters)"></textarea>
+              <div class="form-text text-end"><span id="titleCount">0</span>/150</div>
+            </div>
+
+            <!-- Publish As Account -->
+            <div class="mb-3">
+              <label for="publishAccount" class="form-label fw-semibold">Publish As <span class="text-danger">*</span></label>
+              <select class="form-select" id="publishAccount" name="accountId">
+                <option value="">Select TikTok Account...</option>
+              </select>
+            </div>
+
+            <!-- Privacy Level -->
+            <div class="mb-3">
+              <label for="privacyLevel" class="form-label fw-semibold">Privacy Level</label>
+              <select class="form-select" id="privacyLevel" name="privacyLevel">
+                <option value="PUBLIC_TO_EVERYONE">🌍 Public - Everyone can view</option>
+                <option value="MUTUAL_FOLLOW_FRIENDS">👥 Friends - Mutual followers only</option>
+                <option value="FOLLOWER_OF_CREATOR">👤 Followers - Your followers only</option>
+                <option value="SELF_ONLY">🔒 Private - Only you</option>
+              </select>
+            </div>
+
+            <!-- Disclosure -->
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="discloseContent" checked>
+                <label class="form-check-label" for="discloseContent">
+                  I confirm this content complies with TikTok's Community Guidelines
+                </label>
+              </div>
+            </div>
+
+            <!-- Publish Button -->
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-lg text-white" id="publishBtn" style="background: linear-gradient(135deg, #fe2c55, #25f4ee); border: none; font-weight: 600;">
+                <i class="bi bi-send me-2"></i>Publish to TikTok
+              </button>
+            </div>
+
+            <!-- Progress -->
+            <div class="mt-3 d-none" id="progressSection">
+              <div class="progress" style="height: 24px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" id="uploadProgress" role="progressbar" style="width: 0%;">0%</div>
+              </div>
+              <small class="text-muted mt-1 d-block" id="progressText">Uploading video...</small>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Published Videos List -->
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h6 class="mb-0">📋 Published Videos</h6>
+      <button class="btn btn-outline-secondary btn-sm" onclick="loadVideos()"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th style="width: 50px;">#</th>
+            <th>Title</th>
+            <th style="width: 140px;">Status</th>
+            <th style="width: 180px;">Published At</th>
+          </tr>
+        </thead>
+        <tbody id="videoList">
+          <tr><td colspan="4" class="text-center text-muted py-4">Loading videos...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== Auth Status ==========
+async function refreshAuthStatus() {
+  try {
+    const res = await fetch('/api/tiktok/auth-status');
+    const data = await res.json();
+    
+    const statusCard = document.getElementById('statusCard');
+    const connectionIcon = document.getElementById('connectionIcon');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const publishedCountEl = document.getElementById('publishedCount');
+    const accountNameEl = document.getElementById('accountName');
+    
+    publishedCountEl.textContent = document.getElementById('videoList').children.length || 0; // Update based on loaded videos
+    accountNameEl.textContent = data.totalAccounts !== undefined ? data.totalAccounts : '—'; // Display total accounts
+
+    if (data.totalAccounts > 0) {
+      connectionIcon.textContent = '✅';
+      connectionStatus.textContent = 'Connected to TikTok';
+    } else {
+      connectionIcon.textContent = '❌';
+      connectionStatus.textContent = 'Not Connected';
+    }
+  } catch (error) {
+    console.error('Auth status check failed:', error);
+    document.getElementById('connectionIcon').textContent = '⚠️';
+    document.getElementById('connectionStatus').textContent = 'Error checking status';
+  }
+}
+
+async function connectTikTok() {
+  try {
+    const res = await fetch('/api/tiktok/auth-url');
+    const data = await res.json();
+    if (data.authUrl) {
+      window.open(data.authUrl, 'TikTok Auth', 'width=600,height=700');
+    } else {
+      alert('Failed to generate auth URL. Please configure TikTok API keys in Settings first.');
+    }
+  } catch (error) {
+    alert('Error: ' + error.message);
+  }
+}
+
+// ========== Accounts Management ==========
+async function loadAccounts() {
+  try {
+    const res = await fetch('/api/tiktok/accounts');
+    const data = await res.json();
+    const accountsList = document.getElementById('accountsList');
+    const publishAccountSelect = document.getElementById('publishAccount');
+    
+    publishAccountSelect.innerHTML = '<option value="">Select TikTok Account...</option>'; // Clear existing options
+
+    if (!data.accounts || data.accounts.length === 0) {
+      accountsList.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No TikTok accounts authorized yet. Click "Add Account" to connect one.</td></tr>';
+      return;
+    }
+
+    accountsList.innerHTML = data.accounts.map(a => {
+      const statusBadge = a.status === 'active' && !a.isExpired ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>';
+      const expiresAtText = a.expiresAt ? new Date(a.expiresAt).toLocaleString() : 'N/A';
+      return `
+        <tr>
+          <td><strong>${escapeHtml(a.displayName)}</strong></td>
+          <td class="text-muted">${escapeHtml(a.userId)}</td>
+          <td>${statusBadge}</td>
+          <td class="text-muted">${expiresAtText}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-danger" onclick="removeAccount('${a.id}')" title="Remove Account"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    data.accounts.forEach(a => {
+      const option = document.createElement('option');
+      option.value = a.id;
+      option.textContent = `${a.displayName} (${a.userId}) ${a.status === 'active' && !a.isExpired ? '✅' : '❌'}`;
+      publishAccountSelect.appendChild(option);
+    });
+    
+    refreshAuthStatus(); // Update top status cards after loading accounts
+
+  } catch (error) {
+    console.error('Load accounts failed:', error);
+    document.getElementById('accountsList').innerHTML = '<tr><td colspan="5" class="text-center text-danger py-3">Failed to load accounts</td></tr>';
+  }
+}
+
+async function removeAccount(accountId) {
+  if (!confirm('Are you sure you want to remove this TikTok account? This will revoke its access.')) {
+    return;
+  }
+  try {
+    const res = await fetch(`/api/tiktok/accounts/${accountId}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert('TikTok account removed successfully.');
+      loadAccounts(); // Reload accounts after removal
+    } else {
+      alert('Failed to remove account: ' + (data.error || 'Unknown error'));
+    }
+  } catch (error) {
+    alert('Error removing account: ' + error.message);
+  }
+}
+
+// ========== File Upload ==========
+const dropZone = document.getElementById('dropZone');
+const videoFile = document.getElementById('videoFile');
+
+dropZone.addEventListener('click', () => videoFile.click());
+
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.style.borderColor = '#0d6efd';
+  dropZone.style.background = '#e8f0fe';
+});
+
+dropZone.addEventListener('dragleave', () => {
+  dropZone.style.borderColor = '';
+  dropZone.style.background = '#fafbfc';
+});
+
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.style.borderColor = '';
+  dropZone.style.background = '#fafbfc';
+  if (e.dataTransfer.files.length > 0) {
+    videoFile.files = e.dataTransfer.files;
+    handleFileSelect();
+  }
+});
+
+videoFile.addEventListener('change', handleFileSelect);
+
+function handleFileSelect() {
+  const file = videoFile.files[0];
+  if (!file) return;
+  
+  document.getElementById('uploadPlaceholder').classList.add('d-none');
+  document.getElementById('fileSelected').classList.remove('d-none');
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('fileSize').textContent = formatFileSize(file.size);
+  
+  // Show video preview
+  const previewContainer = document.getElementById('previewContainer');
+  const videoPreview = document.getElementById('videoPreview');
+  const url = URL.createObjectURL(file);
+  videoPreview.src = url;
+  previewContainer.classList.remove('d-none');
+}
+
+function clearFile(e) {
+  e.preventDefault();
+  videoFile.value = '';
+  document.getElementById('uploadPlaceholder').classList.remove('d-none');
+  document.getElementById('fileSelected').classList.add('d-none');
+  document.getElementById('previewContainer').classList.add('d-none');
+  document.getElementById('videoPreview').src = '';
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// ========== Title Counter ==========
+document.getElementById('videoTitle').addEventListener('input', function() {
+  document.getElementById('titleCount').textContent = this.value.length;
+});
+
+// ========== Publish ==========
+document.getElementById('publishForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const file = videoFile.files[0];
+  const title = document.getElementById('videoTitle').value.trim();
+  const privacyLevel = document.getElementById('privacyLevel').value;
+  const accountId = document.getElementById('publishAccount').value; // Get selected account ID
+  
+  if (!file) { alert('Please select a video file.'); return; }
+  if (!title) { alert('Please enter a title.'); return; }
+  if (!accountId) { alert('Please select a TikTok account to publish as.'); return; } // New validation
+  
+  const publishBtn = document.getElementById('publishBtn');
+  const progressSection = document.getElementById('progressSection');
+  const uploadProgress = document.getElementById('uploadProgress');
+  const progressText = document.getElementById('progressText');
+  
+  publishBtn.disabled = true;
+  publishBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Publishing...';
+  progressSection.classList.remove('d-none');
+  
+  try {
+    const formData = new FormData();
+    formData.append('video', file);
+    formData.append('title', title);
+    formData.append('privacyLevel', privacyLevel);
+    formData.append('accountId', accountId); // Add accountId to form data
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/tiktok/publish', true);
+    
+    xhr.upload.onprogress = function(e) {
+      if (e.lengthComputable) {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        uploadProgress.style.width = pct + '%';
+        uploadProgress.textContent = pct + '%';
+        progressText.textContent = pct < 100 ? 'Uploading video...' : 'Processing...';
+      }
+    };
+    
+    xhr.onload = function() {
+      publishBtn.disabled = false;
+      publishBtn.innerHTML = '<i class="bi bi-send me-2"></i>Publish to TikTok';
+      progressSection.classList.add('d-none');
+      
+      const res = JSON.parse(xhr.responseText);
+      if (xhr.status === 200 && res.success) {
+        alert('🎉 Video published successfully!');
+        clearFile(new Event('click'));
+        document.getElementById('videoTitle').value = '';
+        document.getElementById('titleCount').textContent = '0';
+        loadVideos();
+      } else {
+        alert('❌ Publish failed: ' + (res.error || 'Unknown error'));
+      }
+    };
+    
+    xhr.onerror = function() {
+      publishBtn.disabled = false;
+      publishBtn.innerHTML = '<i class="bi bi-send me-2"></i>Publish to TikTok';
+      progressSection.classList.add('d-none');
+      alert('❌ Network error. Please try again.');
+    };
+    
+    xhr.send(formData);
+  } catch (error) {
+    publishBtn.disabled = false;
+    publishBtn.innerHTML = '<i class="bi bi-send me-2"></i>Publish to TikTok';
+    progressSection.classList.add('d-none');
+    alert('❌ Error: ' + error.message);
+  }
+});
+
+// ========== Load Videos ==========
+async function loadVideos() {
+  try {
+    const res = await fetch('/api/tiktok/videos?limit=50');
+    const data = await res.json();
+    const list = document.getElementById('videoList');
+    const countEl = document.getElementById('publishedCount');
+    
+    countEl.textContent = data.total || 0;
+    
+    if (!data.videos || data.videos.length === 0) {
+      list.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No videos published yet. Upload your first video above!</td></tr>';
+      return;
+    }
+    
+    list.innerHTML = data.videos.map((v, i) => `
+      <tr>
+        <td class="text-muted">${i + 1}</td>
+        <td><strong>${escapeHtml(v.title)}</strong></td>
+        <td><span class="badge bg-success">Published</span></td>
+        <td class="text-muted">${v.publishedAt ? new Date(v.publishedAt).toLocaleString() : '—'}</td>
+      </tr>
+    `).join('');
+  } catch (error) {
+    console.error('Load videos failed:', error);
+    document.getElementById('videoList').innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">Failed to load videos</td></tr>';
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text || '';
+  return div.innerHTML;
+}
+
+// ========== Init ==========
+loadAccounts(); // Load accounts first
+loadVideos();
+
+// Auto-refresh auth status after OAuth popup closes
+let authCheckInterval = null;
+window.addEventListener('focus', () => {
+  refreshAuthStatus();
+  loadAccounts();
+});
+</script>
+
+<%- include('partials/footer') %>

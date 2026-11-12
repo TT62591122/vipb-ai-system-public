@@ -1,0 +1,369 @@
+{
+  "tableCounts": [
+    {
+      "table": "customers",
+      "rowCount": 2,
+      "status": "OK"
+    },
+    {
+      "table": "inquiries",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "deals",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "emails",
+      "rowCount": 12,
+      "status": "OK"
+    },
+    {
+      "table": "email_sequences",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "email_accounts",
+      "rowCount": 1,
+      "status": "OK"
+    },
+    {
+      "table": "whatsapp_messages",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "social_posts",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "social_leads",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "browser_profiles",
+      "rowCount": 1,
+      "status": "OK"
+    },
+    {
+      "table": "proxies",
+      "rowCount": 195,
+      "status": "OK"
+    },
+    {
+      "table": "phone_numbers",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "products",
+      "rowCount": 1,
+      "status": "OK"
+    },
+    {
+      "table": "ai_logs",
+      "rowCount": 7,
+      "status": "OK"
+    },
+    {
+      "table": "knowledge_base",
+      "rowCount": 34,
+      "status": "OK"
+    },
+    {
+      "table": "settings",
+      "rowCount": 13,
+      "status": "OK"
+    },
+    {
+      "table": "activity_log",
+      "rowCount": 184,
+      "status": "OK"
+    },
+    {
+      "table": "scheduled_tasks",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "users",
+      "rowCount": 1,
+      "status": "OK"
+    },
+    {
+      "table": "wa_conversations",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "wa_messages",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "wa_quick_replies",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "wa_broadcast_lists",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "wa_broadcast_logs",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "wa_auto_replies",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "lead_score_events",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "li_prospects",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "li_sequences",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "li_action_logs",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "content_calendar",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "content_templates",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "inbox_conversations",
+      "rowCount": 3,
+      "status": "OK"
+    },
+    {
+      "table": "inbox_messages",
+      "rowCount": 24,
+      "status": "OK"
+    },
+    {
+      "table": "inbox_canned_responses",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "journeys",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "journey_enrollments",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "journey_logs",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "marketing_spend",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "conversion_events",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "social_accounts",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "email_tracking_events",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "customer_identifiers",
+      "rowCount": 2,
+      "status": "OK"
+    },
+    {
+      "table": "wa_number_cache",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "social_execution_log",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "proxy_chains",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "proxy_subscriptions",
+      "rowCount": 2,
+      "status": "OK"
+    },
+    {
+      "table": "matrix_tasks",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "matrix_task_items",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "collected_data",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "inbox_sync_state",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "widget_configs",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "outlook_send_log",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "workflows",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "workflow_runs",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "restream_sessions",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "restream_logs",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "digital_humans",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "digital_human_videos",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "followup_plans",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "followup_logs",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "alerts",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "email_blacklist",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "automation_settings",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "account_personalities",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "behavior_logs",
+      "rowCount": 0,
+      "status": "OK"
+    },
+    {
+      "table": "ai_tasks",
+      "rowCount": 32,
+      "status": "OK"
+    },
+    {
+      "table": "ai_task_steps",
+      "rowCount": 71,
+      "status": "OK"
+    },
+    {
+      "table": "ai_conversations",
+      "rowCount": 62,
+      "status": "OK"
+    },
+    {
+      "table": "received_emails",
+      "rowCount": 28,
+      "status": "OK"
+    },
+    {
+      "table": "esim_providers",
+      "rowCount": 8,
+      "status": "OK"
+    },
+    {
+      "table": "sms_logs",
+      "rowCount": 0,
+      "status": "OK"
+    }
+  ],
+  "foreignKeyIssues": [
+    {
+      "table": "activity_log",
+      "column": "user_id",
+      "referencedTable": "users",
+      "orphanCount": 184
+    }
+  ],
+  "jsonValidationIssues": [],
+  "timestamp": "2026-03-15T01:50:08.287Z"
+}

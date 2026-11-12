@@ -1,0 +1,390 @@
+<%- include('partials/header', { page: 'ai-command' }) %>
+
+    <!-- 主内容区 -->
+    <main class="main-content flex-grow-1 p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">🧠 AI 任务中心</h4>
+          <small class="text-muted">自然语言下达指令，AI自动调度执行</small>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-secondary" onclick="clearConversations()">🗑️ 清空对话</button>
+          <button class="btn btn-sm btn-outline-info" onclick="toggleTaskPanel()">📋 任务记录</button>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <!-- 左侧：对话面板 -->
+        <div class="col-lg-8">
+          <div class="card" style="height: calc(100vh - 180px); display: flex; flex-direction: column;">
+            <!-- 对话区域 -->
+            <div class="card-body flex-grow-1 overflow-auto" id="chat-messages" style="min-height: 0;">
+              <div class="text-center text-muted py-5" id="chat-empty">
+                <div class="fs-1 mb-3">🧠</div>
+                <h5>AI 任务中心</h5>
+                <p>输入自然语言指令，我来调度执行</p>
+                <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+                  <button class="btn btn-sm btn-outline-primary quick-cmd" onclick="sendQuickCmd(this)">📧 查看邮箱账号状态</button>
+                  <button class="btn btn-sm btn-outline-primary quick-cmd" onclick="sendQuickCmd(this)">📊 今日数据概览</button>
+                  <button class="btn btn-sm btn-outline-primary quick-cmd" onclick="sendQuickCmd(this)">📋 查看最近客户</button>
+                  <button class="btn btn-sm btn-outline-primary quick-cmd" onclick="sendQuickCmd(this)">📝 写一封产品推荐邮件</button>
+                  <button class="btn btn-sm btn-outline-primary quick-cmd" onclick="sendQuickCmd(this)">🔍 分析智能电表市场</button>
+                  <button class="btn btn-sm btn-outline-primary quick-cmd" onclick="sendQuickCmd(this)">✍️ 生成TikTok短视频文案</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="card-footer bg-white border-top">
+              <div class="input-group">
+                <textarea class="form-control" id="cmd-input" rows="2" placeholder="输入指令... 例如：给上周询盘的客户发跟进邮件" 
+                  onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCommand()}"></textarea>
+                <button class="btn btn-purple px-4" onclick="sendCommand()" id="btn-send">
+                  <span id="send-text">发送</span>
+                  <span id="send-loading" style="display:none" class="spinner-border spinner-border-sm"></span>
+                </button>
+              </div>
+              <div class="d-flex justify-content-between mt-1">
+                <small class="text-muted">Enter 发送，Shift+Enter 换行</small>
+                <small class="text-muted" id="cost-display"></small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：任务面板 -->
+        <div class="col-lg-4" id="task-panel">
+          <!-- 当前任务 -->
+          <div class="card mb-3" id="current-task-card" style="display:none">
+            <div class="card-header bg-primary text-white py-2">
+              <strong>⚡ 当前任务</strong>
+            </div>
+            <div class="card-body p-2" id="current-task-steps">
+            </div>
+          </div>
+
+          <!-- 引擎状态 -->
+          <div class="card mb-3">
+            <div class="card-header py-2"><strong>🔧 引擎状态</strong></div>
+            <div class="card-body p-2" id="engine-status">
+              <div class="d-flex flex-column gap-1">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>🧠 主脑</span><span class="badge" id="status-brain">检测中...</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>✍️ 文本</span><span class="badge" id="status-text">检测中...</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>👁️ 视觉</span><span class="badge" id="status-vision">检测中...</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>🎬 视频</span><span class="badge" id="status-video">检测中...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 历史任务 -->
+          <div class="card">
+            <div class="card-header py-2 d-flex justify-content-between">
+              <strong>📜 历史任务</strong>
+              <button class="btn btn-sm btn-link p-0" onclick="loadTasks()">刷新</button>
+            </div>
+            <div class="card-body p-0" id="task-history" style="max-height: 400px; overflow-y: auto;">
+              <div class="text-center text-muted py-3">暂无任务</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+<style>
+.chat-msg {
+  margin-bottom: 16px;
+  display: flex;
+  gap: 10px;
+}
+.chat-msg.user {
+  flex-direction: row-reverse;
+}
+.chat-msg .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.chat-msg.user .avatar {
+  background: #667eea;
+  color: white;
+}
+.chat-msg.assistant .avatar {
+  background: #f0f0f0;
+}
+.chat-msg .bubble {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.chat-msg.user .bubble {
+  background: #667eea;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+.chat-msg.assistant .bubble {
+  background: #f5f5f5;
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+.step-item {
+  padding: 6px 8px;
+  border-left: 3px solid #ddd;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+.step-item.running { border-left-color: #0d6efd; background: #f0f7ff; }
+.step-item.completed { border-left-color: #198754; }
+.step-item.failed { border-left-color: #dc3545; }
+.step-item.pending { border-left-color: #ddd; color: #999; }
+.quick-cmd:hover { transform: translateY(-1px); }
+#cmd-input:focus { box-shadow: none; border-color: #667eea; }
+</style>
+
+<%- include('partials/footer') %>
+
+<script>
+// ========== AI 任务中心 ==========
+let isProcessing = false;
+let totalSessionCost = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadConversations();
+  loadTasks();
+  checkEngineStatus();
+});
+
+// 发送指令
+async function sendCommand() {
+  const input = document.getElementById('cmd-input');
+  const msg = input.value.trim();
+  if (!msg || isProcessing) return;
+
+  isProcessing = true;
+  input.value = '';
+  document.getElementById('send-text').style.display = 'none';
+  document.getElementById('send-loading').style.display = '';
+  document.getElementById('btn-send').disabled = true;
+
+  // 隐藏空状态
+  const empty = document.getElementById('chat-empty');
+  if (empty) empty.style.display = 'none';
+
+  // 添加用户消息
+  appendMessage('user', msg);
+
+  // 显示思考中
+  const thinkingId = appendMessage('assistant', '🧠 正在理解指令并制定执行计划...');
+
+  // 显示当前任务面板
+  showCurrentTask('分析中...');
+
+  try {
+    const res = await api('/api/ai-command/chat', 'POST', { message: msg });
+    
+    // 移除思考中
+    removeMessage(thinkingId);
+
+    if (res.success) {
+      appendMessage('assistant', res.summary || '执行完成');
+      if (res.cost) {
+        totalSessionCost += res.cost;
+        document.getElementById('cost-display').textContent = `本次: ¥${res.cost.toFixed(4)} | 累计: ¥${totalSessionCost.toFixed(4)}`;
+      }
+      // 更新任务步骤
+      if (res.steps) {
+        updateCurrentTaskSteps(res.steps);
+      }
+    } else {
+      appendMessage('assistant', '❌ ' + (res.error || '执行失败'));
+    }
+  } catch(e) {
+    removeMessage(thinkingId);
+    appendMessage('assistant', '❌ 请求失败: ' + e.message);
+  }
+
+  isProcessing = false;
+  document.getElementById('send-text').style.display = '';
+  document.getElementById('send-loading').style.display = 'none';
+  document.getElementById('btn-send').disabled = false;
+  input.focus();
+  loadTasks();
+}
+
+// 快捷指令
+function sendQuickCmd(btn) {
+  const text = btn.textContent.replace(/^[^\s]+\s/, ''); // 去掉emoji前缀
+  document.getElementById('cmd-input').value = btn.textContent.trim();
+  sendCommand();
+}
+
+// 添加消息到对话区
+let msgCounter = 0;
+function appendMessage(role, content) {
+  const container = document.getElementById('chat-messages');
+  const id = 'msg-' + (++msgCounter);
+  const avatar = role === 'user' ? '👤' : '🧠';
+  
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  div.id = id;
+  div.innerHTML = `
+    <div class="avatar">${avatar}</div>
+    <div class="bubble">${escapeHtml(content)}</div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return id;
+}
+
+function removeMessage(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// 加载对话历史
+async function loadConversations() {
+  try {
+    const res = await api('/api/ai-command/conversations');
+    if (res.success && res.data && res.data.length > 0) {
+      document.getElementById('chat-empty').style.display = 'none';
+      res.data.forEach(msg => {
+        appendMessage(msg.role, msg.content);
+      });
+    }
+  } catch(e) { /* 首次可能没有数据 */ }
+}
+
+// 清空对话
+async function clearConversations() {
+  if (!confirm('确定清空所有对话记录？')) return;
+  try {
+    await api('/api/ai-command/conversations', 'DELETE');
+    document.getElementById('chat-messages').innerHTML = '';
+    document.getElementById('chat-empty').style.display = '';
+    document.getElementById('chat-empty').style.display = '';
+    totalSessionCost = 0;
+    document.getElementById('cost-display').textContent = '';
+    toast('对话已清空');
+  } catch(e) { toast('清空失败', 'danger'); }
+}
+
+// 加载任务历史
+async function loadTasks() {
+  try {
+    const res = await api('/api/ai-command/tasks');
+    const container = document.getElementById('task-history');
+    if (res.success && res.data && res.data.length > 0) {
+      container.innerHTML = res.data.map(t => `
+        <div class="p-2 border-bottom task-history-item" style="cursor:pointer" onclick="viewTask(${t.id})">
+          <div class="d-flex justify-content-between">
+            <small class="text-truncate" style="max-width:200px">${escapeHtml(t.user_input)}</small>
+            <span class="badge bg-${t.status==='completed'?'success':t.status==='failed'?'danger':'info'} ms-1">${t.status==='completed'?'✅':t.status==='failed'?'❌':'⏳'}</span>
+          </div>
+          <small class="text-muted">${t.created_at ? new Date(t.created_at + 'Z').toLocaleString('zh-CN', {timeZone:'Asia/Shanghai'}) : ''} ${t.total_cost ? '| ¥'+t.total_cost.toFixed(4) : ''}</small>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = '<div class="text-center text-muted py-3">暂无任务</div>';
+    }
+  } catch(e) { /* ignore */ }
+}
+
+// 查看任务详情
+async function viewTask(taskId) {
+  try {
+    const res = await api('/api/ai-command/tasks/' + taskId);
+    if (res.success && res.data) {
+      const t = res.data;
+      showCurrentTask(t.user_input);
+      if (t.steps) {
+        updateCurrentTaskSteps(t.steps.map(s => ({
+          step: s.step_order,
+          description: s.action,
+          success: s.status === 'completed',
+          status: s.status
+        })));
+      }
+    }
+  } catch(e) { /* ignore */ }
+}
+
+// 显示当前任务
+function showCurrentTask(title) {
+  const card = document.getElementById('current-task-card');
+  card.style.display = '';
+  document.getElementById('current-task-steps').innerHTML = `<div class="text-muted small">${escapeHtml(title)}</div>`;
+}
+
+// 更新任务步骤
+function updateCurrentTaskSteps(steps) {
+  const container = document.getElementById('current-task-steps');
+  container.innerHTML = steps.map(s => `
+    <div class="step-item ${s.status || (s.success ? 'completed' : 'failed')}">
+      ${s.success === true ? '✅' : s.success === false ? '❌' : '⬜'} Step${s.step}: ${escapeHtml(s.description || s.action || '')}
+    </div>
+  `).join('');
+}
+
+// 检查引擎状态
+async function checkEngineStatus() {
+  try {
+    const res = await api('/api/settings/ai-providers');
+    const providers = res.providers || {};
+    
+    ['brain', 'text', 'vision', 'video'].forEach(role => {
+      const el = document.getElementById('status-' + role);
+      let list;
+      if (Array.isArray(providers)) {
+        // 旧格式
+        list = role === 'text' ? providers : [];
+      } else {
+        list = providers[role] || [];
+      }
+      const enabled = list.filter(p => p.enabled !== false && p.baseUrl && p.apiKey);
+      if (enabled.length > 0) {
+        el.className = 'badge bg-success';
+        el.textContent = `${enabled.length}个可用`;
+      } else {
+        el.className = 'badge bg-secondary';
+        el.textContent = '未配置';
+      }
+    });
+  } catch(e) {
+    ['brain', 'text', 'vision', 'video'].forEach(role => {
+      const el = document.getElementById('status-' + role);
+      el.className = 'badge bg-warning';
+      el.textContent = '检测失败';
+    });
+  }
+}
+
+// 切换任务面板
+function toggleTaskPanel() {
+  const panel = document.getElementById('task-panel');
+  panel.style.display = panel.style.display === 'none' ? '' : 'none';
+}
+</script>

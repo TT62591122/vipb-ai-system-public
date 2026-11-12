@@ -1,0 +1,38 @@
+{
+  "login": {
+    "email_input": "input[name='tid'], input[type='email']",
+    "password_input": "input[name='tpasswd'], input[type='password']",
+    "login_button": "button[type='submit'], button:has(span:text('Log in'))",
+    "qr_code": "div[class*='qrCode'], img[alt*='QR']"
+  },
+  "chat": {
+    "chat_list": "div[data-testid='chat-list'], ul[role='listbox']",
+    "chat_item": "div[data-testid='chat-list-item'], li[role='option'], div[class*='chatListItem']",
+    "chat_name": "span[class*='chatName'], div[class*='name'] span",
+    "chat_last_message": "span[class*='lastMessage'], div[class*='message'] span",
+    "message_input": "div[contenteditable='true'], textarea[placeholder*='message'], div[role='textbox']",
+    "send_button": "button[data-testid='send-button'], button[aria-label='Send'], button[class*='send']",
+    "search_input": "input[placeholder*='Search'], input[type='search']"
+  },
+  "contacts": {
+    "contacts_tab": "a[href*='/contacts'], div[data-testid='contacts-tab']",
+    "friend_list": "div[data-testid='friend-list'], ul[role='list']",
+    "friend_card": "div[data-testid='friend-item'], li[role='listitem']",
+    "friend_name": "span[class*='friendName'], div[class*='name'] span",
+    "friend_status": "span[class*='statusMessage']",
+    "add_friend_button": "button:has(span:text('Add')), button[data-testid='add-friend']",
+    "add_friend_by_id": "input[placeholder*='ID'], input[placeholder*='id']"
+  },
+  "group": {
+    "group_info": "div[data-testid='group-info'], div[class*='groupInfo']",
+    "member_list": "div[data-testid='member-list'], ul[class*='memberList']",
+    "member_card": "div[data-testid='member-item'], li[class*='memberItem']",
+    "member_name": "span[class*='memberName']"
+  },
+  "common": {
+    "scroll_container": "div[class*='chatList'], div[class*='friendList'], main",
+    "loading_spinner": "div[class*='loading'], div[class*='spinner']",
+    "nav_chat": "a[href*='/chats'], div[data-testid='chats-tab']",
+    "nav_contacts": "a[href*='/contacts'], div[data-testid='contacts-tab']"
+  }
+}

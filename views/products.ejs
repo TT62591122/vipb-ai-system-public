@@ -1,0 +1,367 @@
+<%- include('partials/header') %>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="mb-0">📦 产品库</h4><small class="text-muted">产品管理 + 认证 + 价格梯度 + AI描述</small></div>
+    <button class="btn btn-purple" data-bs-toggle="modal" data-bs-target="#addProductModal">➕ 添加产品</button>
+  </div>
+
+  <!-- 搜索和筛选栏 -->
+  <div class="row g-2 mb-3">
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="search-products" placeholder="🔍 搜索产品（名称/型号）" oninput="filterProducts()">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" id="filter-category" onchange="filterProducts()">
+        <option value="">全部分类</option>
+        <% const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort(); %>
+        <% categories.forEach(cat => { %>
+        <option value="<%= cat %>"><%= cat %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" id="filter-product-status" onchange="filterProducts()">
+        <option value="">全部状态</option>
+        <option value="1">上架</option>
+        <option value="0">下架</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-outline-secondary w-100" onclick="clearProductFilters()">🔄 清除筛选</button>
+    </div>
+    <div class="col-md-2">
+      <span id="product-filter-count" class="text-muted small"></span>
+    </div>
+  </div>
+
+  <div class="row g-3" id="products-grid">
+    <% products.forEach(p => { 
+      let certs = [];
+      try { certs = JSON.parse(p.certifications || '[]'); } catch(e) {}
+    %>
+    <div class="col-md-4 product-card-wrapper" data-name="<%= (p.name||'').toLowerCase() %>" data-model="<%= (p.model||'').toLowerCase() %>" data-category="<%= p.category||'' %>" data-active="<%= p.is_active ? '1' : '0' %>">
+      <div class="card">
+        <% if(p.images) { try { const imgs = JSON.parse(p.images); if(imgs.length && imgs[0]) { %><img src="<%= imgs[0] %>" class="card-img-top" style="height:180px;object-fit:cover" onerror="this.style.display='none'"><% } } catch(e) {} } %>
+        <div class="card-body">
+          <h5><%= p.name %></h5>
+          <p class="text-muted mb-1"><%= p.category||'' %> | 型号: <%= p.model||'-' %></p>
+          <p class="small"><%= (p.description||'').substring(0,100) %></p>
+          <div class="d-flex gap-3 mb-2">
+            <div><small class="text-muted">100pcs</small><br><strong>$<%= p.price_100||'-' %></strong></div>
+            <div><small class="text-muted">500pcs</small><br><strong>$<%= p.price_500||'-' %></strong></div>
+            <div><small class="text-muted">1000pcs</small><br><strong>$<%= p.price_1000||'-' %></strong></div>
+          </div>
+          <small class="text-muted">MOQ: <%= p.moq||100 %> | <%= p.currency||'USD' %></small>
+          <div class="mt-2">
+            <% certs.forEach(c => { %>
+            <span class="badge bg-warning text-dark me-1"><%= c %></span>
+            <% }) %>
+          </div>
+          <div class="mt-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="aiProductDesc(<%= p.id %>)">🤖 AI描述</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="editProduct(<%= p.id %>)">✏️ 编辑</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(<%= p.id %>)">🗑️</button>
+            <span class="badge bg-<%= p.is_active ? 'success' : 'secondary' %> ms-1"><%= p.is_active ? '上架' : '下架' %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+    <% if(!products.length) { %>
+    <div class="col-12 text-center text-muted py-5">暂无产品，点击上方添加</div>
+    <% } %>
+  </div>
+  <!-- 产品分页 -->
+  <nav class="d-flex justify-content-between align-items-center mt-3">
+    <small class="text-muted">共 <%= pagination.productTotal %> 个产品，第 <%= pagination.productPage %>/<%= pagination.productTotalPages || 1 %> 页</small>
+    <ul class="pagination pagination-sm mb-0">
+      <li class="page-item <%= pagination.productPage <= 1 ? 'disabled' : '' %>">
+        <a class="page-link" href="/products?page=<%= pagination.productPage - 1 %>">‹</a>
+      </li>
+      <li class="page-item active"><a class="page-link"><%= pagination.productPage %></a></li>
+      <li class="page-item <%= pagination.productPage >= pagination.productTotalPages ? 'disabled' : '' %>">
+        <a class="page-link" href="/products?page=<%= pagination.productPage + 1 %>">›</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<div class="modal fade" id="addProductModal" tabindex="-1">
+  <div class="modal-dialog modal-lg"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">➕ 添加产品</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <form id="product-form">
+        <div class="row mb-3">
+          <div class="col-md-4"><label class="form-label">产品名称 <span class="text-danger">*</span></label><input type="text" class="form-control" name="name" required placeholder="例如：单相智能电表"></div>
+          <div class="col-md-4"><label class="form-label">类别</label>
+  <div class="input-group">
+    <select class="form-select" id="add-category-select" onchange="if(this.value==='__custom__'){document.getElementById('add-category-custom').style.display='';this.style.display='none';document.getElementById('add-category-custom').focus();}">
+      <option value="智能电表">智能电表</option>
+      <option value="断路器">断路器</option>
+      <option value="预付费电表">预付费电表</option>
+      <option value="三相电表">三相电表</option>
+      <option value="单相电表">单相电表</option>
+      <option value="互感器">互感器</option>
+      <option value="配电箱">配电箱</option>
+      <option value="配件">配件</option>
+      <option value="__custom__">✏️ 手动输入...</option>
+    </select>
+    <input type="text" class="form-control" id="add-category-custom" name="category" placeholder="输入自定义类别" style="display:none" onblur="if(!this.value){this.style.display='none';document.getElementById('add-category-select').style.display='';document.getElementById('add-category-select').value='智能电表';}">
+  </div>
+</div>
+          <div class="col-md-4"><label class="form-label">型号</label><input type="text" class="form-control" name="model" placeholder="例如：DDSY-001"></div>
+        </div>
+        <div class="mb-3"><label class="form-label">描述</label><textarea class="form-control" name="description" rows="3" placeholder="请输入产品描述"></textarea></div>
+        <div class="mb-3"><label class="form-label">技术规格</label><textarea class="form-control" name="specs" rows="3" placeholder="电压: 220V&#10;电流: 5(60)A&#10;精度: Class 1.0"></textarea></div>
+        <div class="row mb-3">
+          <div class="col-md-3"><label class="form-label">100pcs价格</label><input type="number" class="form-control" name="price_100" step="0.01" placeholder="例如：25.00"></div>
+          <div class="col-md-3"><label class="form-label">500pcs价格</label><input type="number" class="form-control" name="price_500" step="0.01" placeholder="例如：22.00"></div>
+          <div class="col-md-3"><label class="form-label">1000pcs价格</label><input type="number" class="form-control" name="price_1000" step="0.01" placeholder="例如：20.00"></div>
+          <div class="col-md-3"><label class="form-label">MOQ</label><input type="number" class="form-control" name="moq" value="100"></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">认证类型</label>
+          <div class="d-flex gap-3">
+            <div class="form-check"><input class="form-check-input" type="checkbox" value="IEC" id="cert-iec" name="cert"><label class="form-check-label" for="cert-iec">IEC</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" value="CE" id="cert-ce" name="cert"><label class="form-check-label" for="cert-ce">CE</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" value="KEMA" id="cert-kema" name="cert"><label class="form-check-label" for="cert-kema">KEMA</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" value="STS" id="cert-sts" name="cert"><label class="form-check-label" for="cert-sts">STS</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" value="DLMS" id="cert-dlms" name="cert"><label class="form-check-label" for="cert-dlms">DLMS</label></div>
+          </div>
+        </div>
+        <div class="mb-3">
+  <label class="form-label">产品图片</label>
+  <input type="file" class="form-control" id="add-product-images" accept="image/*" multiple>
+  <div id="add-image-preview" class="d-flex flex-wrap gap-2 mt-2"></div>
+  <small class="text-muted">支持多选，可上传多张产品图片（JPG/PNG/WebP）</small>
+</div>
+      </form>
+    </div>
+    <div class="modal-footer"><button class="btn btn-purple" onclick="addProduct()">保存</button></div>
+  </div></div>
+</div>
+
+<!-- 编辑产品Modal -->
+<div class="modal fade" id="editProductModal" tabindex="-1">
+  <div class="modal-dialog modal-lg"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">✏️ 编辑产品</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <form id="edit-product-form">
+        <input type="hidden" name="id" id="ep-id">
+        <div class="row mb-3">
+          <div class="col-md-4"><label class="form-label">产品名称</label><input type="text" class="form-control" name="name" id="ep-name" required></div>
+          <div class="col-md-4"><label class="form-label">类别</label>
+  <div class="input-group">
+    <select class="form-select" id="ep-category-select" onchange="if(this.value==='__custom__'){document.getElementById('ep-category-custom').style.display='';this.style.display='none';document.getElementById('ep-category-custom').focus();}">
+      <option value="智能电表">智能电表</option>
+      <option value="断路器">断路器</option>
+      <option value="预付费电表">预付费电表</option>
+      <option value="三相电表">三相电表</option>
+      <option value="单相电表">单相电表</option>
+      <option value="互感器">互感器</option>
+      <option value="配电箱">配电箱</option>
+      <option value="配件">配件</option>
+      <option value="__custom__">✏️ 手动输入...</option>
+    </select>
+    <input type="text" class="form-control" id="ep-category-custom" name="category" placeholder="输入自定义类别" style="display:none" onblur="if(!this.value){this.style.display='none';document.getElementById('ep-category-select').style.display='';document.getElementById('ep-category-select').value='智能电表';}">
+  </div>
+</div>
+          <div class="col-md-4"><label class="form-label">型号</label><input type="text" class="form-control" name="model" id="ep-model"></div>
+        </div>
+        <div class="mb-3"><label class="form-label">描述</label><textarea class="form-control" name="description" id="ep-description" rows="3"></textarea></div>
+        <div class="row mb-3">
+          <div class="col-md-3"><label class="form-label">100pcs价格</label><input type="number" class="form-control" name="price_100" id="ep-price100" step="0.01"></div>
+          <div class="col-md-3"><label class="form-label">500pcs价格</label><input type="number" class="form-control" name="price_500" id="ep-price500" step="0.01"></div>
+          <div class="col-md-3"><label class="form-label">1000pcs价格</label><input type="number" class="form-control" name="price_1000" id="ep-price1000" step="0.01"></div>
+          <div class="col-md-3"><label class="form-label">MOQ</label><input type="number" class="form-control" name="moq" id="ep-moq"></div>
+        </div>
+        <div class="mb-3"><label class="form-label">状态</label><select class="form-select" name="is_active" id="ep-active"><option value="1">上架</option><option value="0">下架</option></select></div>
+      </form>
+    </div>
+    <div class="modal-footer"><button class="btn btn-purple" onclick="saveProductEdit()">💾 保存</button></div>
+  </div></div>
+</div>
+
+<script>
+// ========== 搜索和筛选 ==========
+function filterProducts() {
+  const search = document.getElementById('search-products').value.toLowerCase();
+  const category = document.getElementById('filter-category').value;
+  const status = document.getElementById('filter-product-status').value;
+  let visible = 0, total = 0;
+  
+  document.querySelectorAll('.product-card-wrapper').forEach(card => {
+    total++;
+    const name = card.dataset.name || '';
+    const model = card.dataset.model || '';
+    const cardCat = card.dataset.category || '';
+    const cardActive = card.dataset.active || '';
+    
+    const matchSearch = !search || name.includes(search) || model.includes(search);
+    const matchCategory = !category || cardCat === category;
+    const matchStatus = !status || cardActive === status;
+    
+    const show = matchSearch && matchCategory && matchStatus;
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  
+  const info = document.getElementById('product-filter-count');
+  if (search || category || status) {
+    info.textContent = `匹配 ${visible}/${total} 个产品`;
+  } else {
+    info.textContent = '';
+  }
+}
+
+function clearProductFilters() {
+  document.getElementById('search-products').value = '';
+  document.getElementById('filter-category').value = '';
+  document.getElementById('filter-product-status').value = '';
+  filterProducts();
+}
+
+async function addProduct() {
+  const form = document.getElementById('product-form');
+  const data = Object.fromEntries(new FormData(form));
+  
+  // 处理类别：select或自定义输入
+  const catCustom = document.getElementById('add-category-custom');
+  const catSelect = document.getElementById('add-category-select');
+  if (catCustom.style.display !== 'none' && catCustom.value) {
+    data.category = catCustom.value;
+  } else {
+    data.category = catSelect.value;
+  }
+  
+  ['price_100','price_500','price_1000','moq'].forEach(k => { if(data[k]) data[k] = parseFloat(data[k]); });
+  data.certifications = [...document.querySelectorAll('#product-form input[name=cert]:checked')].map(c => c.value);
+  delete data.cert;
+  if (data.specs) {
+    const specObj = {};
+    data.specs.split('\n').forEach(line => {
+      const [k,v] = line.split(/[:：]/).map(s => s.trim());
+      if (k && v) specObj[k] = v;
+    });
+    data.specs = specObj;
+  }
+  
+  // 处理图片上传
+  const fileInput = document.getElementById('add-product-images');
+  const files = fileInput.files;
+  
+  if (files.length > 0) {
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append('images', files[i]);
+    }
+    try {
+      const uploadRes = await fetch('/api/products/upload-images', { method: 'POST', body: formData });
+      const uploadData = await uploadRes.json();
+      if (uploadData.success && uploadData.urls) {
+        data.images = uploadData.urls;
+      }
+    } catch(e) {
+      toast('图片上传失败: ' + e.message, 'danger');
+      return;
+    }
+  }
+  delete data.image_url;
+  
+  const res = await api('/api/products', 'POST', data);
+  if (res.success) { toast('产品已添加'); location.reload(); }
+}
+
+async function editProduct(id) {
+  const p = await api(`/api/products/${id}`);
+  if (!p || p.error) return toast('产品不存在', 'danger');
+  document.getElementById('ep-id').value = p.id;
+  document.getElementById('ep-name').value = p.name || '';
+  
+  // 设置类别
+  const epCatSelect = document.getElementById('ep-category-select');
+  const epCatCustom = document.getElementById('ep-category-custom');
+  const catOptions = [...epCatSelect.options].map(o => o.value);
+  if (catOptions.includes(p.category)) {
+    epCatSelect.value = p.category;
+    epCatSelect.style.display = '';
+    epCatCustom.style.display = 'none';
+  } else {
+    epCatSelect.value = '__custom__';
+    epCatSelect.style.display = 'none';
+    epCatCustom.style.display = '';
+    epCatCustom.value = p.category || '';
+  }
+  
+  document.getElementById('ep-model').value = p.model || '';
+  document.getElementById('ep-description').value = p.description || '';
+  document.getElementById('ep-price100').value = p.price_100 || '';
+  document.getElementById('ep-price500').value = p.price_500 || '';
+  document.getElementById('ep-price1000').value = p.price_1000 || '';
+  document.getElementById('ep-moq').value = p.moq || 100;
+  document.getElementById('ep-active').value = p.is_active ? '1' : '0';
+  new bootstrap.Modal(document.getElementById('editProductModal')).show();
+}
+
+async function saveProductEdit() {
+  const form = document.getElementById('edit-product-form');
+  const data = Object.fromEntries(new FormData(form));
+  const id = data.id; delete data.id;
+  
+  // 处理类别
+  const epCatCustom2 = document.getElementById('ep-category-custom');
+  const epCatSelect2 = document.getElementById('ep-category-select');
+  if (epCatCustom2.style.display !== 'none' && epCatCustom2.value) {
+    data.category = epCatCustom2.value;
+  } else {
+    data.category = epCatSelect2.value;
+  }
+  
+  ['price_100','price_500','price_1000','moq'].forEach(k => { if(data[k]) data[k] = parseFloat(data[k]); });
+  data.is_active = parseInt(data.is_active);
+  const res = await api(`/api/products/${id}`, 'PUT', data);
+  if (res.success) { toast('产品已更新'); location.reload(); }
+}
+
+async function deleteProduct(id) {
+  if (!confirm('确定删除此产品？')) return;
+  const res = await api(`/api/products/${id}`, 'DELETE');
+  if (res.success) { toast('产品已删除'); location.reload(); }
+}
+
+async function aiProductDesc(id) {
+  toast('正在生成AI产品描述...', 'info');
+  const res = await api('/api/ai/chat', 'POST', { agent: 'content', message: `为产品ID ${id} 生成专业的英文产品描述，适合B2B外贸使用。` });
+  if (res.success && res.result) {
+    // 用模态框显示AI结果而不是alert
+    const modal = document.createElement('div');
+    modal.innerHTML = `<div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center" onclick="this.remove()">
+      <div style="background:#fff;border-radius:12px;padding:24px;max-width:600px;max-height:80vh;overflow-y:auto;margin:20px" onclick="event.stopPropagation()">
+        <h5>🤖 AI生成的产品描述</h5>
+        <div style="white-space:pre-wrap;margin:16px 0;padding:12px;background:#f8f9fa;border-radius:8px">${typeof res.result === 'string' ? res.result : JSON.stringify(res.result)}</div>
+        <button class="btn btn-primary" onclick="this.closest('[style]').parentElement.remove()">关闭</button>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+  } else {
+    toast(res.error || '请先配置AI Provider', 'danger');
+  }
+}
+
+// 图片预览
+document.getElementById('add-product-images')?.addEventListener('change', function() {
+  const preview = document.getElementById('add-image-preview');
+  preview.innerHTML = '';
+  [...this.files].forEach((file, i) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.innerHTML += `<div style="position:relative;display:inline-block">
+        <img src="${e.target.result}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid #ddd">
+        <small style="position:absolute;bottom:2px;left:2px;background:rgba(0,0,0,0.6);color:#fff;padding:0 4px;border-radius:4px;font-size:10px">${i+1}</small>
+      </div>`;
+    };
+    reader.readAsDataURL(file);
+  });
+});
+</script>
+<%- include('partials/footer') %>

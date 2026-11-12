@@ -1,0 +1,52 @@
+{
+  "followers": {
+    "followers_link": "a[href*='/followers']",
+    "dialog": "div[role='dialog']",
+    "follower_card": "div[role='dialog'] ul li, div[role='dialog'] div[style*='flex'] > div > div",
+    "follower_name": "span a[role='link'] span",
+    "follower_username": "span a[role='link']",
+    "follower_profile_link": "a[role='link'][href*='/']",
+    "close_dialog": "div[role='dialog'] button svg[aria-label='Close'], div[role='dialog'] div[role='button'] svg"
+  },
+  "post_likers": {
+    "likes_count": "a[href*='/liked_by/'], section span a, button span",
+    "dialog": "div[role='dialog']",
+    "liker_card": "div[role='dialog'] ul li, div[role='dialog'] div > div > div > div",
+    "liker_name": "span a[role='link'] span",
+    "liker_username": "span a[role='link']",
+    "liker_profile_link": "a[role='link'][href*='/']"
+  },
+  "hashtag_posts": {
+    "post_link": "article a[href*='/p/'], article a[href*='/reel/'], main article a[href*='/p/']",
+    "post_image": "article img",
+    "post_caption": "h1, span[dir='auto']",
+    "top_posts_section": "article",
+    "recent_posts_section": "article"
+  },
+  "location_posts": {
+    "post_link": "article a[href*='/p/'], article a[href*='/reel/']",
+    "post_image": "article img",
+    "location_name": "h1, header h1"
+  },
+  "actions": {
+    "follow_button": "button:has(div:text('Follow')), header button, button[type='button']",
+    "following_button": "button:has(div:text('Following'))",
+    "like_button": "svg[aria-label='Like'][role='img'], span svg[aria-label='Like']",
+    "unlike_button": "svg[aria-label='Unlike'][role='img']",
+    "comment_input": "textarea[aria-label='Add a comment…'], form textarea",
+    "comment_submit": "button[type='submit'], div[role='button']:has(div:text('Post'))",
+    "dm_button": "div[role='button'] svg[aria-label='Message'], button svg[aria-label='Message']",
+    "dm_new_message": "a[href='/direct/new/'], div[role='button'] svg[aria-label='New message']",
+    "dm_search_input": "input[name='queryBox'], input[placeholder*='Search']",
+    "dm_user_result": "div[role='dialog'] button, div[role='listbox'] div[role='option']",
+    "dm_next_button": "button:has(div:text('Next')), div[role='button']:has(div:text('Next'))",
+    "dm_message_input": "textarea[placeholder*='Message'], div[role='textbox']",
+    "dm_send_button": "button:has(div:text('Send')), div[role='button']:has(div:text('Send'))"
+  },
+  "common": {
+    "scroll_container": "div[role='dialog'] ul, div[role='dialog'] div[style*='overflow'], main",
+    "loading_spinner": "svg[aria-label='Loading']",
+    "not_found": "h2:text('Sorry, this page'), div:text('Page Not Found')",
+    "login_required": "input[name='username']"
+  }
+}

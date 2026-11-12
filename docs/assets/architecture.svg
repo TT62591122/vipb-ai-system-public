@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560">
+  <rect width="1180" height="560" fill="#ffffff"/>
+  <text x="590" y="42" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="bold" fill="#222222">System Architecture</text>
+  <!-- Layer 1 -->
+  <rect x="90" y="70" width="1000" height="70" rx="10" fill="#009E4D"/>
+  <text x="590" y="100" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="bold" fill="#ffffff">Web Console (EJS Views)</text>
+  <text x="590" y="126" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#e8f5ee">Dashboard &#183; AI Command &#183; CRM &#183; Marketing &#183; Social &#183; Matrix &#183; Inbox &#183; Workflow &#183; SEO &#183; Video &#183; Settings</text>
+  <!-- Layer 2 -->
+  <rect x="90" y="170" width="1000" height="70" rx="10" fill="#2fbf71"/>
+  <text x="590" y="200" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="bold" fill="#ffffff">API Routes (Express)</text>
+  <text x="590" y="226" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#eafaf1">/api/customers &#183; /api/emails &#183; /api/matrix &#183; /api/analytics &#183; /api/social &#183; /api/ai &#183; /api/workflows &#183; /api/products</text>
+  <!-- Layer 3 -->
+  <rect x="90" y="270" width="1000" height="96" rx="10" fill="#eef7f1" stroke="#009E4D" stroke-width="2"/>
+  <text x="590" y="300" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="bold" fill="#009E4D">Core Engines (src/)</text>
+  <text x="590" y="328" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#333333">AI Brain &#183; AI Command Engine &#183; Workflow Engine &#183; Matrix Task Engine &#183; Journey Engine &#183; Lead Scoring</text>
+  <text x="590" y="352" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#333333">Email Sender/Tracker &#183; Anti-ban Engine &#183; Fingerprint Engine &#183; Alert Engine &#183; Audit Logger</text>
+  <!-- Layer 4 -->
+  <rect x="90" y="396" width="640" height="70" rx="10" fill="#2fbf71"/>
+  <text x="410" y="426" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="bold" fill="#ffffff">14 Platform Executors</text>
+  <text x="410" y="450" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#eafaf1">Facebook &#183; Instagram &#183; X &#183; LinkedIn &#183; TikTok &#183; YouTube &#183; WhatsApp &#183; Telegram &#8230;</text>
+  <!-- Layer 5 -->
+  <rect x="770" y="396" width="320" height="70" rx="10" fill="#009E4D"/>
+  <text x="930" y="426" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="bold" fill="#ffffff">Data Layer</text>
+  <text x="930" y="450" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#e8f5ee">SQLite (better-sqlite3) &#183; DAL</text>
+  <!-- connectors -->
+  <g stroke="#009E4D" stroke-width="3">
+    <line x1="590" y1="140" x2="590" y2="170"/>
+    <line x1="590" y1="240" x2="590" y2="270"/>
+    <line x1="410" y1="366" x2="410" y2="396"/>
+    <line x1="930" y1="366" x2="930" y2="396"/>
+  </g>
+  <text x="590" y="530" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#888888">Node.js &#183; Express &#183; Socket.IO &#183; Puppeteer &#183; bcrypt &#183; Helmet &#183; CSRF &#183; Rate Limit</text>
+</svg>

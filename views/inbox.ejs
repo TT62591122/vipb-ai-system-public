@@ -1,0 +1,499 @@
+<%- include('partials/header') %>
+<style>
+  .inbox-container { display: flex; height: calc(100vh - 120px); }
+  .conversation-list { width: 340px; border-right: 1px solid #dee2e6; overflow-y: auto; background: #f8f9fa; }
+  .chat-area { flex: 1; display: flex; flex-direction: column; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
+  .chat-input-area { border-top: 1px solid #dee2e6; padding: 15px; background: #fff; }
+  .msg-bubble { max-width: 70%; padding: 10px 15px; border-radius: 15px; margin-bottom: 8px; }
+  .msg-incoming { background: #f0f0f0; align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg-outgoing { background: #7c3aed; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .platform-facebook { background: #1877f2; color: #fff; }
+  .platform-instagram { background: #e4405f; color: #fff; }
+  .platform-tiktok { background: #000; color: #fff; }
+  .platform-whatsapp { background: #25d366; color: #fff; }
+  .platform-widget { background: #7c3aed; color: #fff; }
+  .unread-badge { background: #dc3545; color: #fff; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+
+  /* 通用badge */
+  .tree-badge {
+    background: #dc3545; color: #fff; border-radius: 10px;
+    min-width: 18px; height: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500; padding: 0 5px;
+  }
+  .tree-badge-sm {
+    background: #dc3545; color: #fff; border-radius: 10px;
+    min-width: 16px; height: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 500; padding: 0 4px;
+  }
+
+  /* 四级分类样式 */
+  .channel-group { border-bottom: 1px solid #e9ecef; }
+
+  /* 第1级：渠道 */
+  .level1-header {
+    padding: 10px 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .level1-header:hover { background: #e9ecef; }
+  .level1-header .tree-left { display: flex; align-items: center; gap: 6px; }
+  .level1-header .tree-right { display: flex; align-items: center; gap: 6px; }
+  .fold-arrow {
+    font-size: 12px;
+    transition: transform 0.2s;
+    color: #999;
+  }
+  .collapsed .fold-arrow { transform: rotate(-90deg); }
+  .tree-body {
+    overflow: hidden;
+    max-height: 5000px;
+    transition: max-height 0.3s ease;
+  }
+  .tree-body.collapsed {
+    max-height: 0;
+  }
+
+  /* 第2级：账号 */
+  .level2-header {
+    padding: 7px 12px 7px 28px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .level2-header:hover { background: #eee; }
+  .level2-header .tree-left { display: flex; align-items: center; gap: 5px; overflow: hidden; }
+  .level2-header .tree-left span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .level2-header .tree-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+
+  /* 第3级：客户/联系人 */
+  .level3-header {
+    padding: 6px 12px 6px 44px;
+    cursor: pointer;
+    font-size: 12.5px;
+    color: #444;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .level3-header:hover { background: #e8e4f0; }
+  .level3-header .tree-left { display: flex; align-items: center; gap: 5px; overflow: hidden; }
+  .level3-header .tree-left .contact-info { overflow: hidden; }
+  .level3-header .tree-left .contact-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .level3-header .tree-left .contact-email { font-size: 11px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .level3-header .tree-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+
+  /* 第4级：会话条目 */
+  .level4-item {
+    padding: 8px 12px 8px 60px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .level4-item:hover, .level4-item.active { background: #e8e0f0; }
+  .level4-item .conv-title { font-size: 12.5px; font-weight: 500; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .level4-item .conv-snippet { font-size: 11.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+  .level4-item .conv-time { font-size: 10px; color: #aaa; flex-shrink: 0; }
+
+  /* 合并的单会话条目（当联系人只有一个会话时，直接可点击） */
+  .level3-single {
+    padding: 7px 12px 7px 44px;
+    cursor: pointer;
+    font-size: 12.5px;
+    color: #444;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .level3-single:hover, .level3-single.active { background: #e8e0f0; }
+  .level3-single .tree-left { display: flex; align-items: center; gap: 5px; overflow: hidden; }
+  .level3-single .contact-info { overflow: hidden; }
+  .level3-single .contact-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .level3-single .conv-snippet { font-size: 11px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+  .level3-single .tree-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+
+  /* 过滤器 */
+  .category-filter {
+    display: flex;
+    gap: 4px;
+    padding: 6px 8px;
+    background: #f0f0f0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .category-filter .btn { font-size: 12px; padding: 2px 10px; border-radius: 12px; }
+  .category-filter .btn.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+</style>
+<div class="main-content p-0">
+  <div class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+    <div><h4 class="mb-0">📥 统一收件箱</h4><small class="text-muted">所有平台消息 · 一站式管理</small></div>
+    <div>
+      <span class="badge bg-danger" id="totalUnread">0 未读</span>
+      <button class="btn btn-sm btn-outline-secondary ms-2" onclick="loadConversations()"><i class="bi bi-arrow-clockwise"></i></button>
+    </div>
+  </div>
+  <div class="inbox-container">
+    <!-- 左侧会话列表 -->
+    <div class="conversation-list">
+      <div class="p-2">
+        <input class="form-control form-control-sm" id="searchConv" placeholder="🔍 搜索会话..." oninput="filterConversations()">
+      </div>
+      <!-- 过滤器 -->
+      <div class="category-filter">
+        <button class="btn btn-sm btn-outline-secondary active" id="filterCustomer" onclick="setCategoryFilter('customer')">👤 客户</button>
+        <button class="btn btn-sm btn-outline-secondary" id="filterAll" onclick="setCategoryFilter('all')">📋 全部</button>
+        <button class="btn btn-sm btn-outline-secondary" id="filterSpam" onclick="setCategoryFilter('spam')">🗑️ 垃圾</button>
+      </div>
+      <div id="convList">
+        <div class="text-center text-muted py-5">加载中...</div>
+      </div>
+    </div>
+    <!-- 右侧聊天 -->
+    <div class="chat-area">
+      <div id="chatHeader" class="px-4 py-2 border-bottom d-none">
+        <strong id="chatName">-</strong>
+        <small class="text-muted ms-2" id="chatPlatform"></small>
+      </div>
+      <div class="chat-messages d-flex flex-column" id="chatMessages">
+        <div class="text-center text-muted my-auto"><i class="bi bi-chat-dots" style="font-size:48px"></i><p class="mt-2">选择左侧会话开始聊天</p></div>
+      </div>
+      <div class="chat-input-area d-none" id="chatInputArea">
+        <div class="input-group">
+          <textarea class="form-control" id="replyInput" rows="1" placeholder="输入回复..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply()}"></textarea>
+          <button class="btn btn-purple" onclick="sendReply()"><i class="bi bi-send"></i></button>
+        </div>
+        <div class="mt-1">
+          <button class="btn btn-sm btn-outline-secondary" title="AI建议回复" onclick="getAISuggestion()">🤖 AI建议</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let conversations = [];
+let currentConvId = null;
+let currentCategory = 'customer'; // 默认过滤
+
+const channelIcons = { email:'📧', whatsapp:'💬', whatsapp_cloud:'🔵', facebook:'📘', instagram:'📸', tiktok:'🎵', widget:'🌐', linkedin:'💼' };
+const channelNames = { email:'邮件', whatsapp:'WhatsApp', whatsapp_cloud:'WhatsApp Cloud API', facebook:'Facebook', instagram:'Instagram', tiktok:'TikTok', widget:'网站客服', linkedin:'LinkedIn' };
+const channelOrder = ['email','whatsapp','whatsapp_cloud','facebook','instagram','tiktok','linkedin','widget'];
+
+// 折叠状态记忆（四级）
+const foldState = {
+  channel: {},   // key: channel
+  account: {},   // key: channel::account_name
+  contact: {},   // key: channel::account_name::contact_name
+};
+
+// 兼容旧字段
+function getChannel(c) { return c.channel || c.platform || 'email'; }
+
+// category 过滤切换
+function setCategoryFilter(cat) {
+  currentCategory = cat;
+  document.querySelectorAll('.category-filter .btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(cat === 'customer' ? 'filterCustomer' : cat === 'all' ? 'filterAll' : 'filterSpam').classList.add('active');
+  loadConversations();
+}
+
+async function loadConversations() {
+  try {
+    const res = await fetch(`/api/inbox/conversations?category=${currentCategory}`);
+    const data = await res.json();
+    conversations = data.conversations || data.data || data || [];
+    renderConversations();
+    updateTotalUnread();
+  } catch(e) {
+    document.getElementById('convList').innerHTML = '<div class="text-center text-muted py-5">暂无会话</div>';
+  }
+}
+
+function updateTotalUnread() {
+  const unread = conversations.reduce((s, c) => s + (c.unread_count || 0), 0);
+  document.getElementById('totalUnread').textContent = unread + ' 未读';
+}
+
+function escKey(s) { return (s || '').replace(/'/g, "\\'").replace(/\\/g, "\\\\"); }
+
+function timeAgo(dt) {
+  if (!dt) return '';
+  const d = new Date(dt);
+  const now = new Date();
+  const diff = (now - d) / 1000;
+  if (diff < 60) return '刚刚';
+  if (diff < 3600) return Math.floor(diff / 60) + '分钟前';
+  if (diff < 86400) return Math.floor(diff / 3600) + '小时前';
+  if (diff < 604800) return Math.floor(diff / 86400) + '天前';
+  return d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
+}
+
+function renderConversations() {
+  const search = document.getElementById('searchConv').value.toLowerCase();
+  const filtered = conversations.filter(c => {
+    if (search && !(c.contact_name || '').toLowerCase().includes(search)
+      && !(c.account_name || '').toLowerCase().includes(search)
+      && !(c.contact_email || '').toLowerCase().includes(search)
+      && !(c.last_message || '').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  // 四级分组: channel → account_name → contact_name → conversations
+  const tree = {};
+  filtered.forEach(c => {
+    const ch = getChannel(c);
+    const acct = c.account_name || c.channel_id || ch;
+    const contact = c.contact_name || '未知';
+    if (!tree[ch]) tree[ch] = {};
+    if (!tree[ch][acct]) tree[ch][acct] = {};
+    if (!tree[ch][acct][contact]) tree[ch][acct][contact] = [];
+    tree[ch][acct][contact].push(c);
+  });
+
+  let html = '';
+
+  // 渲染所有渠道（含预定义+额外）
+  const allChannels = [...channelOrder];
+  Object.keys(tree).forEach(ch => { if (!allChannels.includes(ch)) allChannels.push(ch); });
+
+  allChannels.forEach(ch => {
+    const accounts = tree[ch] || {};
+    const acctKeys = Object.keys(accounts);
+
+    // 统计该渠道的总数和未读数
+    let channelTotal = 0, channelUnread = 0;
+    acctKeys.forEach(acct => {
+      Object.values(accounts[acct]).forEach(convs => {
+        channelTotal += convs.length;
+        channelUnread += convs.reduce((s, c) => s + (c.unread_count || 0), 0);
+      });
+    });
+
+    // 折叠逻辑
+    const chFolded = foldState.channel[ch] !== undefined ? foldState.channel[ch] : (channelTotal === 0 ? true : !channelUnread);
+
+    const icon = channelIcons[ch] || '💬';
+    const name = channelNames[ch] || ch;
+
+    html += `<div class="channel-group">`;
+    // === 第1级：渠道 ===
+    html += `<div class="level1-header ${chFolded ? 'collapsed' : ''}" onclick="toggleFold('channel','${escKey(ch)}')">`;
+    html += `<span class="tree-left">${icon} ${name}</span>`;
+    html += `<span class="tree-right">`;
+    if (channelUnread > 0) html += `<span class="tree-badge">${channelUnread}</span>`;
+    else html += `<small class="text-muted">(${channelTotal})</small>`;
+    html += `<span class="fold-arrow">▼</span>`;
+    html += `</span></div>`;
+
+    html += `<div class="tree-body ${chFolded ? 'collapsed' : ''}">`;
+
+    if (acctKeys.length === 0) {
+      // 空渠道
+    } else {
+      acctKeys.forEach(acct => {
+        const contacts = accounts[acct];
+        const contactKeys = Object.keys(contacts);
+        let acctTotal = 0, acctUnread = 0;
+        contactKeys.forEach(cn => {
+          acctTotal += contacts[cn].length;
+          acctUnread += contacts[cn].reduce((s, c) => s + (c.unread_count || 0), 0);
+        });
+
+        const acctKey = ch + '::' + acct;
+        const acctFolded = foldState.account[acctKey] !== undefined ? foldState.account[acctKey] : false;
+
+        // === 第2级：我方账号 ===
+        html += `<div class="level2-header ${acctFolded ? 'collapsed' : ''}" onclick="event.stopPropagation();toggleFold('account','${escKey(acctKey)}')">`;
+        html += `<span class="tree-left">📬 <span>${acct}</span></span>`;
+        html += `<span class="tree-right">`;
+        if (acctUnread > 0) html += `<span class="tree-badge-sm">${acctUnread}</span>`;
+        else html += `<small class="text-muted">(${acctTotal})</small>`;
+        html += `<span class="fold-arrow">▼</span>`;
+        html += `</span></div>`;
+
+        html += `<div class="tree-body ${acctFolded ? 'collapsed' : ''}">`;
+
+        contactKeys.forEach(contactName => {
+          const convs = contacts[contactName];
+          const contactUnread = convs.reduce((s, c) => s + (c.unread_count || 0), 0);
+          const contactKey = acctKey + '::' + contactName;
+
+          if (convs.length === 1) {
+            // 合并显示：联系人只有一个会话，直接点击打开
+            const c = convs[0];
+            const contactEmail = c.contact_email || '';
+            html += `<div class="level3-single ${c.id == currentConvId ? 'active' : ''}" onclick="event.stopPropagation();openConversation(${c.id})">`;
+            html += `<span class="tree-left">👤 <div class="contact-info">`;
+            html += `<div class="contact-name">${contactName}${contactEmail ? ' <span style="font-weight:400;color:#888;font-size:11px">[' + contactEmail + ']</span>' : ''}</div>`;
+            html += `<div class="conv-snippet">${c.last_message || ''}</div>`;
+            html += `</div></span>`;
+            html += `<span class="tree-right">`;
+            if (c.last_message_at) html += `<span class="conv-time">${timeAgo(c.last_message_at)}</span>`;
+            if (contactUnread > 0) html += `<span class="tree-badge-sm">${contactUnread}</span>`;
+            html += `</span></div>`;
+          } else {
+            // 多个会话：展开第3级
+            const contactFolded = foldState.contact[contactKey] !== undefined ? foldState.contact[contactKey] : false;
+            const firstConv = convs[0];
+            const contactEmail = firstConv.contact_email || '';
+
+            // === 第3级：客户/联系人 ===
+            html += `<div class="level3-header ${contactFolded ? 'collapsed' : ''}" onclick="event.stopPropagation();toggleFold('contact','${escKey(contactKey)}')">`;
+            html += `<span class="tree-left">👤 <div class="contact-info">`;
+            html += `<div class="contact-name">${contactName}${contactEmail ? ' <span style="font-weight:400;color:#888;font-size:11px">[' + contactEmail + ']</span>' : ''}</div>`;
+            html += `</div></span>`;
+            html += `<span class="tree-right">`;
+            if (contactUnread > 0) html += `<span class="tree-badge-sm">${contactUnread}</span>`;
+            else html += `<small class="text-muted">(${convs.length})</small>`;
+            html += `<span class="fold-arrow" style="font-size:11px">▼</span>`;
+            html += `</span></div>`;
+
+            html += `<div class="tree-body ${contactFolded ? 'collapsed' : ''}">`;
+            convs.forEach(c => {
+              // === 第4级：会话 ===
+              html += `<div class="level4-item ${c.id == currentConvId ? 'active' : ''}" onclick="event.stopPropagation();openConversation(${c.id})">`;
+              html += `<div class="d-flex justify-content-between align-items-start">`;
+              html += `<div style="overflow:hidden;flex:1">`;
+              html += `<div class="conv-title">${c.last_message ? c.last_message.substring(0, 60) : '(空)'}</div>`;
+              html += `</div>`;
+              html += `<div class="d-flex align-items-center gap-1" style="flex-shrink:0;margin-left:6px">`;
+              if (c.last_message_at) html += `<span class="conv-time">${timeAgo(c.last_message_at)}</span>`;
+              if (c.unread_count > 0) html += `<span class="tree-badge-sm">${c.unread_count}</span>`;
+              html += `</div>`;
+              html += `</div></div>`;
+            });
+            html += `</div>`;
+          }
+        });
+
+        html += `</div>`; // account body
+      });
+    }
+
+    html += `</div></div>`; // channel body + group
+  });
+
+  if (!html) {
+    html = '<div class="text-center text-muted py-5">暂无会话</div>';
+  }
+
+  document.getElementById('convList').innerHTML = html;
+}
+
+function toggleFold(level, key) {
+  const store = foldState[level];
+  if (store[key] === undefined) {
+    // 首次点击：需要反转当前渲染出的默认状态
+    // channel默认：空渠道或无未读=折叠(true)，有未读=展开(false)
+    // account/contact默认：展开(false)
+    // 点击时取反：如果当前是折叠的就展开，反之折叠
+    if (level === 'channel') {
+      // 检查当前渠道是否默认折叠了
+      const ch = key;
+      let isCurrentlyFolded = true; // 默认假设折叠
+      // 遍历conversations看这个渠道有没有未读
+      const chConvs = conversations.filter(c => (c.channel || c.platform || 'email') === ch);
+      const chUnread = chConvs.reduce((s, c) => s + (c.unread_count || 0), 0);
+      if (chConvs.length > 0 && chUnread > 0) isCurrentlyFolded = false;
+      if (chConvs.length === 0) isCurrentlyFolded = true;
+      store[key] = !isCurrentlyFolded;
+    } else {
+      // account和contact默认展开，toggle后变折叠
+      store[key] = true;
+    }
+  } else {
+    store[key] = !store[key];
+  }
+  renderConversations();
+}
+
+function filterConversations() { renderConversations(); }
+
+async function openConversation(id) {
+  currentConvId = id;
+  renderConversations();
+  document.getElementById('chatHeader').classList.remove('d-none');
+  document.getElementById('chatInputArea').classList.remove('d-none');
+  const conv = conversations.find(c => c.id == id);
+  document.getElementById('chatName').textContent = conv ? conv.contact_name : '';
+  document.getElementById('chatPlatform').textContent = conv ? (conv.channel || conv.platform) : '';
+  try {
+    const res = await fetch(`/api/inbox/conversations/${id}/messages`);
+    const data = await res.json();
+    const msgs = Array.isArray(data) ? data : (data.messages || data.data || []);
+
+    // 标记已读
+    fetch(`/api/inbox/conversations/${id}/read`, { method: 'POST' });
+    if (conv) conv.unread_count = 0;
+    updateTotalUnread();
+    renderConversations();
+
+    const container = document.getElementById('chatMessages');
+    if (msgs.length === 0) {
+      container.innerHTML = '<div class="text-center text-muted my-auto">暂无消息</div>';
+      return;
+    }
+    container.innerHTML = msgs.map(m => `
+      <div class="msg-bubble ${m.direction === 'out' || m.direction === 'outgoing' ? 'msg-outgoing' : 'msg-incoming'}">
+        <div>${m.content || m.message || ''}</div>
+        <small style="opacity:0.7;font-size:11px">${new Date(m.created_at || m.timestamp).toLocaleString('zh-CN')}</small>
+      </div>
+    `).join('');
+    container.scrollTop = container.scrollHeight;
+  } catch(e) {
+    document.getElementById('chatMessages').innerHTML = '<div class="text-center text-muted my-auto">加载失败</div>';
+  }
+}
+
+async function sendReply() {
+  const input = document.getElementById('replyInput');
+  const msg = input.value.trim();
+  if (!msg || !currentConvId) return;
+  input.value = '';
+  const container = document.getElementById('chatMessages');
+  container.innerHTML += `<div class="msg-bubble msg-outgoing"><div>${msg}</div><small style="opacity:0.7;font-size:11px">${new Date().toLocaleString('zh-CN')}</small></div>`;
+  container.scrollTop = container.scrollHeight;
+  try {
+    await fetch(`/api/inbox/conversations/${currentConvId}/reply`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({message:msg}) });
+  } catch(e) { console.error(e); }
+}
+
+async function getAISuggestion() {
+  if (!currentConvId) return alert('请先选择一个会话');
+  const btn = document.querySelector('[onclick*=getAISuggestion]');
+  const origText = btn ? btn.innerHTML : '';
+  if (btn) { btn.innerHTML = '⏳ AI思考中...'; btn.disabled = true; }
+  try {
+    const res = await fetch(`/api/inbox/conversations/${currentConvId}/ai-suggest`);
+    const data = await res.json();
+    if (data.success && data.suggestion) {
+      document.getElementById('replyInput').value = data.suggestion;
+    } else {
+      alert(data.error || 'AI建议获取失败');
+    }
+  } catch(e) {
+    alert('AI建议获取失败: ' + e.message);
+  } finally {
+    if (btn) { btn.innerHTML = origText; btn.disabled = false; }
+  }
+}
+
+loadConversations();
+</script>
+<%- include('partials/footer') %>

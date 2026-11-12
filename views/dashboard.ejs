@@ -1,0 +1,356 @@
+<%- include('partials/header') %>
+<div class="main-content">
+  <!-- 🚨 紧急刹车状态栏 -->
+  <div id="brake-banner" class="alert alert-danger d-none mb-3" style="border-left:5px solid #dc3545">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <strong>🚨 系统已紧急停止</strong>
+        <span id="brake-banner-reason" class="ms-2 text-muted"></span>
+        <span id="brake-banner-time" class="ms-2 text-muted small"></span>
+      </div>
+      <button class="btn btn-success btn-sm" onclick="brakeResume()">✅ 恢复运行</button>
+    </div>
+  </div>
+
+  <!-- 🚨 刹车控制卡片 -->
+  <div class="card mb-3" id="brake-card">
+    <div class="card-body py-2 d-flex justify-content-between align-items-center">
+      <div>
+        <span id="brake-light" style="font-size:18px">🟢</span>
+        <strong class="ms-1">系统状态：</strong>
+        <span id="brake-status-text">运行中</span>
+        <small id="brake-engine-info" class="ms-3 text-muted"></small>
+      </div>
+      <div>
+        <button class="btn btn-outline-danger btn-sm" id="btn-brake-stop" onclick="brakeStop()">🚨 紧急停止</button>
+        <button class="btn btn-success btn-sm d-none" id="btn-brake-resume" onclick="brakeResume()">✅ 恢复运行</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="mb-0">🎯 指挥中心</h4><small class="text-muted">VIPB AI System V2 — 一切尽在掌握</small></div>
+    <button class="btn btn-purple" id="btn-ai-suggest" onclick="getAISuggestions()">🤖 AI工作建议</button>
+    <button class="btn btn-outline-success btn-sm ms-2" onclick="getMarketInsight()">🔍 市场情报</button>
+  </div>
+
+  <!-- 关键数字 -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number"><%= stats.customers %></div><div class="stat-label">客户总数</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number"><%= stats.inquiries %></div><div class="stat-label">新询盘</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number"><%= stats.activeDeals %></div><div class="stat-label">进行中交易</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number">$<%= (stats.totalRevenue||0).toLocaleString() %></div><div class="stat-label">总营收</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number"><%= stats.emailsSent %></div><div class="stat-label">今日邮件</div></div></div>
+    <div class="col-md-2"><div class="stat-card text-center"><div class="stat-number">¥<%= (stats.aiCostToday||0).toFixed(2) %></div><div class="stat-label">今日AI费用</div></div></div>
+  </div>
+
+  <!-- AI建议 -->
+  <div id="ai-suggestions" class="mb-4"></div>
+
+  <div class="row g-3">
+    <!-- 最近询盘 -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">📋 最新询盘</div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead><tr><th>公司</th><th>主题</th><th>产品</th><th>状态</th></tr></thead>
+            <tbody>
+              <% (stats.recentInquiries||[]).forEach(i => { %>
+              <tr><td><%= i.company||'-' %></td><td><%= i.subject||'-' %></td><td><%= i.product||'-' %></td><td><span class="badge badge-stage badge-new"><%= i.status %></span></td></tr>
+              <% }) %>
+              <% if(!(stats.recentInquiries||[]).length) { %><tr><td colspan="4" class="text-center text-muted py-3">暂无询盘</td></tr><% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- 最近交易 -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">💰 最新交易</div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead><tr><th>公司</th><th>标题</th><th>金额</th><th>阶段</th></tr></thead>
+            <tbody>
+              <% (stats.recentDeals||[]).forEach(d => { %>
+              <tr><td><%= d.company||'-' %></td><td><%= d.title||'-' %></td><td>$<%= (d.amount||0).toLocaleString() %></td><td><span class="badge badge-stage badge-hot"><%= d.stage %></span></td></tr>
+              <% }) %>
+              <% if(!(stats.recentDeals||[]).length) { %><tr><td colspan="4" class="text-center text-muted py-3">暂无交易</td></tr><% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 快捷操作 -->
+  <div class="row g-3 mt-3">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">⚡ 快捷操作</div>
+        <div class="card-body">
+          <a href="/crm" class="btn btn-outline-primary me-2">➕ 新增客户</a>
+          <a href="/crm" class="btn btn-outline-success me-2">📋 新建询盘</a>
+          <a href="/marketing" class="btn btn-outline-info me-2">📧 写邮件</a>
+          <a href="/trade" class="btn btn-outline-warning me-2">💰 新建报价</a>
+          <a href="/social" class="btn btn-outline-danger me-2">📱 发社媒</a>
+          <a href="/products" class="btn btn-outline-secondary me-2">📦 管理产品</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新功能矩阵 -->
+  <div class="row g-3 mt-3">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">🔥 矩阵获客工具箱 <span class="badge bg-success ms-2">NEW</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <a href="/matrix" class="card text-decoration-none h-100" style="border-left:4px solid #667eea">
+                <div class="card-body text-center">
+                  <div style="font-size:2em">🎯</div>
+                  <h6 class="mt-2">矩阵任务</h6>
+                  <small class="text-muted">14平台采集+群控</small>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a href="/workflow" class="card text-decoration-none h-100" style="border-left:4px solid #764ba2">
+                <div class="card-body text-center">
+                  <div style="font-size:2em">⚡</div>
+                  <h6 class="mt-2">工作流编排</h6>
+                  <small class="text-muted">多步骤自动化</small>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a href="/inbox" class="card text-decoration-none h-100" style="border-left:4px solid #f093fb">
+                <div class="card-body text-center">
+                  <div style="font-size:2em">💬</div>
+                  <h6 class="mt-2">统一收件箱</h6>
+                  <small class="text-muted">全平台私信聚合</small>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a href="/seo" class="card text-decoration-none h-100" style="border-left:4px solid #4facfe">
+                <div class="card-body text-center">
+                  <div style="font-size:2em">🔍</div>
+                  <h6 class="mt-2">SEO工具</h6>
+                  <small class="text-muted">页面分析+关键词</small>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a href="/video" class="card text-decoration-none h-100" style="border-left:4px solid #43e97b">
+                <div class="card-body text-center">
+                  <div style="font-size:2em">🎬</div>
+                  <h6 class="mt-2">视频工坊</h6>
+                  <small class="text-muted">AI混剪+数字人</small>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-3">
+              <div class="card h-100 opacity-75" style="border-left:4px solid #fa709a; cursor:default" title="后台引擎，矩阵任务执行时自动调用">
+                <div class="card-body text-center">
+                  <div style="font-size:2em">🛡️</div>
+                  <h6 class="mt-2">防封引擎</h6>
+                  <small class="text-muted">10平台规则内置</small>
+                  <div><span class="badge bg-secondary mt-1">自动运行</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card h-100 opacity-75" style="border-left:4px solid #a18cd1; cursor:default" title="后台引擎，采集数据后自动筛选">
+                <div class="card-body text-center">
+                  <div style="font-size:2em">🤖</div>
+                  <h6 class="mt-2">AI筛选</h6>
+                  <small class="text-muted">性别/年龄/行业</small>
+                  <div><span class="badge bg-secondary mt-1">自动运行</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card h-100 opacity-75" style="border-left:4px solid #fbc2eb; cursor:default" title="后台引擎，任务运行时自动分配浏览器">
+                <div class="card-body text-center">
+                  <div style="font-size:2em">📊</div>
+                  <h6 class="mt-2">指纹浏览器</h6>
+                  <small class="text-muted">18并发反检测</small>
+                  <div><span class="badge bg-secondary mt-1">自动运行</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 新手引导 -->
+<div class="modal fade" id="welcomeGuide" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-purple text-white">
+        <h5 class="modal-title">🎉 欢迎使用 VIPB AI System V2</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-4 text-center">
+            <div style="font-size:2.5em">1️⃣</div>
+            <h6>添加客户</h6>
+            <p class="text-muted small">从CRM模块导入或手动添加客户信息</p>
+          </div>
+          <div class="col-md-4 text-center">
+            <div style="font-size:2.5em">2️⃣</div>
+            <h6>配置平台</h6>
+            <p class="text-muted small">在环境管理中设置浏览器环境和代理</p>
+          </div>
+          <div class="col-md-4 text-center">
+            <div style="font-size:2.5em">3️⃣</div>
+            <h6>开始获客</h6>
+            <p class="text-muted small">创建矩阵任务，AI自动采集+筛选+触达</p>
+          </div>
+        </div>
+        <hr>
+        <div class="text-center">
+          <p>💡 <strong>快捷入口</strong>：点击上方"快捷操作"区域的按钮快速开始</p>
+          <p>📖 更多功能请探索左侧导航栏的各个模块</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="localStorage.setItem('vipb_guided','1')">不再显示</button>
+        <button class="btn btn-purple" data-bs-dismiss="modal" onclick="localStorage.setItem('vipb_guided','1')">开始使用 🚀</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+if(!localStorage.getItem('vipb_guided')) {
+  new bootstrap.Modal(document.getElementById('welcomeGuide')).show();
+}
+
+// ========== 紧急刹车 ==========
+function brakeUpdateUI(data) {
+  const banner = document.getElementById('brake-banner');
+  const light = document.getElementById('brake-light');
+  const text = document.getElementById('brake-status-text');
+  const btnStop = document.getElementById('btn-brake-stop');
+  const btnResume = document.getElementById('btn-brake-resume');
+  const info = document.getElementById('brake-engine-info');
+  const bannerReason = document.getElementById('brake-banner-reason');
+  const bannerTime = document.getElementById('brake-banner-time');
+
+  if (data.status === 'stopped') {
+    banner.classList.remove('d-none');
+    bannerReason.textContent = '原因: ' + (data.reason || '未知');
+    bannerTime.textContent = data.stoppedAt ? '时间: ' + new Date(data.stoppedAt).toLocaleString('zh-CN') : '';
+    light.textContent = '🔴';
+    text.textContent = '已停止';
+    text.className = 'text-danger fw-bold';
+    btnStop.classList.add('d-none');
+    btnResume.classList.remove('d-none');
+    if (info) info.textContent = '暂停任务: ' + (data.engines?.matrix?.pausedEmergency || 0) + ' 个';
+    document.getElementById('brake-card').style.borderLeft = '4px solid #dc3545';
+  } else {
+    banner.classList.add('d-none');
+    light.textContent = '🟢';
+    text.textContent = '运行中';
+    text.className = 'text-success';
+    btnStop.classList.remove('d-none');
+    btnResume.classList.add('d-none');
+    if (info) {
+      const m = data.engines?.matrix;
+      info.textContent = m ? '活跃任务: ' + m.activeTasks + ' | 队列: ' + m.queuedTasks : '';
+    }
+    document.getElementById('brake-card').style.borderLeft = '4px solid #28a745';
+  }
+}
+
+function brakeLoadStatus() {
+  fetch('/api/emergency/status').then(r => r.json()).then(brakeUpdateUI).catch(() => {});
+}
+
+function brakeStop() {
+  if (!confirm('⚠️ 确定要紧急停止所有AI任务吗？\n\n这将暂停：\n- 所有矩阵任务\n- 收件箱同步\n- 邮件发送队列\n- LinkedIn/Journey自动化')) return;
+  const reason = prompt('请输入停止原因（可选）：', '手动紧急停止') || '手动紧急停止';
+  fetch('/api/emergency/stop', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ reason })
+  }).then(r => r.json()).then(data => {
+    if (data.success) { brakeLoadStatus(); alert('✅ 所有AI任务已停止'); }
+    else alert('❌ ' + (data.error || '操作失败'));
+  }).catch(e => alert('❌ 请求失败: ' + e.message));
+}
+
+function brakeResume() {
+  if (!confirm('✅ 确定要恢复所有AI任务吗？\n\n将从断点继续执行。')) return;
+  fetch('/api/emergency/resume', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ resumeMatrix: true, resumeInbox: true, resumeCron: true })
+  }).then(r => r.json()).then(data => {
+    if (data.success) {
+      brakeLoadStatus();
+      alert('✅ 系统已恢复运行\n恢复任务: ' + (data.recovered?.tasks || 0) + ' 个');
+    } else alert('❌ ' + (data.error || '操作失败'));
+  }).catch(e => alert('❌ 请求失败: ' + e.message));
+}
+
+// 页面加载时获取状态
+brakeLoadStatus();
+
+// WebSocket实时更新
+if (typeof io !== 'undefined') {
+  const socket = io();
+  socket.on('emergency_brake', function(data) {
+    brakeLoadStatus();
+  });
+}
+
+// ========== 市场情报 ==========
+async function getAISuggestions() {
+  const btn = document.getElementById('btn-ai-suggest');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>分析中...'; }
+  try {
+    const container = document.getElementById('ai-suggestions');
+    if (container) container.innerHTML = '<div class="alert alert-info"><div class="spinner-border spinner-border-sm me-2"></div>AI 正在分析您的业务数据...</div>';
+    const res = await api('/api/ai/chat', 'POST', {
+      agent: 'sales',
+      message: '分析当前仪表盘数据，给出3-5条具体的运营建议。包括：哪些客户应该优先跟进、邮件营销优化方向、社媒运营改进建议。简洁实用，每条建议附带具体行动步骤。'
+    });
+    if (container) {
+      if (res.success && res.result) {
+        container.innerHTML = '<div class="card"><div class="card-header">💡 AI运营建议</div><div class="card-body"><div style="white-space:pre-wrap">' + res.result + '</div></div></div>';
+      } else {
+        container.innerHTML = '<div class="alert alert-warning">⚠️ ' + (res.error || '请先配置AI Provider') + '</div>';
+      }
+    }
+  } catch(e) {
+    const container = document.getElementById('ai-suggestions');
+    if (container) container.innerHTML = '<div class="alert alert-danger">请求失败: ' + e.message + '</div>';
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '💡 AI运营建议'; }
+  }
+}
+
+async function getMarketInsight() {
+  const container = document.getElementById('ai-suggestions');
+  if (!container) return;
+  container.innerHTML = '<div class="alert alert-info"><div class="spinner-border spinner-border-sm me-2"></div>🔍 正在获取市场情报...</div>';
+  const res = await api('/api/ai/chat', 'POST', {
+    agent: 'research',
+    message: '根据我当前的客户和交易数据，给出3条最重要的市场情报和行动建议。包括：目标市场动态、竞品动向、近期商机。简洁实用。'
+  });
+  if (res.success && res.result) {
+    container.innerHTML = '<div class="card"><div class="card-header">🔍 市场情报</div><div class="card-body"><div style="white-space:pre-wrap">' + (res.result || '') + '</div></div></div>';
+  } else {
+    container.innerHTML = '<div class="alert alert-warning">⚠️ ' + (res.error || '请先配置AI Provider') + '</div>';
+  }
+}
+</script>
+<%- include('partials/footer') %>

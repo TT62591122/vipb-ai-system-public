@@ -1,0 +1,2994 @@
+﻿<%- include('partials/header') %>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="mb-0">⚙️ 设置</h4><small class="text-muted">AI Provider + 邮件账号 + 爬虫代理 + 公司信息 + 指纹浏览器</small></div>
+  </div>
+
+  <ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-account">🔐 账户安全</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-ai">🤖 AI Provider</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-email-config">📬 邮件配置</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-company">🏢 公司信息</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-system">🔧 系统</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-antiban">🛡️ 防封规则</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-audit">📜 操作日志</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-modules">🔌 模块管理</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-tiktok-api">🎵 TikTok API</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-youtube-api">&#9654; YouTube API</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-instagram-api">&#128247; Instagram API</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-fingerprint">🔒 指纹浏览器</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-agent">🤖 Agent控制</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-knowledge">🧠 知识库</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- 账户安全 -->
+    <div class="tab-pane fade show active" id="tab-account">
+      <div class="card">
+        <div class="card-header">🔐 修改密码</div>
+        <div class="card-body">
+          <form id="change-password-form">
+            <div class="mb-3">
+              <label class="form-label">当前密码</label>
+              <input type="password" class="form-control" name="currentPassword" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">新密码</label>
+              <input type="password" class="form-control" name="newPassword" required minlength="6">
+              <small class="text-muted">至少6个字符</small>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">确认新密码</label>
+              <input type="password" class="form-control" name="confirmPassword" required minlength="6">
+            </div>
+            <button type="button" class="btn btn-purple" onclick="changePassword()">💾 修改密码</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-header">🔐 双因素认证 (TOTP)</div>
+        <div class="card-body" id="totp-section">
+          <div id="totp-status">
+            <p>加载中...</p>
+          </div>
+          
+          <!-- 未启用时显示 -->
+          <div id="totp-setup" style="display:none;">
+            <p class="text-muted">启用Google Authenticator双因素认证，登录时需要额外输入动态验证码，大幅提升账户安全性。</p>
+            <button class="btn btn-purple" onclick="setupTotp()">🔐 启用双因素认证</button>
+          </div>
+          
+          <!-- 设置流程 -->
+          <div id="totp-qrcode" style="display:none;">
+            <div class="alert alert-info">
+              <strong>步骤1：</strong>打开手机上的 Google Authenticator App<br>
+              <strong>步骤2：</strong>扫描下方二维码<br>
+              <strong>步骤3：</strong>输入App显示的6位验证码确认
+            </div>
+            <div class="text-center mb-3">
+              <img id="totp-qr-img" src="" alt="TOTP QR Code" style="max-width:200px;">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">手动输入密钥（如果无法扫码）</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="totp-secret-text" readonly>
+                <button class="btn btn-outline-secondary" onclick="navigator.clipboard.writeText(document.getElementById('totp-secret-text').value)">复制</button>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">输入验证码确认</label>
+              <input type="text" class="form-control" id="totp-verify-code" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" placeholder="6位数字验证码">
+            </div>
+            <button class="btn btn-success" onclick="enableTotp()">✅ 确认启用</button>
+            <button class="btn btn-secondary ms-2" onclick="cancelTotp()">取消</button>
+          </div>
+          
+          <!-- 已启用时显示 -->
+          <div id="totp-enabled" style="display:none;">
+            <div class="alert alert-success">
+              <strong>✅ 双因素认证已启用</strong><br>
+              登录时需要输入Google Authenticator动态验证码。
+            </div>
+            <button class="btn btn-outline-danger" onclick="showDisableTotp()">禁用双因素认证</button>
+          </div>
+          
+          <!-- 禁用确认 -->
+          <div id="totp-disable" style="display:none;">
+            <div class="alert alert-warning">
+              <strong>⚠️ 禁用双因素认证会降低账户安全性</strong>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">当前密码</label>
+              <input type="password" class="form-control" id="totp-disable-password" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">当前验证码</label>
+              <input type="text" class="form-control" id="totp-disable-code" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" placeholder="6位数字验证码">
+            </div>
+            <button class="btn btn-danger" onclick="disableTotp()">确认禁用</button>
+            <button class="btn btn-secondary ms-2" onclick="cancelDisableTotp()">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-header">👤 账户信息</div>
+        <div class="card-body">
+          <p><strong>用户名:</strong> <%= locals.username || '未知' %></p>
+          <p><strong>角色:</strong> <%= locals.role || 'user' %></p>
+          <p><strong>最后登录:</strong> 当前会话</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Provider -->
+    <div class="tab-pane fade" id="tab-ai">
+      <div class="text-center mb-4">
+        <h4 class="mb-0">🤖 AI 智能调度配置</h4>
+        <small class="text-muted">可视化4角色分布图布局：主脑AI → 6专家Agent → 3种执行引擎</small>
+      </div>
+
+      <!-- 主脑AI -->
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <span class="fs-5">🧠 主脑 AI</span>
+            <small class="text-muted ms-2">理解指令 · 调度专家 · 汇总结果</small>
+          </div>
+          <button class="btn btn-sm btn-purple" onclick="addProviderToRole('brain')">➕ 添加</button>
+        </div>
+        <div class="card-body" id="role-brain-providers">
+          <!-- Provider条目动态渲染 -->
+        </div>
+        <div class="card-footer d-flex gap-2">
+          <button class="btn btn-sm btn-purple" onclick="saveRoleProviders('brain')">💾 保存设置</button>
+          <button class="btn btn-sm btn-outline-primary" onclick="testRoleProviders('brain')">🔗 测试连接</button>
+          <span id="role-brain-status" class="ms-2 small align-self-center"></span>
+        </div>
+      </div>
+
+      <!-- 箭头连接线 -->
+      <div class="text-center mb-3" style="font-size: 1.5rem;">▼</div>
+
+      <!-- 6专家Agent -->
+      <div class="card bg-light mb-3">
+        <div class="card-body text-center py-2">
+          <div class="mb-1"><strong>🧠 主脑自动调度 → 6专家Agent</strong></div>
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <span class="badge bg-primary">🧑‍💼 销售专家</span>
+            <span class="badge bg-success">📧 邮件专家</span>
+            <span class="badge bg-info">📊 数据分析</span>
+            <span class="badge bg-warning text-dark">📝 内容专家</span>
+            <span class="badge bg-secondary">🔍 市场调研</span>
+            <span class="badge bg-danger">🛡️ 风控专家</span>
+          </div>
+          <small class="text-muted">每个专家自动选择合适的引擎执行任务</small>
+        </div>
+      </div>
+
+      <!-- 箭头连接线 -->
+      <div class="text-center mb-3" style="font-size: 1.5rem;">▼ 使用以下引擎执行</div>
+
+      <!-- 3种引擎 -->
+      <div class="row mb-4">
+        <!-- 视频引擎 -->
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <div>
+                <span class="fs-5">🎬 视频引擎</span>
+                <small class="text-muted ms-2">视频生成 · 数字人/混剪</small>
+              </div>
+              <button class="btn btn-sm btn-purple" onclick="addProviderToRole('video')">➕ 添加</button>
+            </div>
+            <div class="card-body" id="role-video-providers">
+              <!-- Provider条目动态渲染 -->
+            </div>
+            <div class="card-footer d-flex gap-2">
+              <button class="btn btn-sm btn-purple" onclick="saveRoleProviders('video')">💾 保存</button>
+              <button class="btn btn-sm btn-outline-primary" onclick="testRoleProviders('video')">🔗 测试</button>
+              <span id="role-video-status" class="ms-2 small align-self-center"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 视觉引擎 -->
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <div>
+                <span class="fs-5">👁️ 视觉引擎</span>
+                <small class="text-muted ms-2">看图分析 · 产品图识别</small>
+              </div>
+              <button class="btn btn-sm btn-purple" onclick="addProviderToRole('vision')">➕ 添加</button>
+            </div>
+            <div class="card-body" id="role-vision-providers">
+              <!-- Provider条目动态渲染 -->
+            </div>
+            <div class="card-footer d-flex gap-2">
+              <button class="btn btn-sm btn-purple" onclick="saveRoleProviders('vision')">💾 保存</button>
+              <button class="btn btn-sm btn-outline-primary" onclick="testRoleProviders('vision')">🔗 测试</button>
+              <span id="role-vision-status" class="ms-2 small align-self-center"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 文本引擎 -->
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <div>
+                <span class="fs-5">✍️ 文本引擎</span>
+                <small class="text-muted ms-2">写邮件/翻译/SEO · 文案/分析/报表</small>
+              </div>
+              <button class="btn btn-sm btn-purple" onclick="addProviderToRole('text')">➕ 添加</button>
+            </div>
+            <div class="card-body" id="role-text-providers">
+              <!-- Provider条目动态渲染 -->
+            </div>
+            <div class="card-footer d-flex gap-2">
+              <button class="btn btn-sm btn-purple" onclick="saveRoleProviders('text')">💾 保存</button>
+              <button class="btn btn-sm btn-outline-primary" onclick="testRoleProviders('text')">🔗 测试</button>
+              <span id="role-text-status" class="ms-2 small align-self-center"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="d-flex justify-content-center gap-3">
+        <button class="btn btn-purple" onclick="saveAIProviders()">💾 保存全部</button>
+        <button class="btn btn-outline-primary" onclick="testAllProviders()">🔗 全部测试</button>
+        <span id="ai-test-status" class="ms-2"></span>
+      </div>
+    </div>
+
+    <!-- 邮件配置 -->
+    <div class="tab-pane fade" id="tab-email-config">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between">
+          <span>📬 邮件账号 (<%= accounts.length %>)</span>
+          <div>
+            <button class="btn btn-sm btn-purple" data-bs-toggle="modal" data-bs-target="#addEmailAccountModal">➕ 单个添加</button>
+            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#batchAddEmailModal">📋 批量添加</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="batchDeleteEmails()" id="btn-batch-delete" style="display:none">🗑️ 批量删除</button>
+          </div>
+          <div class="d-flex align-items-center gap-2 ms-auto">
+            <small class="text-muted">默认发件账号:</small>
+            <select id="default-email-account" class="form-select form-select-sm" style="width:auto;min-width:200px" onchange="setDefaultEmailAccount(this.value)">
+              <option value="">自动轮询</option>
+              <% (locals.emailAccounts || []).forEach(a => { %>
+                <option value="<%= a.id %>" <%= a.id == locals.defaultEmailAccountId ? 'selected' : '' %>><%= a.email %> (<%= a.auth_type === 'gmail_api' ? 'Gmail API' : 'SMTP' %>)</option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0" id="email-accounts-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="select-all-emails" onchange="toggleSelectAll(this)"></th>
+                <th>邮箱</th>
+                <th>认证</th>
+                <th>预热</th>
+                <th>限额</th>
+                <th>健康度</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% accounts.forEach(a => { %>
+              <tr>
+                <td><input type="checkbox" class="email-checkbox" value="<%= a.id %>" onchange="updateBatchDeleteBtn()"></td>
+                <td><%= a.email %></td>
+                <td><%= a.auth_type === 'gmail_api' ? '🔗 Gmail API' : '🔑 SMTP' %></td>
+                <td><%= a.warmup_stage %></td>
+                <td><%= a.daily_limit %>/天</td>
+                <td><%= a.health_score %>%</td>
+                <td><%= a.is_active ? '✅' : '⏸️' %></td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1" onclick="testSmtpConnection(<%= a.id %>)" title="测试连接">🔗</button>
+                  <% if (a.auth_type === 'gmail_api' && !a.oauth_credentials) { %>
+                  <button class="btn btn-sm btn-warning me-1" onclick="startGmailAuth(<%= a.id %>)" title="Gmail OAuth授权">🔐 授权</button>
+                  <% } else if (a.auth_type === 'gmail_api' && a.oauth_credentials) { %>
+                  <button class="btn btn-sm btn-outline-success me-1" onclick="startGmailAuth(<%= a.id %>)" title="重新授权">✅ 已授权</button>
+                  <% } %>
+                  <button class="btn btn-sm btn-outline-danger" onclick="deleteEmail(<%= a.id %>)">删除</button>
+                </td>
+              </tr>
+              <% }) %>
+              <% if(!accounts.length) { %><tr><td colspan="8" class="text-center text-muted py-3">暂无邮箱</td></tr><% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 公司信息 -->
+    <div class="tab-pane fade" id="tab-company">
+      <div class="card">
+        <div class="card-header">🏢 公司信息</div>
+        <div class="card-body">
+          <form id="company-form">
+            <div class="mb-3"><label class="form-label">公司名称</label><input type="text" class="form-control" name="name" value="<%= settings.company_info?.name || '' %>"></div>
+            <div class="mb-3"><label class="form-label">主营产品</label><input type="text" class="form-control" name="products" value="<%= settings.company_info?.products || 'Smart Meters, Circuit Breakers' %>"></div>
+            <div class="mb-3"><label class="form-label">目标市场</label><input type="text" class="form-control" name="markets" value="<%= settings.company_info?.markets || '中东, 东南亚, 非洲, 南美' %>"></div>
+            <div class="mb-3"><label class="form-label">公司地址</label><input type="text" class="form-control" name="address" value="<%= settings.company_info?.address || '' %>"></div>
+            <div class="mb-3"><label class="form-label">联系电话</label><input type="text" class="form-control" name="phone" value="<%= settings.company_info?.phone || '' %>"></div>
+            <div class="mb-3"><label class="form-label">网站</label><input type="text" class="form-control" name="website" value="<%= settings.company_info?.website || '' %>"></div>
+            <button type="button" class="btn btn-purple" onclick="saveCompanyInfo()">💾 保存</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- 系统 -->
+    <div class="tab-pane fade" id="tab-system">
+      <div class="card">
+        <div class="card-header">🔧 系统信息</div>
+        <div class="card-body">
+          <p><strong>版本:</strong> VIPB AI System V2.0</p>
+          <p><strong>技术栈:</strong> Node.js + Express + EJS + Bootstrap 5 + better-sqlite3</p>
+          <p><strong>数据库:</strong> SQLite (data/vipb.db)</p>
+          <p><strong>端口:</strong> 3000</p>
+          <p><strong>架构:</strong> 8大模块 + AI大脑5层架构</p>
+        </div>
+      </div>
+
+      <!-- 数据库备份管理 -->
+      <div class="card mt-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>💾 数据库备份</span>
+          <div>
+            <button class="btn btn-sm btn-purple" onclick="manualBackup()" id="btn-backup">💾 立即备份</button>
+            <button class="btn btn-sm btn-outline-warning ms-2" onclick="cleanBackups()">🧹 清理旧备份</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info small mb-3">
+            <strong>自动备份:</strong> 每天凌晨3:00自动备份 | 服务器启动时自动备份 | 保留最近7天
+          </div>
+          <div id="backup-status" class="mb-3"></div>
+          <div id="backup-list">
+            <div class="text-center text-muted py-2"><div class="spinner-border spinner-border-sm"></div> 加载中...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-header">💾 数据导入导出</div>
+        <div class="card-body">
+          <div class="d-flex gap-3">
+            <button class="btn btn-purple" onclick="exportData()">📤 导出所有数据 (JSON)</button>
+            <div>
+              <label class="btn btn-outline-primary mb-0">📥 导入数据 (JSON)<input type="file" accept=".json" onchange="importData(this)" hidden></label>
+            </div>
+          </div>
+          <div id="data-io-status" class="mt-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 防封规则 -->
+    <div class="tab-pane fade" id="tab-antiban">
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>🛡️ 防封 & 养号规则引擎</strong>
+          <div>
+            <span class="badge bg-info me-2" id="ab-version">v-</span>
+            <button class="btn btn-sm btn-outline-warning" onclick="abReset()">🔄 恢复默认</button>
+            <button class="btn btn-sm btn-success" onclick="abSave()">💾 保存修改</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="small text-muted">所有平台的养号阶段、发送限额、内容安全、时间控制规则集中管理。修改后立即生效，无需重启。</p>
+
+          <ul class="nav nav-pills mb-3 flex-wrap">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#ab-whatsapp">💬 WhatsApp</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#ab-linkedin">🔗 LinkedIn</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#ab-facebook">📘 Facebook</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#ab-tiktok">🎵 TikTok</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#ab-email">📧 Email</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#ab-instagram">📷 Instagram</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#ab-youtube">▶️ YouTube</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#ab-twitter">🐦 Twitter</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#ab-vk">🔵 VK</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#ab-reddit">🟠 Reddit</a></li>
+          </ul>
+
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="ab-whatsapp"><div id="ab-editor-whatsapp"></div></div>
+            <div class="tab-pane fade" id="ab-linkedin"><div id="ab-editor-linkedin"></div></div>
+            <div class="tab-pane fade" id="ab-facebook"><div id="ab-editor-facebook"></div></div>
+            <div class="tab-pane fade" id="ab-tiktok"><div id="ab-editor-tiktok"></div></div>
+            <div class="tab-pane fade" id="ab-email"><div id="ab-editor-email"></div></div>
+            <div class="tab-pane fade" id="ab-instagram"><div id="ab-editor-instagram"></div></div>
+            <div class="tab-pane fade" id="ab-youtube"><div id="ab-editor-youtube"></div></div>
+            <div class="tab-pane fade" id="ab-twitter"><div id="ab-editor-twitter"></div></div>
+            <div class="tab-pane fade" id="ab-vk"><div id="ab-editor-vk"></div></div>
+            <div class="tab-pane fade" id="ab-reddit"><div id="ab-editor-reddit"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 账号状态 -->
+      <div class="card mb-3">
+        <div class="card-header"><strong>📊 账号状态监控</strong></div>
+        <div class="card-body p-0">
+          <table class="table table-sm mb-0">
+            <thead><tr><th>平台</th><th>账号</th><th>账龄</th><th>阶段</th><th>今日操作</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody id="ab-accounts-table"><tr><td colspan="7" class="text-center text-muted py-3">暂无注册账号</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 注册新账号 -->
+      <div class="card">
+        <div class="card-header"><strong>➕ 注册新账号（开始养号计时）</strong></div>
+        <div class="card-body">
+          <div class="row g-2">
+            <div class="col-md-3">
+              <select class="form-select form-select-sm" id="ab-new-platform">
+                <option value="whatsapp">WhatsApp</option>
+                <option value="linkedin">LinkedIn</option>
+                <option value="facebook">Facebook</option>
+                <option value="tiktok">TikTok</option>
+                <option value="email">Email</option>
+              </select>
+            </div>
+            <div class="col-md-4"><input type="text" class="form-control form-control-sm" id="ab-new-id" placeholder="账号标识（如手机号/邮箱）"></div>
+            <div class="col-md-3"><input type="date" class="form-control form-control-sm" id="ab-new-date" placeholder="创建日期（可选）"></div>
+            <div class="col-md-2"><button class="btn btn-sm btn-purple w-100" onclick="abRegisterAccount()">注册</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 操作日志 -->
+    <div class="tab-pane fade" id="tab-audit">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>📜 操作日志</span>
+          <div>
+            <button class="btn btn-sm btn-outline-danger" onclick="cleanAuditLogs()">🧹 清理30天前</button>
+            <button class="btn btn-sm btn-purple" onclick="loadAuditLogs()">🔄 刷新</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- 筛选栏 -->
+          <div class="row g-2 mb-3">
+            <div class="col-md-3">
+              <select class="form-select form-select-sm" id="audit-action-filter" onchange="loadAuditLogs()">
+                <option value="">全部操作</option>
+                <option value="login">登录</option>
+                <option value="logout">登出</option>
+                <option value="created">新增</option>
+                <option value="updated">修改</option>
+                <option value="deleted">删除</option>
+                <option value="stage_change">阶段变更</option>
+                <option value="approved">审核通过</option>
+                <option value="rejected">驳回</option>
+                <option value="email_sent">邮件发送</option>
+                <option value="ai_call">AI调用</option>
+                <option value="backup">备份</option>
+                <option value="settings_change">设置变更</option>
+                <option value="password_change">密码修改</option>
+                <option value="clean_logs">日志清理</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select form-select-sm" id="audit-entity-filter" onchange="loadAuditLogs()">
+                <option value="">全部类型</option>
+                <option value="user">用户</option>
+                <option value="customer">客户</option>
+                <option value="deal">交易</option>
+                <option value="inquiry">询盘</option>
+                <option value="email">邮件</option>
+                <option value="product">产品</option>
+                <option value="settings">设置</option>
+                <option value="ai">AI</option>
+                <option value="system">系统</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <input type="date" class="form-control form-control-sm" id="audit-date-from" onchange="loadAuditLogs()" placeholder="开始日期">
+            </div>
+            <div class="col-md-3">
+              <input type="date" class="form-control form-control-sm" id="audit-date-to" onchange="loadAuditLogs()" placeholder="结束日期">
+            </div>
+          </div>
+
+          <!-- 日志统计 -->
+          <div id="audit-stats" class="mb-3 text-muted small"></div>
+
+          <!-- 日志列表 -->
+          <div class="table-responsive" style="max-height:500px;overflow-y:auto;">
+            <table class="table table-sm table-hover mb-0" id="audit-table">
+              <thead>
+                <tr>
+                  <th style="width:160px">时间</th>
+                  <th style="width:100px">操作</th>
+                  <th style="width:80px">类型</th>
+                  <th style="width:60px">ID</th>
+                  <th>详情</th>
+                </tr>
+              </thead>
+              <tbody id="audit-table-body">
+                <tr><td colspan="5" class="text-center text-muted py-3">加载中...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 分页 -->
+          <nav class="d-flex justify-content-between align-items-center mt-2" id="audit-pagination">
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模块管理 -->
+    <div class="tab-pane fade" id="tab-modules">
+      <!-- 出站代理配置 -->
+      <div class="card mb-3">
+        <div class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
+          <small class="fw-bold">🌐 出站代理（翻墙请求）</small>
+          <button class="btn btn-sm btn-light" onclick="detectProxy()">🔍 自动检测</button>
+        </div>
+        <div class="card-body py-2">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="proxy-enabled">
+                <label class="form-check-label" for="proxy-enabled">启用</label>
+              </div>
+            </div>
+            <div class="col">
+              <input type="text" class="form-control form-control-sm" id="proxy-url" placeholder="例如: http://127.0.0.1:2080 或 socks5h://127.0.0.1:1080">
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-sm btn-success" onclick="saveProxy()">💾 保存</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick="testProxy()">🧪 测试</button>
+            </div>
+          </div>
+          <div id="proxy-status" class="mt-1" style="font-size:0.8em"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="fw-bold">🔌 模块管理</span>
+          <button class="btn btn-sm btn-success" onclick="saveModuleSwitches()">💾 保存设置</button>
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+            <!-- 社媒发布 -->
+            <div class="col-md-4">
+              <div class="card border-primary">
+                <div class="card-header bg-primary text-white py-2">
+                  <small class="fw-bold">📱 社媒发布</small>
+                </div>
+                <div class="card-body p-2">
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-tiktok" data-module="tiktok"><label class="form-check-label" for="mod-tiktok">TikTok</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-facebook" data-module="facebook"><label class="form-check-label" for="mod-facebook">Facebook</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-instagram" data-module="instagram"><label class="form-check-label" for="mod-instagram">Instagram</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-youtube" data-module="youtube"><label class="form-check-label" for="mod-youtube">YouTube</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-twitter" data-module="twitter"><label class="form-check-label" for="mod-twitter">Twitter/X</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-pinterest" data-module="pinterest"><label class="form-check-label" for="mod-pinterest">Pinterest</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-threads" data-module="threads"><label class="form-check-label" for="mod-threads">Threads</label></div>
+                </div>
+              </div>
+            </div>
+            <!-- 采集获客 -->
+            <div class="col-md-4">
+              <div class="card border-success">
+                <div class="card-header bg-success text-white py-2">
+                  <small class="fw-bold">🔍 采集获客</small>
+                </div>
+                <div class="card-body p-2">
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-google_maps" data-module="google_maps"><label class="form-check-label" for="mod-google_maps">Google Maps</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-yandex_maps" data-module="yandex_maps"><label class="form-check-label" for="mod-yandex_maps">Yandex Maps</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-website" data-module="website"><label class="form-check-label" for="mod-website">Website采集</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-shopee" data-module="shopee"><label class="form-check-label" for="mod-shopee">Shopee</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-reddit" data-module="reddit"><label class="form-check-label" for="mod-reddit">Reddit</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-vk" data-module="vk"><label class="form-check-label" for="mod-vk">VK</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-outlook" data-module="outlook"><label class="form-check-label" for="mod-outlook">Outlook</label></div>
+                </div>
+              </div>
+            </div>
+            <!-- 私域触达 -->
+            <div class="col-md-4">
+              <div class="card border-warning">
+                <div class="card-header bg-warning text-dark py-2">
+                  <small class="fw-bold">💬 私域触达</small>
+                </div>
+                <div class="card-body p-2">
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-whatsapp" data-module="whatsapp"><label class="form-check-label" for="mod-whatsapp">WhatsApp</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-linkedin" data-module="linkedin"><label class="form-check-label" for="mod-linkedin">LinkedIn</label></div>
+                  <div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-line" data-module="line"><label class="form-check-label" for="mod-line">Line</label></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 功能引擎 -->
+          <div class="row mt-4">
+            <div class="col-md-6">
+              <div class="card border-info">
+                <div class="card-header bg-info text-white py-2">
+                  <small class="fw-bold">⚙️ 功能引擎</small>
+                </div>
+                <div class="card-body p-2">
+                  <div class="row">
+                    <div class="col-6"><div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-inbox_sync" data-module="inbox_sync"><label class="form-check-label" for="mod-inbox_sync">邮件同步</label></div></div>
+                    <div class="col-6"><div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-email_broadcast" data-module="email_broadcast"><label class="form-check-label" for="mod-email_broadcast">邮箱群发</label></div></div>
+                    <div class="col-6"><div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-workflow" data-module="workflow"><label class="form-check-label" for="mod-workflow">工作流引擎</label></div></div>
+                    <div class="col-6"><div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-live_restream" data-module="live_restream"><label class="form-check-label" for="mod-live_restream">直播转播</label></div></div>
+                    <div class="col-6"><div class="form-check form-switch mb-1"><input class="form-check-input module-switch" type="checkbox" id="mod-human_behavior" data-module="human_behavior"><label class="form-check-label" for="mod-human_behavior">拟人行为</label></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 基础设施 -->
+            <div class="col-md-6">
+              <div class="card border-secondary">
+                <div class="card-header bg-secondary text-white py-2">
+                  <small class="fw-bold">🏗️ 基础设施（常开）</small>
+                </div>
+                <div class="card-body p-2">
+                  <div class="row">
+                    <div class="col-6"><span class="badge bg-success me-1">🟢</span> 矩阵调度</div>
+                    <div class="col-6"><span class="badge bg-success me-1">🟢</span> 反封号</div>
+                    <div class="col-6"><span class="badge bg-success me-1">🟢</span> 线索评分</div>
+                    <div class="col-6"><span class="badge bg-success me-1">🟢</span> 告警</div>
+                    <div class="col-6"><span class="badge bg-success me-1">🟢</span> 紧急刹车</div>
+                  </div>
+                  <div class="mt-2"><small class="text-muted">这些是系统基础设施，始终保持运行</small></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 text-muted small">
+            💡 提示：关闭模块后，该模块的任务将被跳过但不会删除。重新开启后可继续执行。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TikTok API 配置 -->
+    <div class="tab-pane fade" id="tab-tiktok-api">
+      <div class="card">
+        <div class="card-header bg-dark text-white py-2 d-flex justify-content-between align-items-center">
+          <span class="fw-bold">🎵 TikTok Content Posting API 配置</span>
+          <button class="btn btn-sm btn-light" onclick="saveTikTokApi()">💾 保存</button>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info py-2 mb-3" style="font-size:0.85em">
+            <strong>使用说明：</strong>
+            1. 前往 <a href="https://developers.tiktok.com" target="_blank">developers.tiktok.com</a> 注册开发者账号<br>
+            2. 创建应用，申请 Content Posting API 权限（Direct Post + Inbox模式）<br>
+            3. 设置 Redirect URI 为下方的回调地址<br>
+            4. 将 Client Key 和 Client Secret 填入下方<br>
+            5. 到 社媒管理 → 账号管理 点击 "TikTok授权" 完成OAuth授权
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Client Key</label>
+              <input type="text" class="form-control" id="tk-client-key" placeholder="如 aw1234567890abcdef">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Client Secret</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="tk-client-secret" placeholder="填写后加密存储" autocomplete="new-password">
+                <button class="btn btn-outline-secondary" type="button" onclick="this.previousElementSibling.type = this.previousElementSibling.type==='password'?'text':'password'">👁️</button>
+              </div>
+              <small class="text-muted" id="tk-secret-masked"></small>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">OAuth 回调地址（Redirect URI）</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="tk-redirect-uri" value="http://localhost:3001/oauth/tiktok/callback">
+                <button class="btn btn-outline-secondary" onclick="navigator.clipboard.writeText(document.getElementById('tk-redirect-uri').value);toast('已复制')">📋 复制</button>
+              </div>
+              <small class="text-muted">⚠️ 如需外网回调，请用 ngrok 等工具映射，并将公网地址填入TikTok开发者后台</small>
+            </div>
+          </div>
+          <div id="tk-api-status" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YouTube API 配置 -->
+    <div class="tab-pane fade" id="tab-youtube-api">
+      <div class="card">
+        <div class="card-header bg-danger text-white py-2 d-flex justify-content-between align-items-center">
+          <span class="fw-bold">&#9654; YouTube Data API v3 配置</span>
+          <button class="btn btn-sm btn-light" onclick="saveYouTubeApi()">&#128190; 保存</button>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info py-2 mb-3" style="font-size:0.85em">
+            <strong>使用说明：</strong>
+            1. 前往 <a href="https://console.cloud.google.com" target="_blank">Google Cloud Console</a> 创建项目<br>
+            2. 启用 YouTube Data API v3<br>
+            3. 创建 OAuth 2.0 凭据（Web应用类型）<br>
+            4. 设置 Redirect URI 为下方的回调地址<br>
+            5. 将 Client ID 和 Client Secret 填入下方
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Client ID</label>
+              <input type="text" class="form-control" id="yt-client-id" placeholder="xxx.apps.googleusercontent.com">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Client Secret</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="yt-client-secret" placeholder="填写后加密存储" autocomplete="new-password">
+                <button class="btn btn-outline-secondary" type="button" onclick="this.previousElementSibling.type = this.previousElementSibling.type==='password'?'text':'password'">&#128065;</button>
+              </div>
+              <small class="text-muted" id="yt-secret-masked"></small>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">OAuth 回调地址</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="yt-redirect-uri" value="http://localhost:3001/oauth/youtube/callback" readonly>
+                <button class="btn btn-outline-secondary" onclick="navigator.clipboard.writeText(document.getElementById('yt-redirect-uri').value);toast('已复制')">&#128203; 复制</button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">API Key（可选，用于公开数据查询）</label>
+              <input type="text" class="form-control" id="yt-api-key" placeholder="AIzaSy...">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">默认频道ID（可选）</label>
+              <input type="text" class="form-control" id="yt-channel-id" placeholder="UC...">
+            </div>
+          </div>
+          <div id="yt-api-status" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instagram API 配置 -->
+    <div class="tab-pane fade" id="tab-instagram-api">
+      <div class="card">
+        <div class="card-header py-2 d-flex justify-content-between align-items-center" style="background:linear-gradient(45deg,#405DE6,#5851DB,#833AB4,#C13584,#E1306C,#FD1D1D);color:#fff">
+          <span class="fw-bold">&#128247; Instagram Graph API 配置</span>
+          <button class="btn btn-sm btn-light" onclick="saveInstagramApi()">&#128190; 保存</button>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info py-2 mb-3" style="font-size:0.85em">
+            <strong>使用说明：</strong>
+            1. 前往 <a href="https://developers.facebook.com" target="_blank">Meta for Developers</a> 创建应用<br>
+            2. 添加 Instagram Graph API 产品<br>
+            3. 获取 App ID 和 App Secret<br>
+            4. 设置 Redirect URI 为下方的回调地址<br>
+            5. 需要 Instagram Business/Creator 账号（关联Facebook Page）
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">App ID</label>
+              <input type="text" class="form-control" id="ig-app-id" placeholder="Meta App ID">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">App Secret</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="ig-app-secret" placeholder="填写后加密存储" autocomplete="new-password">
+                <button class="btn btn-outline-secondary" type="button" onclick="this.previousElementSibling.type = this.previousElementSibling.type==='password'?'text':'password'">&#128065;</button>
+              </div>
+              <small class="text-muted" id="ig-secret-masked"></small>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">OAuth 回调地址</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="ig-redirect-uri" value="http://localhost:3001/oauth/instagram/callback" readonly>
+                <button class="btn btn-outline-secondary" onclick="navigator.clipboard.writeText(document.getElementById('ig-redirect-uri').value);toast('已复制')">&#128203; 复制</button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Instagram Business Account ID（可选）</label>
+              <input type="text" class="form-control" id="ig-account-id" placeholder="授权后自动获取">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Facebook Page ID（可选）</label>
+              <input type="text" class="form-control" id="ig-page-id" placeholder="关联的Facebook页面ID">
+            </div>
+          </div>
+          <div id="ig-api-status" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 指纹浏览器配置 -->
+    <div class="tab-pane fade" id="tab-fingerprint">
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>🔒 指纹浏览器连接配置</span>
+          <button class="btn btn-sm btn-outline-primary" onclick="fpCheckAll()">🔗 检测全部连接</button>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3">配置外部指纹浏览器的本地API地址。启动对应软件后点击"检测连接"验证。</p>
+          
+          <!-- AdsPower -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">🛡️ AdsPower</h6>
+                <span id="fp-ads-status" class="badge bg-secondary">未检测</span>
+              </div>
+              <div class="row g-2 align-items-end">
+                <div class="col-md-5">
+                  <label class="form-label small">API 地址</label>
+                  <input type="text" class="form-control form-control-sm" id="fp-ads-url" value="http://local.adspower.net:50325" placeholder="http://local.adspower.net:50325">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small">状态</label>
+                  <div class="form-check form-switch mt-1">
+                    <input class="form-check-input" type="checkbox" id="fp-ads-enabled" checked>
+                    <label class="form-check-label small" for="fp-ads-enabled">启用</label>
+                  </div>
+                </div>
+                <div class="col-md-4 text-end">
+                  <button class="btn btn-sm btn-outline-primary" onclick="fpCheck('adspower')">检测连接</button>
+                  <button class="btn btn-sm btn-outline-secondary" onclick="fpViewProfiles('adspower')">查看配置</button>
+                </div>
+              </div>
+              <div id="fp-ads-profiles" class="mt-2" style="display:none"></div>
+            </div>
+          </div>
+
+          <!-- Multilogin -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">🔐 Multilogin</h6>
+                <span id="fp-ml-status" class="badge bg-secondary">未检测</span>
+              </div>
+              <div class="row g-2 align-items-end">
+                <div class="col-md-5">
+                  <label class="form-label small">API 地址</label>
+                  <input type="text" class="form-control form-control-sm" id="fp-ml-url" value="http://127.0.0.1:35000" placeholder="http://127.0.0.1:35000">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small">Token（可选）</label>
+                  <input type="text" class="form-control form-control-sm" id="fp-ml-token" placeholder="Bearer Token">
+                </div>
+                <div class="col-md-2">
+                  <div class="form-check form-switch mt-3">
+                    <input class="form-check-input" type="checkbox" id="fp-ml-enabled">
+                    <label class="form-check-label small" for="fp-ml-enabled">启用</label>
+                  </div>
+                </div>
+                <div class="col-md-2 text-end">
+                  <button class="btn btn-sm btn-outline-primary" onclick="fpCheck('multilogin')">检测</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GeeLark -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">📱 GeeLark（云手机）</h6>
+                <span id="fp-gl-status" class="badge bg-secondary">未检测</span>
+              </div>
+              <div class="row g-2 align-items-end">
+                <div class="col-md-5">
+                  <label class="form-label small">API 地址</label>
+                  <input type="text" class="form-control form-control-sm" id="fp-gl-url" value="http://127.0.0.1:43000" placeholder="http://127.0.0.1:43000">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small">API Key（可选）</label>
+                  <input type="text" class="form-control form-control-sm" id="fp-gl-apikey" placeholder="API Key">
+                </div>
+                <div class="col-md-2">
+                  <div class="form-check form-switch mt-3">
+                    <input class="form-check-input" type="checkbox" id="fp-gl-enabled">
+                    <label class="form-check-label small" for="fp-gl-enabled">启用</label>
+                  </div>
+                </div>
+                <div class="col-md-2 text-end">
+                  <button class="btn btn-sm btn-outline-primary" onclick="fpCheck('geelark')">检测</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-end">
+            <button class="btn btn-purple" onclick="fpSaveConfig()">💾 保存配置</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 安装信息 -->
+      <div class="card">
+        <div class="card-header">📍 安装位置</div>
+        <div class="card-body">
+          <table class="table table-sm mb-0">
+            <thead><tr><th>软件</th><th>安装路径</th><th>用途</th></tr></thead>
+            <tbody>
+              <tr><td>🛡️ AdsPower</td><td><code>D:\VIPB-Tools\AdsPower</code></td><td>主力 — 登录、发布等高风险操作</td></tr>
+              <tr><td>🔐 Multilogin</td><td><code>D:\Program Files (x86)\Multilogin</code></td><td>备用 — 高级指纹伪装</td></tr>
+              <tr><td>📱 GeeLark</td><td><code>D:\GeeLark</code></td><td>云手机 — TikTok移动端模拟</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent控制面板 -->
+    <div class="tab-pane fade" id="tab-agent">
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>🤖 AI销售Agent（小A分身）</span>
+          <span id="agent-status-badge" class="badge bg-secondary">加载中...</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label fw-bold">Agent状态</label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="agent-enabled-switch" onchange="toggleAgentModule(this.checked)">
+                  <label class="form-check-label" for="agent-enabled-switch">启用Agent自动巡检</label>
+                </div>
+                <small class="text-muted">关闭后主脑仍可读取知识库，只是不自动巡检和执行</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">巡检间隔</label>
+                <select class="form-select" id="agent-scan-interval" onchange="saveAgentScanInterval(this.value)">
+                  <option value="1">每1小时</option>
+                  <option value="2" selected>每2小时</option>
+                  <option value="4">每4小时</option>
+                  <option value="8">每8小时</option>
+                  <option value="12">每12小时</option>
+                  <option value="24">每24小时</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold">💰 成本控制</label>
+              <div class="mb-2">
+                <div class="d-flex justify-content-between"><small>单次巡检上限</small><small id="agent-cost-per-scan">$0.50</small></div>
+                <input type="number" class="form-control form-control-sm" id="agent-limit-per-scan" value="0.50" step="0.10" min="0.10" onchange="saveAgentCostLimits()">
+              </div>
+              <div class="mb-2">
+                <div class="d-flex justify-content-between"><small>每日上限</small><small id="agent-cost-daily-display">$0.00 / $2.00</small></div>
+                <input type="number" class="form-control form-control-sm" id="agent-limit-daily" value="2.00" step="0.50" min="0.50" onchange="saveAgentCostLimits()">
+                <div class="progress mt-1" style="height:6px"><div class="progress-bar bg-info" id="agent-cost-daily-bar" style="width:0%"></div></div>
+              </div>
+              <div class="mb-2">
+                <div class="d-flex justify-content-between"><small>每月上限</small><small id="agent-cost-monthly-display">$0.00 / $30.00</small></div>
+                <input type="number" class="form-control form-control-sm" id="agent-limit-monthly" value="30.00" step="5.00" min="5.00" onchange="saveAgentCostLimits()">
+                <div class="progress mt-1" style="height:6px"><div class="progress-bar bg-warning" id="agent-cost-monthly-bar" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <h6>🎚️ 自主权等级</h6>
+              <div class="list-group" id="autonomy-levels">
+                <label class="list-group-item list-group-item-action d-flex align-items-center">
+                  <input class="form-check-input me-2" type="radio" name="autonomy" value="1"> <strong>Lv1 仅通知</strong>&nbsp;— 只发通知，不做操作
+                </label>
+                <label class="list-group-item list-group-item-action d-flex align-items-center">
+                  <input class="form-check-input me-2" type="radio" name="autonomy" value="2"> <strong>Lv2 草稿模式</strong>&nbsp;— 生成草稿，你审核后发
+                </label>
+                <label class="list-group-item list-group-item-action d-flex align-items-center">
+                  <input class="form-check-input me-2" type="radio" name="autonomy" value="3"> <strong>Lv3 低风险自动</strong>&nbsp;— 老客户自动发，新客户审核
+                </label>
+                <label class="list-group-item list-group-item-action d-flex align-items-center">
+                  <input class="form-check-input me-2" type="radio" name="autonomy" value="4"> <strong>Lv4 高风险自动</strong>&nbsp;— 新客户也自动，询盘需审核
+                </label>
+                <label class="list-group-item list-group-item-action d-flex align-items-center">
+                  <input class="form-check-input me-2" type="radio" name="autonomy" value="5"> <strong>Lv5 完全自主</strong>&nbsp;— 全部自动执行
+                </label>
+              </div>
+              <button class="btn btn-sm btn-purple mt-2" onclick="saveAutonomyLevel()">💾 保存等级</button>
+            </div>
+            <div class="col-md-6">
+              <h6>📋 升级申请</h6>
+              <div id="upgrade-requests-list" style="max-height:200px;overflow-y:auto">
+                <p class="text-muted">暂无申请</p>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <h6>🔍 巡检规则</h6>
+              <div class="mb-2"><label class="form-label small">新线索未触达阈值（小时）</label><input type="number" class="form-control form-control-sm" id="rule-first-touch" value="24" min="1"></div>
+              <div class="mb-2"><label class="form-label small">跟进间隔阈值（天）</label><input type="number" class="form-control form-control-sm" id="rule-follow-up" value="3" min="1"></div>
+              <div class="mb-2"><label class="form-label small">询盘未回复阈值（小时）</label><input type="number" class="form-control form-control-sm" id="rule-inquiry" value="2" min="1"></div>
+              <div class="mb-2"><label class="form-label small">热线索跟进阈值（小时）</label><input type="number" class="form-control form-control-sm" id="rule-hot-lead" value="12" min="1"></div>
+              <div class="mb-2"><label class="form-label small">每次巡检最大操作数</label><input type="number" class="form-control form-control-sm" id="rule-max-actions" value="10" min="1" max="50"></div>
+              <button class="btn btn-sm btn-purple" onclick="saveScanRules()">💾 保存规则</button>
+              <button class="btn btn-sm btn-outline-primary ms-2" onclick="triggerManualScan()">🔍 立即巡检</button>
+            </div>
+            <div class="col-md-6">
+              <h6>📊 最近巡检结果</h6>
+              <div id="scan-results-list" style="max-height:250px;overflow-y:auto">
+                <p class="text-muted">暂无结果</p>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-md-12">
+              <h6>📊 效果看板</h6>
+              <div class="row" id="agent-dashboard">
+                <div class="col-md-2 mb-2"><div class="card text-center p-2"><div class="small text-muted">巡检次数</div><div class="h5 mb-0" id="dash-scans">-</div></div></div>
+                <div class="col-md-2 mb-2"><div class="card text-center p-2"><div class="small text-muted">发现机会</div><div class="h5 mb-0" id="dash-opportunities">-</div></div></div>
+                <div class="col-md-2 mb-2"><div class="card text-center p-2"><div class="small text-muted">已执行</div><div class="h5 mb-0 text-success" id="dash-executed">-</div></div></div>
+                <div class="col-md-2 mb-2"><div class="card text-center p-2"><div class="small text-muted">草稿待审</div><div class="h5 mb-0 text-warning" id="dash-drafts">-</div></div></div>
+                <div class="col-md-2 mb-2"><div class="card text-center p-2"><div class="small text-muted">经验总数</div><div class="h5 mb-0" id="dash-experiences">-</div></div></div>
+                <div class="col-md-2 mb-2"><div class="card text-center p-2"><div class="small text-muted">自主权</div><div class="h5 mb-0" id="dash-autonomy">-</div></div></div>
+              </div>
+              <div class="row mt-1">
+                <div class="col-md-6"><small class="text-muted">Agent邮件回复率: <strong id="dash-agent-rate">N/A</strong></small></div>
+                <div class="col-md-6"><small class="text-muted">手动邮件回复率: <strong id="dash-manual-rate">N/A</strong></small></div>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <h6>📝 Agent草稿待审核 <span class="badge bg-warning" id="draft-count">0</span></h6>
+          <div id="agent-drafts-list" style="max-height:400px;overflow-y:auto">
+            <p class="text-muted">暂无草稿</p>
+          </div>
+          <!-- 草稿编辑模态框 -->
+          <div class="modal fade" id="draftEditModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">✏️ 编辑草稿</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+              <input type="hidden" id="draft-edit-id">
+              <div class="mb-2"><label class="form-label small text-muted">收件人</label><input type="text" class="form-control form-control-sm" id="draft-edit-to" readonly></div>
+              <div class="mb-2"><label class="form-label small text-muted">主题</label><input type="text" class="form-control" id="draft-edit-subject"></div>
+              <div class="mb-2"><label class="form-label small text-muted">正文</label><textarea class="form-control" id="draft-edit-body" rows="12" style="font-size:0.9rem"></textarea></div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+              <button class="btn btn-primary" onclick="saveDraft()">💾 保存</button>
+              <button class="btn btn-success" onclick="saveThenSendDraft()">✅ 保存并发送</button>
+            </div>
+          </div></div></div>
+          <hr>
+          <h6>📊 最近操作日志</h6>
+          <div id="agent-action-log" style="max-height:300px;overflow-y:auto">
+            <p class="text-muted">加载中...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 知识库管理 -->
+    <div class="tab-pane fade" id="tab-knowledge">
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>🧠 知识库管理</span>
+          <div>
+            <select class="form-select form-select-sm d-inline-block" style="width:auto" id="kb-filter-category" onchange="loadExperiences()">
+              <option value="">全部分类</option>
+              <option value="email">📧 邮件</option>
+              <option value="whatsapp">💬 WhatsApp</option>
+              <option value="linkedin">💼 LinkedIn</option>
+              <option value="tiktok">🎵 TikTok</option>
+              <option value="facebook">📘 Facebook</option>
+              <option value="cross_channel">🔄 跨渠道</option>
+              <option value="strategy">📋 策略</option>
+            </select>
+            <select class="form-select form-select-sm d-inline-block" style="width:auto" id="kb-filter-sentiment" onchange="loadExperiences()">
+              <option value="">全部结果</option>
+              <option value="positive">✅ 正面</option>
+              <option value="neutral">➖ 中性</option>
+              <option value="negative">❌ 负面</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="nav nav-pills mb-3">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#kb-experiences" onclick="loadExperiences()">📝 动态经验 <span class="badge bg-secondary" id="kb-exp-count">0</span></a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#kb-strategies" onclick="loadStrategies()">📋 策略库</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#kb-static">📚 静态知识</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="kb-experiences">
+              <div id="kb-experiences-list" style="max-height:500px;overflow-y:auto">
+                <p class="text-muted">点击加载...</p>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="kb-strategies">
+              <div id="kb-strategies-list">
+                <p class="text-muted">点击加载...</p>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="kb-static">
+              <div id="kb-static-list">
+                <p class="text-muted">点击加载...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="modal fade" id="addEmailAccountModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" id="addEmailModalContent">
+  <div class="modal-header"><h5 class="modal-title" id="addEmailModalTitle">➕ 添加邮箱账号</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body" id="addEmailModalBody">
+    <form id="email-account-form">
+      <div class="mb-3"><label class="form-label">邮箱地址</label><input type="email" class="form-control" name="email" required placeholder="输入邮箱后自动识别服务商" oninput="autoDetectEmailProvider(this.value)"></div>
+      <div id="email-preset-hint" class="mb-3" style="display:none"></div>
+      
+      <div class="mb-3">
+        <label class="form-label">认证方式</label>
+        <select class="form-select" name="auth_type" onchange="toggleAuthType(this.value)">
+          <option value="smtp">🔑 SMTP 密码/授权码</option>
+          <option value="gmail_api">🔗 Gmail API (OAuth)</option>
+        </select>
+      </div>
+
+      <div id="smtp-config-section">
+        <div class="mb-3"><label class="form-label">显示名称</label><input type="text" class="form-control" name="display_name" placeholder="可选，发件人显示名"></div>
+        <div class="row mb-3"><div class="col-8"><label class="form-label">SMTP主机</label><input type="text" class="form-control" name="smtp_host" placeholder="自动填充"></div><div class="col-4"><label class="form-label">端口</label><input type="number" class="form-control" name="smtp_port" value="587"></div></div>
+        <div class="row mb-3"><div class="col-8"><label class="form-label">IMAP主机</label><input type="text" class="form-control" name="imap_host" placeholder="自动填充"></div><div class="col-4"><label class="form-label">端口</label><input type="number" class="form-control" name="imap_port" value="993"></div></div>
+        <div class="row mb-3"><div class="col-6"><label class="form-label">SMTP用户名</label><input type="text" class="form-control" name="smtp_user" placeholder="通常与邮箱地址相同"></div><div class="col-6"><label class="form-label">密码/授权码</label><input type="password" class="form-control" name="smtp_pass" placeholder="SMTP密码或授权码"></div></div>
+      </div>
+
+      <div id="gmail-api-config-section" style="display:none">
+        <div class="alert alert-info small">
+          <strong>Gmail API 配置步骤：</strong><br>
+          1. 前往 <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a><br>
+          2. 创建 OAuth 2.0 客户端 ID（Web应用）<br>
+          3. 添加重定向URI: <code>http://localhost:3001/api/email-accounts/gmail-callback</code><br>
+          4. 复制 Client ID 和 Client Secret 填入下方
+        </div>
+        <div class="mb-3"><label class="form-label">Client ID</label><input type="text" class="form-control" name="gmail_client_id" placeholder="xxx.apps.googleusercontent.com"></div>
+        <div class="mb-3"><label class="form-label">Client Secret</label><input type="password" class="form-control" name="gmail_client_secret" placeholder="GOCSPX-xxx"></div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer" id="addEmailModalFooter"><button class="btn btn-purple" onclick="addEmailAccount()">保存</button></div>
+</div></div></div>
+
+<!-- 批量添加邮箱Modal -->
+<div class="modal fade" id="batchAddEmailModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">📋 批量添加邮箱</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="alert alert-info small">
+      <strong>支持格式：</strong><br>
+      1. 每行一个邮箱：<code>user@example.com</code><br>
+      2. 邮箱|密码：<code>user@example.com|password123</code><br>
+      3. 邮箱|密码|SMTP主机|端口：<code>user@example.com|pass|smtp.example.com|587</code><br>
+      4. JSON格式：<code>{"email":"user@example.com","smtp_pass":"pass",...}</code>
+    </div>
+    <textarea class="form-control mb-3" id="batch-email-input" rows="10" placeholder="粘贴邮箱数据..."></textarea>
+    <div id="batch-parse-result"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-outline-secondary" onclick="parseBatchEmails()">🔍 解析预览</button>
+    <button class="btn btn-purple" onclick="submitBatchEmails()">💾 批量添加</button>
+  </div>
+</div></div></div>
+
+<script>
+let parsedEmails = [];
+
+async function setDefaultEmailAccount(accountId) {
+  try {
+    const res = await api('/api/settings/default_email_account_id', 'PUT', { value: accountId });
+    if (res.success) toast('默认发件账号已更新', 'success');
+    else toast('更新失败: ' + res.error, 'danger');
+  } catch(e) { toast('更新失败', 'danger'); }
+}
+
+// 添加邮箱模态框关闭时：如果已经添加成功，刷新页面
+document.getElementById('addEmailAccountModal').addEventListener('hidden.bs.modal', function() {
+  if (this.dataset.added === 'true') {
+    this.dataset.added = '';
+    reloadKeepTab();
+  }
+});
+
+let _emailDetectTimer = null;
+function toggleAuthType(type) {
+  document.getElementById('smtp-config-section').style.display = type === 'smtp' ? '' : 'none';
+  document.getElementById('gmail-api-config-section').style.display = type === 'gmail_api' ? '' : 'none';
+  
+  // 如果切换到Gmail API，清空SMTP密码，反之清空Gmail Secret
+  if (type === 'gmail_api') {
+    document.querySelector('#smtp-config-section input[name="smtp_pass"]').value = '';
+  } else {
+    document.querySelector('#gmail-api-config-section input[name="gmail_client_secret"]').value = '';
+  }
+}
+
+function autoDetectEmailProvider(email) {
+  clearTimeout(_emailDetectTimer);
+  _emailDetectTimer = setTimeout(async () => {
+    const hint = document.getElementById('email-preset-hint');
+    if (!email || !email.includes('@')) { hint.style.display = 'none'; return; }
+    try {
+      const res = await api('/api/email-presets?email=' + encodeURIComponent(email), 'GET');
+      if (!res.success || !res.data) return;
+      const d = res.data;
+      const form = document.getElementById('email-account-form');
+      if (d.matched) {
+        form.smtp_host.value = d.smtp_host;
+        form.smtp_port.value = d.smtp_port;
+        if (d.imap_host) form.imap_host.value = d.imap_host;
+        if (d.imap_port) form.imap_port.value = d.imap_port;
+        if (!form.smtp_user.value) form.smtp_user.value = email;
+        hint.innerHTML = '<div class="alert alert-success small mb-0 py-1">✅ 已识别 <b>' + d.domain + '</b>，配置已自动填充' + (d.note ? '<br>💡 ' + d.note : '') + (d.steps ? '<br>📋 <b>操作步骤：</b>' + d.steps : '') + (d.guide_url ? '<br><a href="' + d.guide_url + '" target="_blank">🔗 前往设置页面</a>' : '') + '</div>';
+        hint.style.display = 'block';
+      } else {
+        hint.innerHTML = '<div class="alert alert-warning small mb-0 py-1">⚠️ 未识别 <b>' + d.domain + '</b>，请手动填写SMTP/IMAP配置</div>';
+        hint.style.display = 'block';
+      }
+    } catch(e) { console.error('preset detect error', e); }
+  }, 500);
+}
+
+async function addEmailAccount() {
+  const form = document.getElementById('email-account-form');
+  const data = Object.fromEntries(new FormData(form));
+  if (!data.email) { toast('请输入邮箱地址', 'warning'); return; }
+  data.smtp_port = parseInt(data.smtp_port) || 587;
+  data.imap_port = parseInt(data.imap_port) || 993;
+  if (!data.smtp_user && data.email) data.smtp_user = data.email;
+  
+  // 先查预设（在POST之前就查好，避免时序问题）
+  let presetData = null;
+  if (data.email.includes('@')) {
+    try {
+      const presetRes = await api('/api/email-presets?email=' + encodeURIComponent(data.email), 'GET');
+      if (presetRes.success && presetRes.data && presetRes.data.guide_url) {
+        presetData = presetRes.data;
+      }
+    } catch(e) {}
+  }
+  
+  const res = await api('/api/email-accounts', 'POST', data);
+  if (!res.success) {
+    toast(res.error || '添加失败', 'danger');
+    return;
+  }
+  
+  // 添加成功 - 替换模态框内容为结果页
+  document.getElementById('addEmailAccountModal').dataset.added = 'true';
+  var resultHtml = '<div class="alert alert-success"><b>✅ 邮箱添加成功</b><br>' + data.email + '</div>';
+  
+  if (data.auth_type === 'gmail_api') {
+    // Gmail API 模式 - 引导授权
+    resultHtml += '<div class="alert alert-warning"><b>⚠️ 下一步：完成 Gmail OAuth 授权</b><br><small>点击下方按钮，在弹出的Google页面中登录并授权。</small></div>';
+    resultHtml += '<div class="d-grid"><button class="btn btn-purple" onclick="startGmailAuth(' + res.id + ')">🔐 开始 Gmail 授权</button></div>';
+  } else if (presetData) {
+    resultHtml += '<div class="alert alert-warning"><b>⚠️ 下一步：获取授权码</b><br><small>' + (presetData.note || '') + '</small></div>';
+    if (presetData.steps) {
+      resultHtml += '<div class="alert alert-info small"><b>📋 操作步骤：</b><br>' + presetData.steps + '</div>';
+    }
+    resultHtml += '<div class="d-grid"><a href="' + presetData.guide_url + '" target="_blank" class="btn btn-purple">🔗 前往获取授权码</a></div>';
+    resultHtml += '<div class="mt-2 small text-muted">获取后在邮箱列表点编辑，填入授权码，再测试连接。</div>';
+  }
+  document.getElementById('addEmailModalTitle').innerText = '✅ 添加成功';
+  document.getElementById('addEmailModalBody').innerHTML = resultHtml;
+  document.getElementById('addEmailModalFooter').innerHTML = '<button class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>';
+}
+
+function parseBatchEmails() {
+  const input = document.getElementById('batch-email-input').value.trim();
+  if (!input) { toast('请输入邮箱数据', 'warning'); return; }
+  
+  const lines = input.split('\n').filter(l => l.trim());
+  parsedEmails = [];
+  const duplicates = [];
+  const existing = <%- JSON.stringify(accounts.map(a => a.email)) %>;
+  const needPresetFill = [];
+  
+  lines.forEach(line => {
+    line = line.trim();
+    let email = null;
+    
+    // 尝试JSON格式
+    if (line.startsWith('{')) {
+      try {
+        const obj = JSON.parse(line);
+        if (obj.email) email = obj;
+      } catch {}
+    }
+    
+    // 尝试分隔符格式
+    if (!email) {
+      const parts = line.split(/[|,\t]/);
+      if (parts.length >= 1 && parts[0].includes('@')) {
+        email = {
+          email: parts[0].trim(),
+          smtp_pass: parts[1]?.trim() || '',
+          smtp_host: parts[2]?.trim() || '',
+          smtp_port: parseInt(parts[3]) || 587,
+          smtp_user: parts[0].trim()
+        };
+        // 没填SMTP主机的，标记需要自动填充
+        if (!email.smtp_host) needPresetFill.push(email);
+      }
+    }
+    
+    if (email) {
+      if (existing.includes(email.email) || parsedEmails.find(e => e.email === email.email)) {
+        duplicates.push(email.email);
+      } else {
+        parsedEmails.push(email);
+      }
+    }
+  });
+  
+  // 自动填充预设配置
+  (async () => {
+    let filled = 0;
+    for (const em of needPresetFill) {
+      try {
+        const res = await api('/api/email-presets?email=' + encodeURIComponent(em.email), 'GET');
+        if (res.success && res.data && res.data.matched) {
+          em.smtp_host = res.data.smtp_host;
+          em.smtp_port = res.data.smtp_port;
+          if (res.data.imap_host) em.imap_host = res.data.imap_host;
+          if (res.data.imap_port) em.imap_port = res.data.imap_port;
+          filled++;
+        }
+      } catch(e) {}
+    }
+    
+    const result = document.getElementById('batch-parse-result');
+    result.innerHTML = `
+      <div class="alert alert-success">✅ 解析成功 ${parsedEmails.length} 个邮箱${filled ? '，自动填充 ' + filled + ' 个SMTP配置' : ''}</div>
+      ${duplicates.length ? `<div class="alert alert-warning">⚠️ 跳过重复: ${duplicates.join(', ')}</div>` : ''}
+      <div class="table-container" style="max-height:200px;overflow-y:auto">
+        <table class="table table-sm">
+          <thead><tr><th>邮箱</th><th>SMTP主机</th><th>端口</th></tr></thead>
+          <tbody>
+            ${parsedEmails.map(e => `<tr><td>${e.email}</td><td>${e.smtp_host||'<span class="text-danger">未识别</span>'}</td><td>${e.smtp_port||587}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  })();
+}
+
+async function submitBatchEmails() {
+  if (!parsedEmails.length) { toast('请先解析邮箱数据', 'warning'); return; }
+  
+  const result = document.getElementById('batch-parse-result');
+  result.innerHTML = '<div class="spinner-border spinner-border-sm"></div> 批量添加中...';
+  
+  const res = await api('/api/marketing/accounts/batch', 'POST', { accounts: parsedEmails });
+  
+  if (res.success) {
+    toast(`成功添加 ${res.added} 个邮箱`);
+    // 收集所有需要授权的邮箱，按服务商去重
+    const guideMap = {};
+    for (const em of parsedEmails) {
+      if (!em.email || !em.email.includes('@')) continue;
+      try {
+        const presetRes = await api('/api/email-presets?email=' + encodeURIComponent(em.email), 'GET');
+        if (presetRes.success && presetRes.data && presetRes.data.matched && presetRes.data.guide_url) {
+          if (!guideMap[presetRes.data.domain]) {
+            guideMap[presetRes.data.domain] = { url: presetRes.data.guide_url, note: presetRes.data.note, emails: [] };
+          }
+          guideMap[presetRes.data.domain].emails.push(em.email);
+        }
+      } catch(e) {}
+    }
+    const domains = Object.keys(guideMap);
+    if (domains.length > 0) {
+      let html = '<div class="alert alert-info mt-3"><b>📋 以下邮箱需要获取授权码/应用密码：</b><br><br>';
+      domains.forEach(d => {
+        const g = guideMap[d];
+        html += '<div class="mb-2"><b>' + d + '</b>（' + g.emails.length + '个邮箱）<br>';
+        html += '<small class="text-muted">💡 ' + (g.note || '') + '</small><br>';
+        html += '<a href="' + g.url + '" target="_blank" class="btn btn-sm btn-outline-primary mt-1" onclick="this.classList.add(\'disabled\')">🔗 打开' + d + '授权页面</a></div>';
+      });
+      html += '<hr><small>获取授权码后，在邮箱列表中编辑对应邮箱，填入授权码并测试连接。</small></div>';
+      result.innerHTML = `<div class="alert alert-success">✅ 成功添加 ${res.added} 个邮箱</div>` + html;
+    } else {
+      setTimeout(() => reloadKeepTab(), 1000);
+    }
+  } else {
+    result.innerHTML = `<div class="alert alert-danger">${res.error}</div>`;
+  }
+}
+
+function toggleSelectAll(checkbox) {
+  document.querySelectorAll('.email-checkbox').forEach(cb => cb.checked = checkbox.checked);
+  updateBatchDeleteBtn();
+}
+
+function updateBatchDeleteBtn() {
+  const checked = document.querySelectorAll('.email-checkbox:checked').length;
+  const btn = document.getElementById('btn-batch-delete');
+  if (checked > 0) {
+    btn.style.display = 'inline-block';
+    btn.textContent = `🗑️ 批量删除 (${checked})`;
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+async function deleteEmail(id) {
+  if (!confirm('确定删除此邮箱？')) return;
+  const res = await api(`/api/marketing/accounts/${id}`, 'DELETE');
+  if (res.success) { toast('已删除'); reloadKeepTab(); }
+}
+
+async function batchDeleteEmails() {
+  const ids = Array.from(document.querySelectorAll('.email-checkbox:checked')).map(cb => cb.value);
+  if (!ids.length) return;
+  if (!confirm(`确定删除 ${ids.length} 个邮箱？`)) return;
+  
+  const res = await api('/api/marketing/accounts/batch-delete', 'POST', { ids });
+  if (res.success) { toast(`已删除 ${res.deleted} 个邮箱`); reloadKeepTab(); }
+}
+
+async function exportData() {
+  const status = document.getElementById('data-io-status');
+  status.innerHTML = '<div class="spinner-border spinner-border-sm"></div> 导出中...';
+  const res = await api('/api/settings/export');
+  const blob = new Blob([JSON.stringify(res, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `vipb-export-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  status.innerHTML = '<span class="text-success">✅ 导出完成</span>';
+}
+
+async function importData(input) {
+  const file = input.files[0]; if (!file) return;
+  const status = document.getElementById('data-io-status');
+  status.innerHTML = '<div class="spinner-border spinner-border-sm"></div> 导入中...';
+  const text = await file.text();
+  const data = JSON.parse(text);
+  const res = await api('/api/settings/import', 'POST', data);
+  status.innerHTML = res.success ? '<span class="text-success">✅ 导入完成</span>' : `<span class="text-danger">${res.error}</span>`;
+}
+
+async function changePassword() {
+  const form = document.getElementById('change-password-form');
+  const data = Object.fromEntries(new FormData(form));
+  
+  if (data.newPassword !== data.confirmPassword) {
+    toast('两次输入的新密码不一致', 'danger');
+    return;
+  }
+  
+  if (data.newPassword.length < 6) {
+    toast('新密码至少6个字符', 'danger');
+    return;
+  }
+  
+  const res = await api('/api/settings/change-password', 'POST', {
+    currentPassword: data.currentPassword,
+    newPassword: data.newPassword
+  });
+  
+  if (res.success) {
+    toast('密码修改成功，请重新登录');
+    setTimeout(() => window.location.href = '/logout', 1500);
+  } else {
+    toast(res.error || '密码修改失败', 'danger');
+  }
+}
+
+// ========== 备份管理 ==========
+async function loadBackups() {
+  const list = document.getElementById('backup-list');
+  if (!list) return;
+  try {
+    const res = await api('/api/settings/backups');
+    if (!res.success || !res.backups.length) {
+      list.innerHTML = '<p class="text-muted text-center py-2">暂无备份</p>';
+      return;
+    }
+    list.innerHTML = `
+      <table class="table table-hover table-sm mb-0">
+        <thead><tr><th>文件名</th><th>大小</th><th>创建时间</th><th>操作</th></tr></thead>
+        <tbody>
+          ${res.backups.map(b => `
+            <tr>
+              <td><small>${b.filename}</small></td>
+              <td>${b.sizeFormatted}</td>
+              <td><small>${b.createdFormatted}</small></td>
+              <td>
+                <a href="/api/settings/backups/${b.filename}" class="btn btn-sm btn-outline-primary" title="下载">📥</a>
+                <button class="btn btn-sm btn-outline-danger ms-1" onclick="deleteBackupFile('${b.filename}')" title="删除">🗑️</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch(e) {
+    list.innerHTML = '<p class="text-danger">加载失败</p>';
+  }
+}
+
+async function manualBackup() {
+  const btn = document.getElementById('btn-backup');
+  const status = document.getElementById('backup-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ 备份中...';
+  status.innerHTML = '<div class="spinner-border spinner-border-sm"></div> 正在备份...';
+  
+  const res = await api('/api/settings/backup', 'POST');
+  if (res.success) {
+    status.innerHTML = `<div class="alert alert-success small py-1">✅ 备份成功: ${res.filename} (${(res.size/1024/1024).toFixed(2)} MB)</div>`;
+    toast('数据库备份成功');
+    loadBackups();
+  } else {
+    status.innerHTML = `<div class="alert alert-danger small py-1">❌ ${res.error}</div>`;
+  }
+  btn.disabled = false;
+  btn.textContent = '💾 立即备份';
+}
+
+async function deleteBackupFile(filename) {
+  if (!confirm('确定删除备份 ' + filename + '？')) return;
+  const res = await api('/api/settings/backups/' + filename, 'DELETE');
+  if (res.success) { toast('备份已删除'); loadBackups(); }
+  else { toast(res.error || '删除失败', 'danger'); }
+}
+
+async function cleanBackups() {
+  if (!confirm('将清理7天前的所有备份，确定？')) return;
+  const res = await api('/api/settings/backups/clean', 'POST', { days: 7 });
+  if (res.success) { toast(`清理完成，删除了${res.deleted}个旧备份`); loadBackups(); }
+}
+
+// 页面加载时获取备份列表
+document.addEventListener('DOMContentLoaded', () => {
+  loadBackups();
+  loadAuditLogs();
+  
+  // 处理 Gmail OAuth 回调状态
+  const urlParams = new URLSearchParams(window.location.search);
+  const authStatus = urlParams.get('auth_status');
+  if (authStatus === 'success') {
+    toast('✅ Gmail OAuth 授权成功！', 'success');
+    // 清除URL参数
+    window.history.replaceState({}, '', '/settings#tab-email-config');
+  } else if (authStatus === 'failed') {
+    const error = urlParams.get('error') || '未知错误';
+    toast('❌ Gmail OAuth 授权失败: ' + error, 'danger');
+    window.history.replaceState({}, '', '/settings#tab-email-config');
+  }
+});
+
+// ========== 审计日志 ==========
+let auditCurrentPage = 1;
+
+async function loadAuditLogs(page) {
+  if (page) auditCurrentPage = page;
+  
+  const action = document.getElementById('audit-action-filter').value;
+  const entityType = document.getElementById('audit-entity-filter').value;
+  const dateFrom = document.getElementById('audit-date-from').value;
+  const dateTo = document.getElementById('audit-date-to').value;
+  
+  const params = new URLSearchParams({
+    page: auditCurrentPage,
+    limit: 50
+  });
+  if (action) params.set('action', action);
+  if (entityType) params.set('entityType', entityType);
+  if (dateFrom) params.set('dateFrom', dateFrom);
+  if (dateTo) params.set('dateTo', dateTo);
+  
+  const body = document.getElementById('audit-table-body');
+  body.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-2"><div class="spinner-border spinner-border-sm"></div> 加载中...</td></tr>';
+  
+  try {
+    const res = await api(`/api/settings/audit-logs?${params}`);
+    const logs = res.data || [];
+    const pg = res.pagination || {};
+    
+    document.getElementById('audit-stats').textContent = `共 ${pg.total || 0} 条记录，第 ${pg.page || 1}/${pg.totalPages || 1} 页`;
+    
+    if (!logs.length) {
+      body.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">暂无日志记录</td></tr>';
+    } else {
+      const actionIcons = {
+        login: '🔑', logout: '🚪', created: '✨', updated: '📝', deleted: '🗑️',
+        stage_change: '🔄', approved: '✅', rejected: '❌',
+        email_sent: '📧', ai_call: '🤖', backup: '💾',
+        settings_change: '⚙️', password_change: '🔒', clean_logs: '🧹'
+      };
+      const entityIcons = {
+        user: '👤', customer: '🏢', deal: '💰', inquiry: '📋',
+        email: '📧', product: '📦', settings: '⚙️', ai: '🤖', system: '🖥️'
+      };
+      
+      body.innerHTML = logs.map(log => {
+        const actionIcon = actionIcons[log.action] || '📄';
+        const entityIcon = entityIcons[log.entity_type] || '📄';
+        let details = '';
+        try {
+          const d = JSON.parse(log.details || '{}');
+          const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+          details = Object.entries(d).map(([k,v]) => `<span class="badge bg-light text-dark me-1">${esc(k)}: ${esc(typeof v === 'object' ? JSON.stringify(v) : v)}</span>`).join('');
+        } catch { details = (log.details || '').replace(/</g,'&lt;'); }
+        
+        return `<tr>
+          <td><small>${log.created_at || '-'}</small></td>
+          <td>${actionIcon} <small>${log.action || '-'}</small></td>
+          <td>${entityIcon} <small>${log.entity_type || '-'}</small></td>
+          <td><small>${log.entity_id || '-'}</small></td>
+          <td><div style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${details}</div></td>
+        </tr>`;
+      }).join('');
+    }
+    
+    // 分页
+    const paginationEl = document.getElementById('audit-pagination');
+    if (pg.totalPages > 1) {
+      paginationEl.innerHTML = `
+        <small class="text-muted">第 ${pg.page}/${pg.totalPages} 页</small>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item ${pg.page <= 1 ? 'disabled' : ''}"><a class="page-link" href="#" onclick="loadAuditLogs(${pg.page - 1});return false;">‹</a></li>
+          <li class="page-item active"><a class="page-link">${pg.page}</a></li>
+          <li class="page-item ${pg.page >= pg.totalPages ? 'disabled' : ''}"><a class="page-link" href="#" onclick="loadAuditLogs(${pg.page + 1});return false;">›</a></li>
+        </ul>
+      `;
+    } else {
+      paginationEl.innerHTML = '';
+    }
+  } catch(e) {
+    body.innerHTML = '<tr><td colspan="5" class="text-danger text-center py-2">加载失败</td></tr>';
+  }
+}
+
+async function cleanAuditLogs() {
+  const days = prompt('清理多少天前的日志？', '30');
+  if (!days) return;
+  
+  const res = await api('/api/settings/audit-logs/clean', 'POST', { days: parseInt(days) });
+  if (res.success) {
+    toast(`已清理 ${res.deleted} 条旧日志`);
+    loadAuditLogs(1);
+  } else {
+    toast(res.error || '清理失败', 'danger');
+  }
+}
+
+// SMTP连接测试
+async function testSmtpConnection(accountId) {
+  toast('正在测试连接...', 'info');
+  const res = await api(`/api/email-accounts/${accountId}/test`, 'POST');
+  if (res.success) {
+    toast('✅ ' + (res.message || '连接成功！'));
+  } else {
+    toast('❌ 连接失败: ' + (res.error || '未知错误'), 'danger');
+  }
+}
+
+async function startGmailAuth(accountId) {
+  toast('正在获取授权链接...', 'info');
+  const res = await api(`/api/email-accounts/${accountId}/gmail-auth-url`, 'GET');
+  if (res.success && res.url) {
+    window.open(res.url, '_blank');
+    toast('已打开Google授权页面，请在新窗口中完成授权', 'info');
+  } else {
+    toast('❌ 获取授权链接失败: ' + (res.error || '未知错误'), 'danger');
+  }
+}
+
+// ========== 防封规则管理 ==========
+let abRulesCache = null;
+
+document.addEventListener('DOMContentLoaded', () => { abLoadRules(); abLoadAccounts(); });
+
+async function abLoadRules() {
+  try {
+    abRulesCache = await api('/api/antiban/rules');
+    console.log('[DEBUG] abRulesCache:', JSON.stringify(abRulesCache).substring(0, 500));
+    console.log('[DEBUG] whatsapp keys:', abRulesCache.whatsapp ? Object.keys(abRulesCache.whatsapp) : 'MISSING');
+    document.getElementById('ab-version').textContent = 'v' + (abRulesCache.version || '?');
+    ['whatsapp','linkedin','facebook','tiktok','email','instagram','youtube','twitter','vk','reddit'].forEach(p => {
+      try {
+        abRenderPlatform(p);
+        console.log('[DEBUG] rendered:', p, 'OK');
+      } catch(e2) {
+        console.error('[DEBUG] render failed:', p, e2);
+        const el = document.getElementById('ab-editor-' + p);
+        if (el) el.innerHTML = '<div class="alert alert-danger">渲染失败[' + p + ']: ' + e2.message + '</div>';
+      }
+    });
+  } catch(e) { console.error('加载防封规则失败:', e); }
+}
+
+function abRenderPlatform(platform) {
+  const rules = abRulesCache[platform];
+  if (!rules) return;
+  const el = document.getElementById('ab-editor-' + platform);
+  if (!el) return;
+  try {
+  const platformNames = { whatsapp:'WhatsApp', linkedin:'LinkedIn', facebook:'Facebook', tiktok:'TikTok', email:'Email' };
+  
+  // 字段中文翻译映射
+  const fieldLabels = {
+    // ===== 通用 =====
+    min_delay_ms: '最小延迟(ms)', max_delay_ms: '最大延迟(ms)',
+    min_delay: '最小延迟(ms)', max_delay: '最大延迟(ms)', delay: '延迟(ms)',
+    // WhatsApp
+    max_daily_outbound: '每日最大外发数', max_daily_broadcast: '每日最大群发数',
+    max_hourly_messages: '每小时最大消息数',
+    broadcast_delay_ms: '群发延迟(ms)', broadcast_delay_random_ms: '群发随机延迟(ms)',
+    cooldown_after_n: '连续N条后冷却', cooldown_duration_ms: '冷却时长(ms)',
+    max_same_content_per_day: '每日相同内容最大次数',
+    max_links_per_message: '每条消息最大链接数', max_message_length: '消息最大长度',
+    active_hours_start: '活跃开始时间', active_hours_end: '活跃结束时间',
+    weekend_reduction: '周末频率降低比',
+    max_block_rate: '最大封号率', max_report_count_daily: '每日最大举报数',
+    pause_hours_on_warning: '警告后暂停(小时)', pause_hours_on_block: '封号后暂停(小时)',
+    max_outbound: '最大外发', max_new_chats: '最大新对话', only_reply: '只回复',
+    // LinkedIn
+    max_daily_connections: '每日最大连接数', max_daily_messages: '每日最大消息数',
+    max_daily_profile_views: '每日最大浏览量', max_pending_connections: '最大待处理连接',
+    withdraw_old_pending_days: '撤回过期连接(天)',
+    personalization_required: '要求个性化', max_same_message_per_day: '每日相同消息最大次数',
+    active_days: '活跃日(周)',
+    max_connection_reject_rate: '最大连接拒绝率', max_weekly_restrictions: '每周最大限制次数',
+    max_connections: '最大连接数', max_views: '最大浏览数',
+    // Facebook
+    max_daily_posts: '每日最大发帖数', max_daily_group_posts: '每日最大群发帖数',
+    max_daily_comments: '每日最大评论数',
+    group_post_interval_hours: '群发间隔(小时)',
+    max_same_content_groups: '相同内容最大群组数', require_content_variation: '要求内容变化',
+    banned_keywords: '违禁关键词', max_links_per_post: '每帖最大链接数',
+    max_post_removal_per_week: '每周最大删帖数', checkpoint_cooldown_hours: '检查点冷却(小时)',
+    auto_pause_enabled: '自动暂停',
+    max_posts: '最大发帖', max_comments: '最大评论', max_messages: '最大消息', max_friend_requests: '最大好友请求',
+    // TikTok
+    min_post_interval_hours: '发帖最小间隔(小时)',
+    max_daily_follows: '每日最大关注数', max_daily_likes: '每日最大点赞数',
+    optimal_video_length_sec: '最佳视频时长(秒)', max_hashtags: '最大标签数',
+    shadow_ban_detection: '影子封禁检测', max_zero_view_videos: '最大零播放视频数',
+    max_follows: '最大关注',
+    // Email
+    max_daily_per_account: '每账号每日最大发送数', max_bounce_rate: '最大退信率',
+    max_spam_rate: '最大垃圾率', rotate_accounts: '轮换账号',
+    require_unsubscribe_link: '要求退订链接', require_personalization: '要求个性化',
+    spammy_keywords: '垃圾关键词', max_subject_length: '最大标题长度',
+    auto_pause_on_bounce: '退信自动暂停', pause_hours_on_high_bounce: '高退信暂停(小时)',
+    max_daily: '每日最大发送',
+    // Instagram
+    max_daily_unfollows: '每日最大取关数', max_daily_dms: '每日最大私信数',
+    max_hourly_actions: '每小时最大操作数', follow_unfollow_ratio: '关注/取关比例',
+    optimal_hashtags: '最佳标签数', max_same_comment_per_day: '每日相同评论最大次数',
+    require_comment_variation: '要求评论变化',
+    action_block_cooldown_hours: '操作限制冷却(小时)', max_action_blocks_per_week: '每周最大操作限制数',
+    max_likes: '最大点赞', max_dms: '最大私信',
+    // YouTube
+    max_daily_subscribes: '每日最大订阅数', max_comment_removals_per_week: '每周最大评论删除数',
+    max_subscribes: '最大订阅',
+    // Twitter
+    max_daily_tweets: '每日最大推文数', max_daily_retweets: '每日最大转发数',
+    max_same_tweet_per_day: '每日相同推文最大次数',
+    rate_limit_cooldown_minutes: '限流冷却(分钟)', max_suspensions_before_pause: '暂停前最大封号次数',
+    max_tweets: '最大推文',
+    // VK
+    max_daily_friend_requests: '每日最大好友请求数', captcha_cooldown_hours: '验证码冷却(小时)',
+    max_friends: '最大好友',
+    // Reddit
+    min_karma_to_post: '发帖最低Karma', subreddit_cooldown_minutes: '子版块冷却(分钟)',
+    no_self_promotion_ratio: '非自我推广比例', require_subreddit_rules_check: '要求检查版规',
+    max_post_removals_per_week: '每周最大删帖数', karma_farming: 'Karma积累模式',
+    // 其他通用
+    batch_size: '批量大小', cooldown_between_batches_ms: '批次冷却(ms)',
+    max_hourly: '每小时上限', max_per_campaign: '每次活动上限', bounce_threshold: '退信阈值',
+    max_duplicate_rate: '最大重复率', min_post_length: '最小帖子长度',
+    min_word_count: '最小字数', max_image_text_ratio: '最大图文比',
+    peak_hours: '高峰时段', off_peak_multiplier: '非高峰倍率',
+    weekend_multiplier: '周末倍率', send_hours: '发送时段', rest_days: '休息日',
+    timezone: '时区', active_hours: '活跃时段',
+    max_warning_per_month: '每月最大警告数', health_check_interval_hours: '健康检查间隔(小时)',
+    pause_on_blacklist: '黑名单暂停', reputation_check_enabled: '信誉检查',
+    max_failed_per_day: '每日最大失败数', risk_score_threshold: '风险阈值',
+    auto_reduce_on_warning: '警告时自动降频', auto_pause_on_warning: '警告时自动暂停',
+    engagement_rate_threshold: '互动率阈值', max_spam_score: '最大垃圾评分',
+  };
+  function getFieldLabel(key) {
+    return fieldLabels[key] || key.replace(/_/g, ' ');
+  }
+
+  let html = '';
+
+  // 养号阶段
+  if (rules.warmup) {
+    html += '<h6>🌱 养号阶段</h6><div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr><th>阶段</th><th>天数</th>';
+    const stage0 = rules.warmup.stages[0];
+    const cols = Object.keys(stage0).filter(k => !['name','days','note','only_reply'].includes(k));
+    cols.forEach(c => html += `<th>${getFieldLabel(c)}</th>`);
+    if (stage0.only_reply !== undefined) html += '<th>只回复</th>';
+    html += '</tr></thead><tbody>';
+    rules.warmup.stages.forEach((s,i) => {
+      html += `<tr><td>${s.name}</td><td>${s.days[0]}-${s.days[1]}天</td>`;
+      cols.forEach(c => html += `<td><input type="number" class="form-control form-control-sm" style="width:70px" value="${s[c]||0}" onchange="abUpdateStage('${platform}',${i},'${c}',this.value)"></td>`);
+      if (s.only_reply !== undefined) html += `<td><input type="checkbox" ${s.only_reply?'checked':''} onchange="abUpdateStage('${platform}',${i},'only_reply',this.checked)"></td>`;
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+
+  // 发送限制
+  if (rules.sending) {
+    html += '<h6 class="mt-3">⏱️ 发送限制</h6><div class="row g-2">';
+    Object.entries(rules.sending).forEach(([k,v]) => {
+      html += `<div class="col-md-4"><label class="form-label small">${getFieldLabel(k)}</label><input type="number" class="form-control form-control-sm" value="${v}" onchange="abUpdateField('${platform}','sending','${k}',this.value)"></div>`;
+    });
+    html += '</div>';
+  }
+
+  // 内容安全
+  if (rules.content) {
+    html += '<h6 class="mt-3">📝 内容安全</h6><div class="row g-2">';
+    Object.entries(rules.content).forEach(([k,v]) => {
+      if (k === 'banned_keywords' || k === 'spammy_keywords') {
+        html += `<div class="col-md-12"><label class="form-label small">${getFieldLabel(k)}</label><input type="text" class="form-control form-control-sm" value="${(v||[]).join(', ')}" onchange="abUpdateField('${platform}','content','${k}',this.value.split(',').map(s=>s.trim()).filter(Boolean))"></div>`;
+      } else if (typeof v === 'boolean') {
+        html += `<div class="col-md-4"><label class="form-label small">${getFieldLabel(k)}</label><select class="form-select form-select-sm" onchange="abUpdateField('${platform}','content','${k}',this.value==='true')"><option value="true" ${v?'selected':''}>是</option><option value="false" ${!v?'selected':''}>否</option></select></div>`;
+      } else {
+        html += `<div class="col-md-4"><label class="form-label small">${getFieldLabel(k)}</label><input type="number" class="form-control form-control-sm" value="${v}" onchange="abUpdateField('${platform}','content','${k}',this.value)"></div>`;
+      }
+    });
+    html += '</div>';
+  }
+
+  // 时间控制
+  if (rules.schedule) {
+    html += '<h6 class="mt-3">🕐 时间控制</h6><div class="row g-2">';
+    Object.entries(rules.schedule).forEach(([k,v]) => {
+      if (Array.isArray(v)) {
+        html += `<div class="col-md-4"><label class="form-label small">${getFieldLabel(k)}</label><input type="text" class="form-control form-control-sm" value="${v.join(',')}" onchange="abUpdateField('${platform}','schedule','${k}',this.value.split(',').map(Number))"></div>`;
+      } else {
+        html += `<div class="col-md-4"><label class="form-label small">${getFieldLabel(k)}</label><input type="${typeof v==='number'?'number':'text'}" class="form-control form-control-sm" value="${v}" onchange="abUpdateField('${platform}','schedule','${k}',this.value)"></div>`;
+      }
+    });
+    html += '</div>';
+  }
+
+  // 健康监控
+  if (rules.health) {
+    html += '<h6 class="mt-3">❤️ 健康监控</h6><div class="row g-2">';
+    Object.entries(rules.health).forEach(([k,v]) => {
+      if (typeof v === 'boolean') {
+        html += `<div class="col-md-4"><label class="form-label small">${getFieldLabel(k)}</label><select class="form-select form-select-sm" onchange="abUpdateField('${platform}','health','${k}',this.value==='true')"><option value="true" ${v?'selected':''}>开启</option><option value="false" ${!v?'selected':''}>关闭</option></select></div>`;
+      } else {
+        html += `<div class="col-md-4"><label class="form-label small">${getFieldLabel(k)}</label><input type="number" step="0.01" class="form-control form-control-sm" value="${v}" onchange="abUpdateField('${platform}','health','${k}',this.value)"></div>`;
+      }
+    });
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+  } catch(e) { console.error('防封规则渲染失败[' + platform + ']:', e); el.innerHTML = '<div class="alert alert-danger">规则渲染失败: ' + e.message + '</div>'; }
+}
+
+function abUpdateStage(platform, index, field, value) {
+  if (field === 'only_reply') {
+    abRulesCache[platform].warmup.stages[index][field] = value;
+  } else {
+    abRulesCache[platform].warmup.stages[index][field] = parseInt(value);
+  }
+}
+
+function abUpdateField(platform, section, field, value) {
+  if (typeof value === 'string' && !isNaN(value) && !Array.isArray(abRulesCache[platform][section][field])) {
+    value = parseFloat(value);
+  }
+  abRulesCache[platform][section][field] = value;
+}
+
+async function abSave() {
+  abRulesCache.version = new Date().toISOString().split('T')[0].replace(/-/g,'.');
+  const res = await api('/api/antiban/rules', 'PUT', abRulesCache);
+  if (res.success) { toast('防封规则已保存'); document.getElementById('ab-version').textContent = 'v' + abRulesCache.version; }
+  else toast('保存失败: ' + (res.error||''), 'danger');
+}
+
+async function abReset() {
+  if (!confirm('确定恢复默认规则？所有修改将丢失！')) return;
+  const res = await api('/api/antiban/rules/reset', 'POST');
+  if (res.success) { toast('已恢复默认规则'); abLoadRules(); }
+}
+
+async function abLoadAccounts() {
+  try {
+    const accounts = await api('/api/antiban/accounts');
+    const tbody = document.getElementById('ab-accounts-table');
+    if (!accounts.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">暂无注册账号</td></tr>'; return; }
+    tbody.innerHTML = accounts.map(a => {
+      const statsStr = Object.entries(a.todayStats || {}).map(([k,v]) => `${k}:${v}`).join(' ') || '-';
+      const statusBadge = a.paused ? `<span class="badge bg-danger">暂停</span>` : `<span class="badge bg-success">正常</span>`;
+      return `<tr>
+        <td>${a.platform}</td><td>${a.accountId}</td><td>${a.age}天</td>
+        <td><span class="badge bg-info">${a.stage}</span></td><td class="small">${statsStr}</td>
+        <td>${statusBadge}</td>
+        <td>${a.paused ? 
+          `<button class="btn btn-xs btn-success" onclick="abUnpause('${a.platform}','${a.accountId}')">恢复</button>` :
+          `<button class="btn btn-xs btn-warning" onclick="abPause('${a.platform}','${a.accountId}')">暂停</button>`
+        }</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {}
+}
+
+async function abRegisterAccount() {
+  const platform = document.getElementById('ab-new-platform').value;
+  const accountId = document.getElementById('ab-new-id').value.trim();
+  const createdDate = document.getElementById('ab-new-date').value || undefined;
+  if (!accountId) return toast('请输入账号标识', 'danger');
+  await api('/api/antiban/accounts', 'POST', { platform, accountId, createdDate });
+  toast(`${platform} 账号已注册，开始养号计时`);
+  document.getElementById('ab-new-id').value = '';
+  abLoadAccounts();
+}
+
+async function abPause(platform, accountId) {
+  const hours = prompt('暂停多少小时？', '24');
+  if (!hours) return;
+  await api(`/api/antiban/accounts/${platform}/${accountId}/pause`, 'POST', { hours: parseInt(hours) });
+  toast('账号已暂停');
+  abLoadAccounts();
+}
+
+async function abUnpause(platform, accountId) {
+  await api(`/api/antiban/accounts/${platform}/${accountId}/unpause`, 'POST');
+  toast('账号已恢复');
+  abLoadAccounts();
+}
+
+// ========== AI Providers 4角色分组管理 ==========
+const AI_ROLES = {
+  brain: { label: '🧠 主脑 AI', desc: '理解指令·调度专家' },
+  video: { label: '🎬 视频引擎', desc: '视频生成·数字人·混剪' },
+  vision: { label: '👁️ 视觉引擎', desc: '看图分析·产品图识别' },
+  text: { label: '✍️ 文本引擎', desc: '邮件·翻译·文案·SEO' }
+};
+let aiProvidersByRole = { brain: [], video: [], vision: [], text: [] };
+
+document.addEventListener('DOMContentLoaded', loadAIProviders);
+
+async function loadAIProviders() {
+  try {
+    const res = await api('/api/settings/ai-providers');
+    const data = res.providers;
+    if (data && !Array.isArray(data) && data.brain !== undefined) {
+      aiProvidersByRole = { brain: data.brain || [], video: data.video || [], vision: data.vision || [], text: data.text || [] };
+    } else if (Array.isArray(data)) {
+      aiProvidersByRole = { brain: [], video: [], vision: [], text: data };
+    }
+  } catch(e) {
+    try {
+      const old = '<%- settings.ai_provider ? JSON.stringify(settings.ai_provider).replace(/\x27/g, "\\\x27") : "" %>';
+      if (old) {
+        const parsed = JSON.parse(old);
+        if (parsed.baseUrl) aiProvidersByRole.text = [{ ...parsed, name: '默认', enabled: true }];
+      }
+    } catch(e2) {}
+  }
+  renderAllRoles();
+}
+
+function renderAllRoles() {
+  Object.keys(AI_ROLES).forEach(role => renderRoleProviders(role));
+}
+
+function renderRoleProviders(role) {
+  const container = document.getElementById('role-' + role + '-providers');
+  if (!container) return;
+  const list = aiProvidersByRole[role] || [];
+  if (list.length === 0) {
+    container.innerHTML = '<div class="text-muted small text-center py-2">暂未配置，点击右上角"添加"</div>';
+    return;
+  }
+  container.innerHTML = list.map((p, i) => `
+    <div class="card mb-2 ${p.enabled === false ? 'opacity-50' : ''}">
+      <div class="card-body p-2">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-${p.enabled === false ? 'secondary' : 'success'}">#${i+1}</span>
+            <strong class="small">${p.name || '未命名'}</strong>
+            <span class="badge bg-info small">${p.model || '未设置'}</span>
+            <span id="pstatus-${role}-${i}"></span>
+          </div>
+          <div class="d-flex gap-1">
+            ${i > 0 ? `<button class="btn btn-sm btn-outline-secondary py-0 px-1" onclick="moveRoleProvider('${role}',${i},-1)">⬆</button>` : ''}
+            ${i < list.length-1 ? `<button class="btn btn-sm btn-outline-secondary py-0 px-1" onclick="moveRoleProvider('${role}',${i},1)">⬇</button>` : ''}
+            <button class="btn btn-sm btn-outline-${p.enabled===false?'success':'warning'} py-0 px-1" onclick="toggleRoleProvider('${role}',${i})">${p.enabled===false?'启用':'禁用'}</button>
+            <button class="btn btn-sm btn-outline-primary py-0 px-1" onclick="editRoleProvider('${role}',${i})">✏️</button>
+            <button class="btn btn-sm btn-outline-danger py-0 px-1" onclick="removeRoleProvider('${role}',${i})">🗑️</button>
+          </div>
+        </div>
+        <div class="row g-2 mt-1" id="pfields-${role}-${i}" style="display:none">
+          <div class="col-md-3"><input class="form-control form-control-sm" placeholder="名称" value="${p.name||''}" oninput="aiProvidersByRole['${role}'][${i}].name=this.value" onchange="aiProvidersByRole['${role}'][${i}].name=this.value"></div>
+          <div class="col-md-4"><input class="form-control form-control-sm" placeholder="API Base URL" value="${p.baseUrl||''}" oninput="aiProvidersByRole['${role}'][${i}].baseUrl=this.value" onchange="aiProvidersByRole['${role}'][${i}].baseUrl=this.value"></div>
+          <div class="col-md-3"><input class="form-control form-control-sm" type="password" placeholder="API Key" value="${p.apiKey||''}" oninput="aiProvidersByRole['${role}'][${i}].apiKey=this.value" onchange="aiProvidersByRole['${role}'][${i}].apiKey=this.value"></div>
+          <div class="col-md-2"><input class="form-control form-control-sm" placeholder="模型" value="${p.model||''}" oninput="aiProvidersByRole['${role}'][${i}].model=this.value" onchange="aiProvidersByRole['${role}'][${i}].model=this.value"></div>
+        </div>
+        <small class="text-muted">${p.baseUrl ? p.baseUrl.replace(/\/+$/, '').substring(0, 40) + '...' : '未配置URL'}</small>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addProviderToRole(role) {
+  aiProvidersByRole[role].push({ name: 'Provider ' + (aiProvidersByRole[role].length + 1), baseUrl: '', apiKey: '', model: '', enabled: true });
+  renderRoleProviders(role);
+  editRoleProvider(role, aiProvidersByRole[role].length - 1);
+}
+
+function editRoleProvider(role, i) {
+  const el = document.getElementById('pfields-' + role + '-' + i);
+  if (el) el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+
+function removeRoleProvider(role, i) {
+  if (!confirm('确定删除？')) return;
+  aiProvidersByRole[role].splice(i, 1);
+  renderRoleProviders(role);
+}
+
+function toggleRoleProvider(role, i) {
+  aiProvidersByRole[role][i].enabled = aiProvidersByRole[role][i].enabled === false ? true : false;
+  renderRoleProviders(role);
+}
+
+function moveRoleProvider(role, i, dir) {
+  const list = aiProvidersByRole[role];
+  const j = i + dir;
+  if (j < 0 || j >= list.length) return;
+  [list[i], list[j]] = [list[j], list[i]];
+  renderRoleProviders(role);
+}
+
+async function saveAIProviders() {
+  // 保存前强制同步所有展开的输入框值到aiProvidersByRole
+  _syncAllRoleInputs();
+  const res = await api('/api/settings/ai-providers', 'PUT', { providers: aiProvidersByRole });
+
+  if (res.success) {
+    const allEnabled = Object.values(aiProvidersByRole).flat().filter(p => p.enabled !== false && p.baseUrl && p.apiKey);
+    Object.keys(AI_ROLES).forEach(role => renderRoleProviders(role));
+    toast('AI Provider 已保存（' + allEnabled.length + '个启用）');
+  } else {
+    toast(res.error || '保存失败', 'danger');
+  }
+}
+
+/** 单角色保存 */
+async function saveRoleProviders(role) {
+  _syncRoleInputs(role);
+  // 保存时发送完整的providers对象（后端需要完整数据）
+  const res = await api('/api/settings/ai-providers', 'PUT', { providers: aiProvidersByRole });
+  const statusEl = document.getElementById('role-' + role + '-status');
+  if (res.success) {
+    const enabled = (aiProvidersByRole[role] || []).filter(p => p.enabled !== false && p.baseUrl && p.apiKey);
+    renderRoleProviders(role);
+    const statusEl2 = document.getElementById('role-' + role + '-status');
+    if (statusEl2) statusEl2.innerHTML = '<span class="text-success">✅ 已保存（' + enabled.length + '个启用）</span>';
+    setTimeout(() => { if (statusEl2) statusEl2.innerHTML = ''; }, 3000);
+  } else {
+    if (statusEl) statusEl.innerHTML = '<span class="text-danger">❌ ' + (res.error || '保存失败') + '</span>';
+  }
+}
+
+/** 单角色测试 */
+async function testRoleProviders(role) {
+  _syncRoleInputs(role);
+  const list = aiProvidersByRole[role] || [];
+  const statusEl = document.getElementById('role-' + role + '-status');
+  if (statusEl) statusEl.innerHTML = '<span class="text-info">⏳ 测试中...</span>';
+  let passed = 0, total = 0;
+  for (let i = 0; i < list.length; i++) {
+    const p = list[i];
+    if (p.enabled === false || !p.baseUrl || !p.apiKey) {
+      const el = document.getElementById('pstatus-' + role + '-' + i);
+      if (el) el.innerHTML = '<span class="badge bg-secondary">跳过</span>';
+      continue;
+    }
+    total++;
+    const el = document.getElementById('pstatus-' + role + '-' + i);
+    if (el) el.innerHTML = '<span class="badge bg-info">测试中...</span>';
+    try {
+      const res = await api('/api/settings/test-ai-provider', 'POST', { baseUrl: p.baseUrl, apiKey: p.apiKey, model: p.model, role: role });
+      if (res.success) {
+        if (el) el.innerHTML = '<span class="badge bg-success">✅ ' + (res.latency || '') + '</span>';
+        passed++;
+      } else {
+        if (el) el.innerHTML = '<span class="badge bg-danger">❌ ' + (res.error || '').substring(0,30) + '</span>';
+      }
+    } catch(e) {
+      if (el) el.innerHTML = '<span class="badge bg-danger">❌ 网络错误</span>';
+    }
+  }
+  if (statusEl) statusEl.innerHTML = '<span class="text-' + (passed > 0 ? 'success' : 'danger') + '">' + passed + '/' + total + ' 通过</span>';
+}
+
+/** 同步单个角色的输入框值 */
+function _syncRoleInputs(role) {
+  const list = aiProvidersByRole[role] || [];
+  for (let i = 0; i < list.length; i++) {
+    const fields = document.getElementById('pfields-' + role + '-' + i);
+    if (fields) {
+      const inputs = fields.querySelectorAll('input');
+      if (inputs[0]) list[i].name = inputs[0].value;
+      if (inputs[1]) list[i].baseUrl = inputs[1].value;
+      if (inputs[2]) list[i].apiKey = inputs[2].value;
+      if (inputs[3]) list[i].model = inputs[3].value;
+    }
+  }
+}
+
+/** 同步所有角色的输入框值 */
+function _syncAllRoleInputs() {
+  for (const role of Object.keys(AI_ROLES)) {
+    _syncRoleInputs(role);
+  }
+}
+
+async function testAllProviders() {
+  _syncAllRoleInputs();
+  const statusEl = document.getElementById('ai-test-status');
+  statusEl.innerHTML = '<span class="text-info">⏳ 测试中...</span>';
+  let passed = 0, total = 0;
+  for (const role of Object.keys(AI_ROLES)) {
+    const list = aiProvidersByRole[role] || [];
+    for (let i = 0; i < list.length; i++) {
+      const p = list[i];
+      if (p.enabled === false || !p.baseUrl || !p.apiKey) {
+        const el = document.getElementById('pstatus-' + role + '-' + i);
+        if (el) el.innerHTML = '<span class="badge bg-secondary">跳过</span>';
+        continue;
+      }
+      total++;
+      const el = document.getElementById('pstatus-' + role + '-' + i);
+      if (el) el.innerHTML = '<span class="badge bg-info">测试中...</span>';
+      try {
+        const res = await api('/api/settings/test-ai-provider', 'POST', { baseUrl: p.baseUrl, apiKey: p.apiKey, model: p.model, role: role });
+        if (res.success) {
+          if (el) el.innerHTML = '<span class="badge bg-success">✅ ' + (res.latency || '') + '</span>';
+          passed++;
+        } else {
+          if (el) el.innerHTML = '<span class="badge bg-danger">❌ ' + (res.error || '').substring(0,20) + '</span>';
+        }
+      } catch(e) {
+        if (el) el.innerHTML = '<span class="badge bg-danger">❌ 网络错误</span>';
+      }
+    }
+  }
+  statusEl.innerHTML = `<span class="text-${passed > 0 ? 'success' : 'danger'}">${passed}/${total} 通过</span>`;
+}
+
+// ========== 出站代理管理 ==========
+async function loadProxy() {
+  try {
+    const res = await fetch('/api/settings/outbound-proxy');
+    const data = await res.json();
+    if (data.success && data.proxy) {
+      document.getElementById('proxy-enabled').checked = data.proxy.enabled;
+      document.getElementById('proxy-url').value = data.proxy.url || '';
+    }
+  } catch(e) {}
+}
+
+async function saveProxy() {
+  const enabled = document.getElementById('proxy-enabled').checked;
+  const url = document.getElementById('proxy-url').value.trim();
+  try {
+    const res = await fetch('/api/settings/outbound-proxy', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled, url })
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('proxy-status').innerHTML = '<span class="text-success">✅ 已保存</span>';
+      setTimeout(function(){ document.getElementById('proxy-status').innerHTML = ''; }, 2000);
+    }
+  } catch(e) { alert('保存失败: ' + e.message); }
+}
+
+async function testProxy() {
+  document.getElementById('proxy-status').innerHTML = '<span class="text-primary">⏳ 测试中...</span>';
+  try {
+    const res = await fetch('/api/seo/keywords', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keyword: 'test' })
+    });
+    const data = await res.json();
+    if (data.totalSuggestions > 0) {
+      document.getElementById('proxy-status').innerHTML = '<span class="text-success">✅ 代理正常，获取到 ' + data.totalSuggestions + ' 个关键词</span>';
+    } else {
+      document.getElementById('proxy-status').innerHTML = '<span class="text-warning">⚠️ 代理可能不通，未获取到数据</span>';
+    }
+  } catch(e) {
+    document.getElementById('proxy-status').innerHTML = '<span class="text-danger">❌ 测试失败: ' + e.message + '</span>';
+  }
+}
+
+async function detectProxy() {
+  document.getElementById('proxy-status').innerHTML = '<span class="text-primary">⏳ 正在扫描本地代理端口...</span>';
+  try {
+    const res = await fetch('/api/settings/detect-proxy');
+    const data = await res.json();
+    if (data.success && data.proxy) {
+      document.getElementById('proxy-url').value = data.proxy;
+      document.getElementById('proxy-enabled').checked = true;
+      document.getElementById('proxy-status').innerHTML = '<span class="text-success">✅ 检测到代理: ' + data.proxy + '，请点保存</span>';
+    } else {
+      document.getElementById('proxy-status').innerHTML = '<span class="text-warning">⚠️ 未检测到可用代理，请手动填写</span>';
+    }
+  } catch(e) {
+    document.getElementById('proxy-status').innerHTML = '<span class="text-danger">❌ 检测失败: ' + e.message + '</span>';
+  }
+}
+
+// ========== 模块管理 ==========
+async function loadModuleSwitches() {
+  try {
+    const res = await fetch('/api/settings/modules');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.success && data.modules) {
+      document.querySelectorAll('.module-switch').forEach(function(el) {
+        var mod = el.getAttribute('data-module');
+        if (data.modules[mod] !== undefined) {
+          el.checked = data.modules[mod];
+        }
+      });
+    }
+  } catch(e) {
+    console.error('加载模块状态失败:', e);
+  }
+}
+
+async function saveModuleSwitches() {
+  var modules = {};
+  document.querySelectorAll('.module-switch').forEach(function(el) {
+    modules[el.getAttribute('data-module')] = el.checked;
+  });
+  try {
+    var res = await fetch('/api/settings/modules', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ modules: modules })
+    });
+    if (!res.ok) {
+      alert('保存失败: HTTP ' + res.status);
+      return;
+    }
+    var data = await res.json();
+    if (data.success) {
+      var btn = document.querySelector('[onclick="saveModuleSwitches()"]');
+      var origText = btn.innerHTML;
+      btn.innerHTML = '✅ 已保存';
+      btn.classList.remove('btn-success');
+      btn.classList.add('btn-outline-success');
+      setTimeout(function() {
+        btn.innerHTML = origText;
+        btn.classList.remove('btn-outline-success');
+        btn.classList.add('btn-success');
+      }, 2000);
+    } else {
+      alert('保存失败: ' + (data.error || '未知错误'));
+    }
+  } catch(e) {
+    alert('保存失败: ' + e.message);
+  }
+}
+
+// 模块管理Tab激活时加载数据
+document.querySelector('[href="#tab-modules"]')?.addEventListener('shown.bs.tab', function(){ loadModuleSwitches(); loadProxy(); });
+
+// 如果URL hash是modules，自动加载
+if (location.hash === '#tab-modules') { loadModuleSwitches(); loadProxy(); }
+
+// ========== 保存公司信息 ==========
+async function saveCompanyInfo() {
+  var form = document.getElementById('company-form');
+  var data = Object.fromEntries(new FormData(form));
+  try {
+    var res = await fetch('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'company_info', value: JSON.stringify(data) })
+    });
+    var result = await res.json();
+    if (result.success) {
+      toast ? toast('公司信息已保存') : alert('已保存');
+    } else {
+      (toast || alert)('保存失败: ' + (result.error || '未知错误'));
+    }
+  } catch(e) { (toast || alert)('保存失败: ' + e.message); }
+}
+
+// ========== TikTok API 配置 ==========
+async function loadTikTokApi() {
+  try {
+    var res = await fetch('/api/settings/tiktok-api');
+    var result = await res.json();
+    if (result.success && result.data) {
+      document.getElementById('tk-client-key').value = result.data.clientKey || '';
+      document.getElementById('tk-redirect-uri').value = result.data.redirectUri || 'http://localhost:3001/oauth/tiktok/callback';
+      if (result.data.clientSecretMasked) {
+        document.getElementById('tk-secret-masked').textContent = '当前密钥: ' + result.data.clientSecretMasked;
+      }
+    }
+  } catch(e) { console.error('加载TikTok配置失败:', e); }
+}
+
+async function saveTikTokApi() {
+  var clientKey = document.getElementById('tk-client-key').value.trim();
+  var clientSecret = document.getElementById('tk-client-secret').value.trim();
+  var redirectUri = document.getElementById('tk-redirect-uri').value.trim();
+  if (!clientKey) { toast('请填写 Client Key', 'warning'); return; }
+  var body = { clientKey, redirectUri };
+  if (clientSecret) body.clientSecret = clientSecret;
+  try {
+    var res = await fetch('/api/settings/tiktok-api', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    var result = await res.json();
+    if (result.success) {
+      toast('TikTok API 配置已保存');
+      document.getElementById('tk-client-secret').value = '';
+      loadTikTokApi();
+    } else {
+      toast('保存失败: ' + (result.error || '未知错误'), 'danger');
+    }
+  } catch(e) { toast('保存失败: ' + e.message, 'danger'); }
+}
+
+document.querySelector('[href="#tab-tiktok-api"]')?.addEventListener('shown.bs.tab', loadTikTokApi);
+if (location.hash === '#tab-tiktok-api') loadTikTokApi();
+
+// ===== YouTube API =====
+async function loadYouTubeApi() {
+  try {
+    const res = await fetch('/api/settings/youtube-api');
+    const data = await res.json();
+    if (data.success && data.data) {
+      document.getElementById('yt-client-id').value = data.data.clientId || '';
+      document.getElementById('yt-api-key').value = data.data.apiKey || '';
+      document.getElementById('yt-channel-id').value = data.data.channelId || '';
+      if (data.data.clientSecretMasked) document.getElementById('yt-secret-masked').textContent = data.data.clientSecretMasked;
+    }
+  } catch(e) {}
+}
+async function saveYouTubeApi() {
+  const body = {
+    clientId: document.getElementById('yt-client-id').value,
+    clientSecret: document.getElementById('yt-client-secret').value || undefined,
+    apiKey: document.getElementById('yt-api-key').value,
+    channelId: document.getElementById('yt-channel-id').value
+  };
+  const res = await fetch('/api/settings/youtube-api', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  const data = await res.json();
+  if (data.success) { toast('YouTube API 配置已保存'); loadYouTubeApi(); }
+  else alert(data.error || '保存失败');
+}
+document.querySelector('[href="#tab-youtube-api"]')?.addEventListener('shown.bs.tab', loadYouTubeApi);
+
+// ===== Instagram API =====
+async function loadInstagramApi() {
+  try {
+    const res = await fetch('/api/settings/instagram-api');
+    const data = await res.json();
+    if (data.success && data.data) {
+      document.getElementById('ig-app-id').value = data.data.appId || '';
+      document.getElementById('ig-account-id').value = data.data.accountId || '';
+      document.getElementById('ig-page-id').value = data.data.pageId || '';
+      if (data.data.appSecretMasked) document.getElementById('ig-secret-masked').textContent = data.data.appSecretMasked;
+    }
+  } catch(e) {}
+}
+async function saveInstagramApi() {
+  const body = {
+    appId: document.getElementById('ig-app-id').value,
+    appSecret: document.getElementById('ig-app-secret').value || undefined,
+    accountId: document.getElementById('ig-account-id').value,
+    pageId: document.getElementById('ig-page-id').value
+  };
+  const res = await fetch('/api/settings/instagram-api', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  const data = await res.json();
+  if (data.success) { toast('Instagram API 配置已保存'); loadInstagramApi(); }
+  else alert(data.error || '保存失败');
+}
+document.querySelector('[href="#tab-instagram-api"]')?.addEventListener('shown.bs.tab', loadInstagramApi);
+
+// ===== 指纹浏览器配置 =====
+async function fpLoadConfig() {
+  try {
+    const res = await fetch('/api/browser-adapters/status');
+    const data = await res.json();
+    if (data.success && data.data) {
+      for (const [type, info] of Object.entries(data.data)) {
+        const prefix = type === 'adspower' ? 'ads' : type === 'multilogin' ? 'ml' : 'gl';
+        const el = document.getElementById(`fp-${prefix}-status`);
+        if (el) {
+          if (info.online) {
+            el.className = 'badge bg-success';
+            el.textContent = '✅ 在线';
+          } else {
+            el.className = 'badge bg-danger';
+            el.textContent = '❌ 离线';
+          }
+        }
+      }
+    }
+  } catch(e) { console.error('加载指纹浏览器状态失败:', e); }
+}
+
+async function fpCheck(type) {
+  const prefix = type === 'adspower' ? 'ads' : type === 'multilogin' ? 'ml' : 'gl';
+  const el = document.getElementById(`fp-${prefix}-status`);
+  if (el) { el.className = 'badge bg-warning'; el.textContent = '检测中...'; }
+  try {
+    const res = await fetch('/api/browser-adapters/status');
+    const data = await res.json();
+    if (data.success && data.data?.[type]) {
+      const info = data.data[type];
+      if (el) {
+        el.className = info.online ? 'badge bg-success' : 'badge bg-danger';
+        el.textContent = info.online ? '✅ 在线' : '❌ 离线';
+      }
+      toast(info.online ? `${type} 连接成功` : `${type} 未连接: ${info.error || '未知'}`);
+    }
+  } catch(e) {
+    if (el) { el.className = 'badge bg-danger'; el.textContent = '❌ 错误'; }
+    toast('检测失败: ' + e.message);
+  }
+}
+
+async function fpCheckAll() {
+  await Promise.all(['adspower', 'multilogin', 'geelark'].map(t => fpCheck(t)));
+}
+
+async function fpSaveConfig() {
+  const config = {
+    adspower: {
+      enabled: document.getElementById('fp-ads-enabled').checked,
+      apiUrl: document.getElementById('fp-ads-url').value
+    },
+    multilogin: {
+      enabled: document.getElementById('fp-ml-enabled').checked,
+      apiUrl: document.getElementById('fp-ml-url').value,
+      token: document.getElementById('fp-ml-token').value
+    },
+    geelark: {
+      enabled: document.getElementById('fp-gl-enabled').checked,
+      apiUrl: document.getElementById('fp-gl-url').value,
+      apiKey: document.getElementById('fp-gl-apikey').value
+    }
+  };
+  try {
+    const res = await fetch('/api/browser-adapters/config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config)
+    });
+    const data = await res.json();
+    if (data.success) toast('指纹浏览器配置已保存');
+    else toast('保存失败: ' + (data.error || '未知错误'));
+  } catch(e) { toast('保存失败: ' + e.message); }
+}
+
+async function fpViewProfiles(type) {
+  const prefix = type === 'adspower' ? 'ads' : type === 'multilogin' ? 'ml' : 'gl';
+  const container = document.getElementById(`fp-${prefix}-profiles`);
+  if (!container) return;
+  container.style.display = container.style.display === 'none' ? 'block' : 'none';
+  if (container.style.display === 'none') return;
+  container.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm"></div> 加载中...</div>';
+  try {
+    const res = await fetch(`/api/browser-adapters/${type}/profiles`);
+    const data = await res.json();
+    if (data.success && data.data?.length) {
+      let html = '<table class="table table-sm table-bordered mb-0"><thead><tr><th>ID</th><th>名称</th><th>状态</th></tr></thead><tbody>';
+      data.data.forEach(p => {
+        html += `<tr><td><code>${p.id}</code></td><td>${p.name}</td><td>${p.status}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    } else {
+      container.innerHTML = '<div class="text-muted small">暂无配置文件。请先在 AdsPower 中创建浏览器配置。</div>';
+    }
+  } catch(e) {
+    container.innerHTML = `<div class="text-danger small">加载失败: ${e.message}（请确认软件已启动）</div>`;
+  }
+}
+
+document.querySelector('[href="#tab-fingerprint"]')?.addEventListener('shown.bs.tab', fpLoadConfig);
+
+// ========== Agent控制面板 ==========
+async function loadAgentStatus() {
+  try {
+    const res = await api('/api/agent/status');
+    if (!res.success) return;
+    document.getElementById('agent-enabled-switch').checked = res.enabled;
+    document.getElementById('agent-status-badge').textContent = res.enabled ? '运行中' : '已关闭';
+    document.getElementById('agent-status-badge').className = 'badge ' + (res.enabled ? 'bg-success' : 'bg-secondary');
+    document.getElementById('agent-scan-interval').value = res.scanInterval || 2;
+    document.getElementById('kb-exp-count').textContent = res.experienceCount || 0;
+    // 成本
+    if (res.cost) {
+      document.getElementById('agent-limit-per-scan').value = res.cost.limits.per_scan;
+      document.getElementById('agent-limit-daily').value = res.cost.limits.daily;
+      document.getElementById('agent-limit-monthly').value = res.cost.limits.monthly;
+      document.getElementById('agent-cost-daily-display').textContent = `$${res.cost.today.spent.toFixed(2)} / $${res.cost.today.limit.toFixed(2)}`;
+      document.getElementById('agent-cost-monthly-display').textContent = `$${res.cost.month.spent.toFixed(2)} / $${res.cost.month.limit.toFixed(2)}`;
+      document.getElementById('agent-cost-daily-bar').style.width = res.cost.today.percent + '%';
+      document.getElementById('agent-cost-monthly-bar').style.width = res.cost.month.percent + '%';
+    }
+  } catch(e) { console.error('loadAgentStatus:', e); }
+}
+
+async function toggleAgentModule(enabled) {
+  try {
+    const res = await api('/api/settings/modules', 'PUT', { modules: { agent: enabled } });
+    if (res.success) {
+      // 同步启停巡检引擎
+      await api('/api/agent/toggle', 'PUT', { enabled });
+      toast(enabled ? 'Agent已启用，巡检引擎已启动' : 'Agent已关闭，巡检引擎已停止', 'success');
+      loadAgentStatus();
+    } else toast('操作失败: ' + res.error, 'danger');
+  } catch(e) { toast('操作失败', 'danger'); }
+}
+
+async function saveAgentScanInterval(val) {
+  try {
+    const res = await api('/api/agent/scan-interval', 'PUT', { interval: parseInt(val) });
+    if (res.success) toast('巡检间隔已更新', 'success');
+  } catch(e) { toast('保存失败', 'danger'); }
+}
+
+async function saveAgentCostLimits() {
+  try {
+    const res = await api('/api/agent/cost-limits', 'PUT', {
+      per_scan: parseFloat(document.getElementById('agent-limit-per-scan').value),
+      daily: parseFloat(document.getElementById('agent-limit-daily').value),
+      monthly: parseFloat(document.getElementById('agent-limit-monthly').value)
+    });
+    if (res.success) { toast('成本上限已更新', 'success'); loadAgentStatus(); }
+  } catch(e) { toast('保存失败', 'danger'); }
+}
+
+async function loadAgentActionLog() {
+  try {
+    const res = await api('/api/agent/action-log?limit=30');
+    const el = document.getElementById('agent-action-log');
+    if (!res.success || !res.data.length) { el.innerHTML = '<p class="text-muted">暂无操作记录</p>'; return; }
+    el.innerHTML = res.data.map(a => `
+      <div class="border-start border-3 ${a.triggered_by === 'agent' ? 'border-primary' : 'border-success'} ps-2 mb-2">
+        <small class="text-muted">${a.created_at}</small>
+        <span class="badge bg-${a.status === 'executed' ? 'success' : a.status === 'cancelled' ? 'secondary' : 'warning'} ms-1">${a.status}</span>
+        <span class="badge bg-${a.triggered_by === 'agent' ? 'primary' : 'info'}">${a.triggered_by}</span>
+        <div><strong>${a.action_type}</strong> ${a.action_detail || ''}</div>
+        ${a.result ? '<small class="text-muted">' + a.result + '</small>' : ''}
+      </div>
+    `).join('');
+  } catch(e) { console.error('loadAgentActionLog:', e); }
+}
+
+document.querySelector('[href="#tab-agent"]')?.addEventListener('shown.bs.tab', () => { loadAgentStatus(); loadAgentActionLog(); loadAutonomy(); loadUpgradeRequests(); loadScanRules(); loadScanResults(); loadDashboard(); loadAgentDrafts(); });
+
+// ========== 自主权等级 ==========
+async function loadAutonomy() {
+  try {
+    const res = await api('/api/agent/autonomy');
+    if (!res.success) return;
+    document.querySelectorAll('input[name="autonomy"]').forEach(r => {
+      r.checked = parseInt(r.value) === res.current_level;
+    });
+  } catch(e) { console.error('loadAutonomy:', e); }
+}
+
+async function saveAutonomyLevel() {
+  const selected = document.querySelector('input[name="autonomy"]:checked');
+  if (!selected) { toast('请选择等级', 'warning'); return; }
+  try {
+    const res = await api('/api/agent/autonomy', 'PUT', { level: parseInt(selected.value) });
+    if (res.success) toast('自主权等级已更新为 Lv' + selected.value, 'success');
+    else toast('更新失败: ' + res.error, 'danger');
+  } catch(e) { toast('更新失败', 'danger'); }
+}
+
+async function loadUpgradeRequests() {
+  try {
+    const res = await api('/api/agent/upgrade-requests');
+    const el = document.getElementById('upgrade-requests-list');
+    if (!res.success || !res.data?.length) { el.innerHTML = '<p class="text-muted">暂无升级申请</p>'; return; }
+    el.innerHTML = res.data.map(r => `
+      <div class="border-start border-3 ${r.status === 'pending' ? 'border-warning' : r.status === 'approved' ? 'border-success' : 'border-danger'} ps-2 mb-2">
+        <small class="text-muted">${r.created_at}</small>
+        <span class="badge bg-${r.status === 'pending' ? 'warning' : r.status === 'approved' ? 'success' : 'danger'}">${r.status === 'pending' ? '待审核' : r.status === 'approved' ? '已同意' : '已拒绝'}</span>
+        <div>Lv${r.from_level} → Lv${r.to_level}: ${r.reason}</div>
+        ${r.status === 'pending' ? `<button class="btn btn-sm btn-success mt-1" onclick="respondUpgrade(${r.id},true)">✅ 同意</button> <button class="btn btn-sm btn-danger mt-1" onclick="respondUpgrade(${r.id},false)">❌ 拒绝</button>` : ''}
+      </div>
+    `).join('');
+  } catch(e) { console.error('loadUpgradeRequests:', e); }
+}
+
+async function respondUpgrade(id, approved) {
+  try {
+    const res = await api('/api/agent/upgrade-requests/' + id, 'PUT', { approved });
+    if (res.success) {
+      toast(approved ? '已同意升级' : '已拒绝，Agent需积累更多经验后再申请', 'success');
+      loadAutonomy(); loadUpgradeRequests();
+    }
+  } catch(e) { toast('操作失败', 'danger'); }
+}
+
+// ========== 巡检规则 ==========
+async function loadScanRules() {
+  try {
+    const res = await api('/api/agent/scan-rules');
+    if (!res.success) return;
+    const d = res.data;
+    document.getElementById('rule-first-touch').value = d.first_touch_hours || 24;
+    document.getElementById('rule-follow-up').value = d.follow_up_days || 3;
+    document.getElementById('rule-inquiry').value = d.inquiry_reply_hours || 2;
+    document.getElementById('rule-hot-lead').value = d.hot_lead_hours || 12;
+    document.getElementById('rule-max-actions').value = d.max_actions_per_scan || 10;
+  } catch(e) { console.error('loadScanRules:', e); }
+}
+
+async function saveScanRules() {
+  try {
+    const rules = {
+      first_touch_hours: parseInt(document.getElementById('rule-first-touch').value),
+      follow_up_days: parseInt(document.getElementById('rule-follow-up').value),
+      inquiry_reply_hours: parseInt(document.getElementById('rule-inquiry').value),
+      hot_lead_hours: parseInt(document.getElementById('rule-hot-lead').value),
+      max_actions_per_scan: parseInt(document.getElementById('rule-max-actions').value)
+    };
+    const res = await api('/api/agent/scan-rules', 'PUT', rules);
+    if (res.success) toast('巡检规则已保存', 'success');
+  } catch(e) { toast('保存失败', 'danger'); }
+}
+
+async function triggerManualScan() {
+  toast('正在执行巡检...', 'info');
+  try {
+    const res = await api('/api/agent/scan', 'POST');
+    if (res.success) {
+      if (res.skipped) toast('巡检跳过: ' + (res.reason || 'Agent未启用'), 'warning');
+      else toast(`巡检完成: 发现${res.total || 0}个机会, 执行${res.executed || 0}/草稿${res.drafted || 0}/通知${res.notified || 0}`, 'success');
+      loadScanResults(); loadAgentActionLog();
+    } else toast('巡检失败: ' + res.error, 'danger');
+  } catch(e) { toast('巡检失败', 'danger'); }
+}
+
+async function loadScanResults() {
+  try {
+    const res = await api('/api/agent/scan-results?limit=20');
+    const el = document.getElementById('scan-results-list');
+    if (!res.success || !res.data?.length) { el.innerHTML = '<p class="text-muted">暂无巡检结果</p>'; return; }
+    el.innerHTML = res.data.map(r => `
+      <div class="border-start border-2 ${r.status === 'executed' ? 'border-success' : r.status === 'pending' ? 'border-warning' : 'border-secondary'} ps-2 mb-1">
+        <small class="text-muted">${r.created_at}</small>
+        <span class="badge bg-${r.status === 'executed' ? 'success' : r.status === 'pending' ? 'warning' : 'secondary'} ms-1">${r.status}</span>
+        <span class="badge bg-info">${r.trigger_type}</span>
+        <div class="small">${r.trigger_reason || ''}</div>
+        ${r.decision_reason ? '<small class="text-muted">决策: ' + r.decision_reason + '</small>' : ''}
+      </div>
+    `).join('');
+  } catch(e) { console.error('loadScanResults:', e); }
+}
+
+// ========== 效果看板 ==========
+async function loadDashboard() {
+  try {
+    const res = await api('/api/agent/dashboard/overview?days=30');
+    if (!res.success) return;
+    document.getElementById('dash-scans').textContent = res.scans?.scan_count || 0;
+    document.getElementById('dash-opportunities').textContent = res.scans?.total || 0;
+    document.getElementById('dash-executed').textContent = res.scans?.executed || 0;
+    document.getElementById('dash-experiences').textContent = res.experiences?.total || 0;
+    document.getElementById('dash-autonomy').textContent = 'Lv' + (res.autonomyLevel || 1);
+    document.getElementById('dash-agent-rate').textContent = res.emailComparison?.agent?.rate || 'N/A';
+    document.getElementById('dash-manual-rate').textContent = res.emailComparison?.manual?.rate || 'N/A';
+    // 草稿数从drafts API获取
+  } catch(e) { console.error('loadDashboard:', e); }
+}
+
+// ========== Agent草稿审核 ==========
+async function loadAgentDrafts() {
+  try {
+    const res = await api('/api/agent/dashboard/drafts');
+    const el = document.getElementById('agent-drafts-list');
+    document.getElementById('draft-count').textContent = res.total || 0;
+    document.getElementById('dash-drafts').textContent = res.total || 0;
+    if (!res.success || !res.data?.length) { el.innerHTML = '<p class="text-muted">暂无待审核草稿</p>'; return; }
+    el.innerHTML = res.data.map(d => `
+      <div class="border-start border-2 border-warning ps-2 mb-2">
+        <div class="d-flex justify-content-between">
+          <strong>${d.company || d.contact_name || d.to_addr}</strong>
+          <small class="text-muted">${d.created_at}</small>
+        </div>
+        <div class="small">📧 ${d.subject || '(无主题)'}</div>
+        <div class="small text-muted text-truncate" style="max-width:500px">${(d.body || '').substring(0, 100)}...</div>
+        <button class="btn btn-sm btn-outline-primary mt-1" onclick='openDraftEdit(${JSON.stringify(d).replace(/'/g,"&#39;")})'>✏️ 查看/编辑</button>
+        <button class="btn btn-sm btn-success mt-1" onclick="sendDraft(${d.id})">✅ 发送</button>
+        <button class="btn btn-sm btn-danger mt-1" onclick="deleteDraft(${d.id})">🗑️ 删除</button>
+      </div>
+    `).join('');
+  } catch(e) { console.error('loadAgentDrafts:', e); }
+}
+
+async function sendDraft(id) {
+  try {
+    const res = await api('/api/agent/dashboard/drafts/' + id + '/send', 'POST');
+    if (res.success) { toast('已加入发送队列', 'success'); loadAgentDrafts(); loadDashboard(); }
+    else toast('发送失败: ' + res.error, 'danger');
+  } catch(e) { toast('发送失败', 'danger'); }
+}
+
+async function deleteDraft(id) {
+  try {
+    const res = await api('/api/agent/dashboard/drafts/' + id, 'DELETE');
+    if (res.success) { toast('草稿已删除', 'success'); loadAgentDrafts(); loadDashboard(); }
+    else toast('删除失败: ' + res.error, 'danger');
+  } catch(e) { toast('删除失败', 'danger'); }
+}
+
+function openDraftEdit(d) {
+  document.getElementById('draft-edit-id').value = d.id;
+  document.getElementById('draft-edit-to').value = d.to_addr || '';
+  document.getElementById('draft-edit-subject').value = d.subject || '';
+  document.getElementById('draft-edit-body').value = d.body || '';
+  new bootstrap.Modal(document.getElementById('draftEditModal')).show();
+}
+
+async function saveDraft() {
+  const id = document.getElementById('draft-edit-id').value;
+  const subject = document.getElementById('draft-edit-subject').value;
+  const body = document.getElementById('draft-edit-body').value;
+  try {
+    const res = await api('/api/agent/dashboard/drafts/' + id, 'PUT', { subject, body });
+    if (res.success) { toast('草稿已保存', 'success'); bootstrap.Modal.getInstance(document.getElementById('draftEditModal')).hide(); loadAgentDrafts(); }
+    else toast('保存失败: ' + res.error, 'danger');
+  } catch(e) { toast('保存失败', 'danger'); }
+}
+
+async function saveThenSendDraft() {
+  const id = document.getElementById('draft-edit-id').value;
+  const subject = document.getElementById('draft-edit-subject').value;
+  const body = document.getElementById('draft-edit-body').value;
+  try {
+    const saveRes = await api('/api/agent/dashboard/drafts/' + id, 'PUT', { subject, body });
+    if (!saveRes.success) { toast('保存失败: ' + saveRes.error, 'danger'); return; }
+    const sendRes = await api('/api/agent/dashboard/drafts/' + id + '/send', 'POST');
+    if (sendRes.success) { toast('已保存并加入发送队列', 'success'); bootstrap.Modal.getInstance(document.getElementById('draftEditModal')).hide(); loadAgentDrafts(); loadDashboard(); }
+    else toast('发送失败: ' + sendRes.error, 'danger');
+  } catch(e) { toast('操作失败', 'danger'); }
+}
+
+// ========== Socket.IO Agent事件监听 ==========
+if (typeof io !== 'undefined') {
+  const socket = io();
+  socket.on('agent_event', (event) => {
+    console.log('[Agent Event]', event.type, event.data);
+    switch(event.type) {
+      case 'scan_complete':
+        toast('巡检完成: 发现' + (event.data.total || 0) + '个机会', 'info');
+        loadScanResults(); loadDashboard(); loadAgentActionLog(); loadAgentDrafts();
+        break;
+      case 'draft_created':
+        toast('Agent为 ' + (event.data.customer || '客户') + ' 生成了邮件草稿', 'info');
+        loadAgentDrafts();
+        break;
+      case 'auto_executed':
+        toast('Agent自动发送邮件给 ' + (event.data.customer || '客户'), 'success');
+        loadAgentActionLog(); loadDashboard();
+        break;
+      case 'upgrade_request':
+        toast('Agent申请升级到 ' + event.data.toName + ': ' + event.data.reason, 'warning');
+        loadUpgradeRequests();
+        break;
+      case 'autonomy_changed':
+        toast('自主权等级已变更为 ' + event.data.levelName, 'info');
+        loadAutonomy(); loadDashboard();
+        break;
+      case 'learning_complete':
+        if (event.data.strategiesCreated > 0) {
+          toast('主动学习: 发现' + event.data.strategiesCreated + '个新策略草稿', 'info');
+        }
+        break;
+      case 'agent_trigger':
+        toast(event.data.reason, 'info');
+        break;
+    }
+  });
+}
+
+// ========== 知识库管理 ==========
+async function loadExperiences() {
+  try {
+    const cat = document.getElementById('kb-filter-category').value;
+    const sent = document.getElementById('kb-filter-sentiment').value;
+    let url = '/api/agent/experiences?limit=50';
+    if (cat) url += '&category=' + cat;
+    if (sent) url += '&sentiment=' + sent;
+    const res = await api(url);
+    const el = document.getElementById('kb-experiences-list');
+    document.getElementById('kb-exp-count').textContent = res.total || 0;
+    if (!res.success || !res.rows?.length) { el.innerHTML = '<p class="text-muted">暂无经验记录</p>'; return; }
+    el.innerHTML = res.rows.map(e => `
+      <div class="card card-body p-2 mb-2">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <span class="badge bg-info">${e.category}</span>
+            <span class="badge bg-${e.result_sentiment === 'positive' ? 'success' : e.result_sentiment === 'negative' ? 'danger' : 'secondary'}">${e.result_sentiment}</span>
+            <span class="badge bg-warning text-dark">置信度: ${(e.confidence || 0).toFixed(2)}</span>
+            ${e.is_valid === 1 ? '<span class="badge bg-success">✓有效</span>' : e.is_valid === 0 ? '<span class="badge bg-danger">✗无效</span>' : ''}
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline-success" onclick="markExp(${e.id},1)" title="标记有效">✓</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="markExp(${e.id},0)" title="标记无效">✗</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="deleteExp(${e.id})" title="删除">🗑</button>
+          </div>
+        </div>
+        <div class="mt-1"><strong>场景:</strong> ${e.situation || '-'}</div>
+        <div><strong>做法:</strong> ${e.action || '-'}</div>
+        <div><strong>结果:</strong> ${e.result || '-'}</div>
+        ${e.lesson ? '<div><strong>教训:</strong> ' + e.lesson + '</div>' : ''}
+        <small class="text-muted">来源: ${e.source} | 应用${e.times_applied || 0}次 | ${e.created_at}</small>
+      </div>
+    `).join('');
+  } catch(e) { console.error('loadExperiences:', e); }
+}
+
+async function markExp(id, valid) {
+  await api('/api/agent/experiences/' + id + '/validate', 'PUT', { is_valid: valid });
+  loadExperiences();
+}
+async function deleteExp(id) {
+  if (!confirm('确定删除这条经验？')) return;
+  await api('/api/agent/experiences/' + id, 'DELETE');
+  loadExperiences();
+}
+
+async function loadStrategies() {
+  try {
+    const res = await api('/api/agent/strategies');
+    const el = document.getElementById('kb-strategies-list');
+    if (!res.success || !res.data?.length) { el.innerHTML = '<p class="text-muted">暂无策略</p>'; return; }
+    el.innerHTML = res.data.map(s => `
+      <div class="card card-body p-2 mb-2">
+        <div class="d-flex justify-content-between">
+          <strong>${s.name}</strong>
+          <span class="badge bg-${s.is_active ? 'success' : 'secondary'}">${s.is_active ? '启用' : '停用'}</span>
+        </div>
+        <div>${s.description || ''}</div>
+        ${s.target_segment ? '<small class="text-muted">适用: ' + s.target_segment + '</small>' : ''}
+      </div>
+    `).join('');
+  } catch(e) { console.error('loadStrategies:', e); }
+}
+
+async function loadStaticKnowledge() {
+  try {
+    const res = await api('/api/agent/knowledge');
+    const el = document.getElementById('kb-static-list');
+    if (!res.success || !res.data) { el.innerHTML = '<p class="text-muted">暂无静态知识</p>'; return; }
+    el.innerHTML = Object.entries(res.data).map(([cat, items]) => `
+      <div class="mb-3">
+        <h6 class="text-primary">${cat}</h6>
+        ${Object.entries(items).map(([k, v]) => `<div class="ps-3 mb-1"><strong>${k}:</strong> <code>${typeof v === 'object' ? JSON.stringify(v).substring(0, 200) : String(v).substring(0, 200)}</code></div>`).join('')}
+      </div>
+    `).join('');
+  } catch(e) { console.error('loadStaticKnowledge:', e); }
+}
+
+document.querySelector('[href="#tab-knowledge"]')?.addEventListener('shown.bs.tab', () => { loadExperiences(); });
+document.querySelector('a[href="#kb-static"]')?.addEventListener('shown.bs.tab', loadStaticKnowledge);
+
+// ========== TOTP 双因素认证 ==========
+async function loadTotpStatus() {
+  try {
+    const res = await fetch('/api/settings/totp');
+    const data = await res.json();
+    document.getElementById('totp-status').style.display = 'none';
+    if (data.enabled) {
+      document.getElementById('totp-enabled').style.display = 'block';
+      document.getElementById('totp-setup').style.display = 'none';
+    } else {
+      document.getElementById('totp-setup').style.display = 'block';
+      document.getElementById('totp-enabled').style.display = 'none';
+    }
+  } catch(e) {
+    document.getElementById('totp-status').innerHTML = '<p class="text-danger">加载TOTP状态失败</p>';
+  }
+}
+
+async function setupTotp() {
+  try {
+    const res = await fetch('/api/settings/totp/setup', { method: 'POST', headers: {'Content-Type':'application/json'} });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('totp-qr-img').src = data.qrCodeUrl;
+      document.getElementById('totp-secret-text').value = data.secret;
+      document.getElementById('totp-setup').style.display = 'none';
+      document.getElementById('totp-qrcode').style.display = 'block';
+    }
+  } catch(e) {
+    alert('生成TOTP密钥失败');
+  }
+}
+
+async function enableTotp() {
+  const token = document.getElementById('totp-verify-code').value;
+  if (!token || token.length !== 6) { alert('请输入6位验证码'); return; }
+  try {
+    const res = await fetch('/api/settings/totp/enable', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ token })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert('✅ 双因素认证已启用！');
+      document.getElementById('totp-qrcode').style.display = 'none';
+      loadTotpStatus();
+    } else {
+      alert(data.error || '启用失败');
+    }
+  } catch(e) {
+    alert('启用失败');
+  }
+}
+
+function cancelTotp() {
+  document.getElementById('totp-qrcode').style.display = 'none';
+  document.getElementById('totp-setup').style.display = 'block';
+}
+
+function showDisableTotp() {
+  document.getElementById('totp-enabled').style.display = 'none';
+  document.getElementById('totp-disable').style.display = 'block';
+}
+
+function cancelDisableTotp() {
+  document.getElementById('totp-disable').style.display = 'none';
+  document.getElementById('totp-enabled').style.display = 'block';
+}
+
+async function disableTotp() {
+  const password = document.getElementById('totp-disable-password').value;
+  const token = document.getElementById('totp-disable-code').value;
+  if (!password) { alert('请输入密码'); return; }
+  if (!token || token.length !== 6) { alert('请输入6位验证码'); return; }
+  try {
+    const res = await fetch('/api/settings/totp/disable', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ token, password })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert('双因素认证已禁用');
+      document.getElementById('totp-disable').style.display = 'none';
+      loadTotpStatus();
+    } else {
+      alert(data.error || '禁用失败');
+    }
+  } catch(e) {
+    alert('禁用失败');
+  }
+}
+
+// 页面加载时获取TOTP状态
+document.addEventListener('DOMContentLoaded', () => {
+  loadTotpStatus();
+});
+</script>
+<%- include('partials/footer') %>

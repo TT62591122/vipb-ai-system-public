@@ -1,0 +1,580 @@
+<%- include('partials/header') %>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="mb-0">📧 营销中心</h4><small class="text-muted">邮件 + 自动化 + 防封体系</small></div>
+  </div>
+
+  <ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-compose">✍️ 写邮件</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-sequences">🔄 自动序列</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-history">📊 发送记录</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-stats">📊 邮箱发送统计</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-campaign">🚀 AI群发</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- 写邮件 -->
+    <div class="tab-pane fade show active" id="tab-compose">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-body">
+              <div class="mb-3"><label class="form-label">发件账号</label>
+                <select class="form-select" id="email-from">
+                  <option value="">-- 选择发件邮箱 --</option>
+                  <% accounts.forEach(a => { if(a.is_active) { %><option value="<%= a.id %>" data-email="<%= a.email %>"><%= a.display_name ? a.display_name+' &lt;'+a.email+'&gt;' : a.email %></option><% } }) %>
+                </select>
+              </div>
+              <div class="mb-3"><label class="form-label">收件人</label>
+                <div class="input-group">
+                  <select class="form-select" id="email-customer" onchange="fillRecipient()">
+                    <option value="">-- 选择客户 --</option>
+                    <% (customers||[]).forEach(c => { if(c.email) { %><option value="<%= c.email %>" data-id="<%= c.id %>" data-company="<%= c.company %>"><%= c.company||c.contact_name %> (<%= c.email %>)</option><% } }) %>
+                  </select>
+                  <input type="email" class="form-control" id="email-to" placeholder="或直接输入邮箱">
+                </div>
+              </div>
+              <div class="mb-3"><label class="form-label">主题</label><input type="text" class="form-control" id="email-subject"></div>
+              <div class="mb-3"><label class="form-label">正文</label><textarea class="form-control" id="email-body" rows="10"></textarea></div>
+              <button class="btn btn-purple" onclick="sendEmail()">📤 发送</button>
+              <button class="btn btn-outline-primary ms-2" onclick="aiGenerateEmail()">🤖 AI生成</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">📧 防封状态</div>
+            <div class="card-body">
+              <p><strong>邮箱预热规则:</strong></p>
+              <ul class="small">
+                <li>Week1: 3封/天</li><li>Week2: 8封/天</li><li>Week3: 15封/天</li><li>Week4: 25封/天</li><li>Week5+: 40封/天</li>
+              </ul>
+              <p><strong>发送间隔:</strong> 3-8分钟</p>
+              <p><strong>退信阈值:</strong> 8%暂停</p>
+              <p><strong>投诉阈值:</strong> 0.3%暂停48h</p>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <div class="card-header">🤖 AI邮件助手</div>
+            <div class="card-body">
+              <select class="form-select mb-2" id="email-type">
+                <option value="cold">冷邮件</option><option value="followup">跟进邮件</option><option value="reply">回复邮件</option><option value="quote">报价邮件</option>
+              </select>
+              <div id="ai-email-output"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自动序列 -->
+    <div class="tab-pane fade" id="tab-sequences">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between"><span>邮件自动序列</span><button class="btn btn-sm btn-purple" data-bs-toggle="modal" data-bs-target="#addSequenceModal">新建序列</button></div>
+        <div class="card-body">
+          <% if(sequences.length) { sequences.forEach(function(s) { %>
+          <div class="kanban-card mb-2"><strong><%= s.name %></strong><br><small class="text-muted"><%= s.description||'' %> | 行业: <%= s.target_industry||'-' %></small></div>
+          <% }) } else { %><p class="text-muted text-center py-3">暂无自动序列</p><% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- 发送记录 -->
+    <div class="tab-pane fade" id="tab-history">
+      <div class="row g-2 mb-3">
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="search-emails" placeholder="🔍 搜索（收件人/主题/公司）" oninput="filterEmails()">
+        </div>
+        <div class="col-md-2">
+          <select class="form-select" id="filter-email-status" onchange="filterEmails()">
+            <option value="">全部状态</option>
+            <option value="draft">📝 草稿</option>
+            <option value="queued">⏳ 排队中</option>
+            <option value="sending">📤 发送中</option>
+            <option value="sent">✅ 已发送</option>
+            <option value="failed">❌ 失败</option>
+            <option value="bounced">↩️ 退信</option>
+          </select>
+        </div>
+        <div class="col-md-2"><input type="date" class="form-control" id="filter-email-date-from" onchange="filterEmails()"></div>
+        <div class="col-md-2"><input type="date" class="form-control" id="filter-email-date-to" onchange="filterEmails()"></div>
+        <div class="col-md-2"><button class="btn btn-outline-secondary w-100" onclick="clearEmailFilters()">🔄 清除</button></div>
+      </div>
+      <div class="small text-muted mb-2" id="email-filter-info"></div>
+      <div class="table-container">
+        <table class="table table-hover">
+          <thead><tr><th>时间</th><th>客户</th><th>渠道</th><th>主题/内容</th><th>状态</th></tr></thead>
+          <tbody>
+            <% recentEmails.forEach(function(e) {
+              const statusColors = {
+                'draft': '📝 草稿',
+                'queued': '⏳ 排队',
+                'sending': '📤 发送中',
+                'sent': '✅ 已发送',
+                'failed': '❌ 失败',
+                'bounced': '↩️ 退信'
+              };
+            %>
+            <tr class="email-row" data-status="<%= e.status %>" data-to="<%= (e.to||'').toLowerCase() %>" data-subject="<%= (e.subject||'').toLowerCase() %>" data-date="<%= (e.sent_at||e.created_at||'').substring(0,10) %>">
+              <td><small><%= e.sent_at || e.created_at %></small></td>
+              <td>📧 <%= e.to %></td>
+              <td><%= e.channel || 'email' %></td>
+              <td><%= (e.subject||e.content||'').substring(0,50) %></td>
+              <td><%= statusColors[e.status] || e.status %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% if(pagination) { %>
+      <div class="d-flex justify-content-between align-items-center mt-2">
+        <small class="text-muted">共 <%= pagination.total %> 条，<%= pagination.totalPages %> 页</small>
+        <div>
+          <% if(pagination.page > 1) { %><a href="/marketing?page=<%= pagination.page-1 %>" class="btn btn-sm btn-outline-primary">上一页</a><% } %>
+          <span class="mx-2"><%= pagination.page %> / <%= pagination.totalPages %></span>
+          <% if(pagination.page < pagination.totalPages) { %><a href="/marketing?page=<%= pagination.page+1 %>" class="btn btn-sm btn-outline-primary">下一页</a><% } %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- 邮箱发送统计 -->
+    <div class="tab-pane fade" id="tab-stats">
+      <div class="card">
+        <div class="card-header">📊 邮箱发送统计</div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>邮箱</th>
+                <th>今日已发</th>
+                <th>今日限额</th>
+                <th>本周已发</th>
+                <th>健康度</th>
+                <th>预热阶段</th>
+                <th>打开率</th>
+                <th>点击率</th>
+                <th>退信率</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% (emailStats||[]).forEach(function(s) { %>
+              <tr>
+                <td><%= s.email %></td>
+                <td><%= s.today_sent || 0 %></td>
+                <td><%= s.daily_limit || 0 %></td>
+                <td><%= s.week_sent || 0 %></td>
+                <td><span class="badge bg-<%= (s.health||'good')==='good'?'success':(s.health==='warning'?'warning':'danger') %>"><%= s.health || 'good' %></span></td>
+                <td><%= s.warmup_stage || '-' %></td>
+                <td><%= s.open_rate || '-' %></td>
+                <td><%= s.click_rate || '-' %></td>
+                <td><%= s.bounce_rate || '-' %></td>
+              </tr>
+              <% }) %>
+              <% if(!(emailStats||[]).length) { %><tr><td colspan="9" class="text-center text-muted py-3">暂无邮箱账号，请前往 设置→邮件配置 添加</td></tr><% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row g-3 mt-2">
+        <div class="col-md-3"><div class="stat-card"><div class="stat-label">今日总发送</div><div class="stat-value" id="stat-today-sent"><%= (emailStats||[]).reduce((s,a) => s+(a.today_sent||0), 0) %></div></div></div>
+        <div class="col-md-3"><div class="stat-card"><div class="stat-label">活跃邮箱</div><div class="stat-value"><%= (emailStats||[]).filter(s => s.today_sent > 0).length %></div></div></div>
+        <div class="col-md-3"><div class="stat-card"><div class="stat-label">健康邮箱</div><div class="stat-value"><%= (emailStats||[]).filter(s => (s.health||'good')==='good').length %></div></div></div>
+        <div class="col-md-3"><div class="stat-card"><div class="stat-label">需关注</div><div class="stat-value"><%= (emailStats||[]).filter(s => s.health==='warning'||s.health==='danger').length %></div></div></div>
+      </div>
+    </div>
+
+    <!-- AI群发 -->
+    <div class="tab-pane fade" id="tab-campaign">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
+              <span>🚀 AI个性化群发</span>
+              <small>100人100封不同邮件</small>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label fw-bold">📌 营销主题/卖点</label>
+                <input type="text" class="form-control" id="campaign-topic" placeholder="例如：智能预付费电表，支持远程抄表，出口30+国家">
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-md-4">
+                  <label class="form-label">邮件类型</label>
+                  <select class="form-select" id="campaign-type">
+                    <option value="cold outreach">冷开发</option>
+                    <option value="product promotion">产品推广</option>
+                    <option value="trade show follow-up">展会跟进</option>
+                    <option value="seasonal promotion">季节促销</option>
+                    <option value="new product launch">新品发布</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">语言</label>
+                  <select class="form-select" id="campaign-language">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="ar">العربية</option>
+                    <option value="pt">Português</option>
+                    <option value="ru">Русский</option>
+                    <option value="zh">中文</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">发件账号</label>
+                  <select class="form-select" id="campaign-account">
+                    <option value="">自动轮发</option>
+                    <% accounts.forEach(a => { if(a.is_active) { %><option value="<%= a.id %>"><%= a.email %></option><% } }) %>
+                  </select>
+                </div>
+              </div>
+
+              <!-- 客户筛选 -->
+              <div class="card mb-3">
+                <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                  <small class="fw-bold">👥 选择目标客户</small>
+                  <div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="loadCampaignCustomers()">🔍 筛选</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="selectAllCampaignCustomers()">全选</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="deselectAllCampaignCustomers()">取消全选</button>
+                  </div>
+                </div>
+                <div class="card-body py-2">
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-3"><input type="text" class="form-control form-control-sm" id="campaign-search" placeholder="搜索公司/联系人/邮箱"></div>
+                    <div class="col-md-3"><input type="text" class="form-control form-control-sm" id="campaign-country" placeholder="国家"></div>
+                    <div class="col-md-3"><input type="text" class="form-control form-control-sm" id="campaign-industry" placeholder="行业"></div>
+                    <div class="col-md-3">
+                      <select class="form-select form-select-sm" id="campaign-stage">
+                        <option value="">所有阶段</option>
+                        <option value="new">新线索</option>
+                        <option value="contacted">已联系</option>
+                        <option value="engaged">已互动</option>
+                        <option value="qualified">已验证</option>
+                        <option value="negotiation">谈判中</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div id="campaign-customer-list" style="max-height:300px;overflow-y:auto">
+                    <div class="text-center text-muted py-3">点击"筛选"加载客户列表</div>
+                  </div>
+                  <div class="mt-2"><small class="text-muted">已选: <span id="campaign-selected-count">0</span> 个客户</small></div>
+                </div>
+              </div>
+
+              <button class="btn btn-lg btn-purple w-100" onclick="startCampaign()">🚀 开始AI群发</button>
+              <div id="campaign-progress" class="mt-3" style="display:none">
+                <div class="progress mb-2"><div class="progress-bar bg-purple" id="campaign-progress-bar" style="width:0%"></div></div>
+                <div id="campaign-progress-text" class="small text-muted"></div>
+              </div>
+              <div id="campaign-result" class="mt-3"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">💡 使用说明</div>
+            <div class="card-body small">
+              <p><strong>AI群发</strong>会为每个客户生成独一无二的个性化邮件：</p>
+              <ul>
+                <li>根据客户公司名、国家、行业定制内容</li>
+                <li>每封邮件主题和正文都不同</li>
+                <li>自动添加个性化称呼</li>
+                <li>遵守邮箱预热规则（不会超限）</li>
+                <li>发送间隔3-8分钟（防封）</li>
+              </ul>
+              <p class="text-warning mb-0">⚠️ 发送前请确保已配置发件邮箱账号</p>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <div class="card-header">📊 群发效果预估</div>
+            <div class="card-body small" id="campaign-estimate">
+              <p class="text-muted">选择客户后显示预估</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 新建自动序列Modal -->
+<div class="modal fade" id="addSequenceModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">新建邮件自动序列</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <form id="sequence-form">
+      <div class="mb-3"><label class="form-label">序列名称</label><input type="text" class="form-control" name="name" placeholder="例如：新客户欢迎流程"></div>
+      <div class="mb-3"><label class="form-label">描述</label><textarea class="form-control" name="description" rows="2" placeholder="简要说明这个序列的用途"></textarea></div>
+      <div class="mb-3"><label class="form-label">目标行业</label><input type="text" class="form-control" name="target_industry" placeholder="例如：电能表、断路器"></div>
+      <div class="mb-3"><label class="form-label">邮件步骤（JSON格式）</label><textarea class="form-control" name="steps" rows="6" placeholder='[{"day":1,"subject":"欢迎...","body":"..."},{"day":3,"subject":"跟进...","body":"..."}]'></textarea></div>
+      <small class="text-muted">格式：[{"day":延迟天数,"subject":"主题","body":"正文"}]</small>
+    </form>
+  </div>
+  <div class="modal-footer"><button class="btn btn-purple" onclick="addSequence()">保存</button></div>
+</div></div></div>
+
+<script>
+// ========== 邮件搜索和筛选 ==========
+function filterEmails() {
+  const search = document.getElementById('search-emails').value.toLowerCase();
+  const status = document.getElementById('filter-email-status').value;
+  const dateFrom = document.getElementById('filter-email-date-from').value;
+  const dateTo = document.getElementById('filter-email-date-to').value;
+
+  const rows = document.querySelectorAll('.email-row');
+  let visible = 0, total = rows.length;
+  rows.forEach(row => {
+    const rowTo = row.dataset.to || '';
+    const rowSubject = row.dataset.subject || '';
+    const rowStatus = row.dataset.status || '';
+    const rowDate = row.dataset.date || '';
+
+    const matchSearch = !search || rowTo.includes(search) || rowSubject.includes(search);
+    const matchStatus = !status || rowStatus === status;
+    const matchDateFrom = !dateFrom || rowDate >= dateFrom;
+    const matchDateTo = !dateTo || rowDate <= dateTo;
+
+    if (matchSearch && matchStatus && matchDateFrom && matchDateTo) {
+      row.style.display = '';
+      visible++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+
+  const info = document.getElementById('email-filter-info');
+  if (search || status || dateFrom || dateTo) {
+    info.textContent = '筛选结果：' + visible + '/' + total + ' 条匹配';
+  } else {
+    info.textContent = '';
+  }
+}
+
+function clearEmailFilters() {
+  document.getElementById('search-emails').value = '';
+  document.getElementById('filter-email-status').value = '';
+  document.getElementById('filter-email-date-from').value = '';
+  document.getElementById('filter-email-date-to').value = '';
+  filterEmails();
+}
+
+function fillRecipient() {
+  const sel = document.getElementById('email-customer');
+  const emailInput = document.getElementById('email-to');
+  if (sel.value) emailInput.value = sel.value;
+}
+
+async function sendEmail() {
+  const to = document.getElementById('email-to').value;
+  const subject = document.getElementById('email-subject').value;
+  const body = document.getElementById('email-body').value;
+  const fromId = document.getElementById('email-from').value;
+
+  if (!to) { toast('请填写收件人地址', 'warning'); return; }
+  if (!subject && !body) { toast('主题和正文不能同时为空', 'warning'); return; }
+
+  if (!fromId) {
+    // 没选发件账号，保存草稿
+    const data = { to, subject, body: body, status: 'draft' };
+    const res = await api('/api/marketing/send', 'POST', data);
+    if (res.success) {
+      toast('📝 已保存为草稿（未选发件账号）');
+      return;
+    }
+  }
+
+  // 有发件账号，直接发送
+  const data = { to, subject, body: body, account_id: parseInt(fromId) };
+  const btn = document.querySelector('[onclick="sendEmail()"]');
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 发送中...';
+
+  try {
+    const res = await api('/api/marketing/send', 'POST', data);
+    if (res.success) {
+      toast('邮件发送成功！');
+      document.getElementById('email-subject').value = '';
+      document.getElementById('email-body').value = '';
+    } else {
+      toast(res.error || '发送失败', 'danger');
+    }
+  } catch(e) {
+    toast('发送出错', 'danger');
+  }
+  btn.innerHTML = '📤 发送';
+}
+
+async function aiGenerateEmail() {
+  const type = document.getElementById('email-type').value;
+  const output = document.getElementById('ai-email-output');
+  output.innerHTML = '<div class="spinner-border spinner-border-sm"></div> 🤖 AI正在生成邮件...';
+
+  try {
+    const customer = document.getElementById('email-customer');
+    const company = customer.selectedOptions[0]?.dataset?.company || '';
+    const res = await api('/api/ai/email', 'POST', { type, company });
+    if (res.success) {
+      output.innerHTML = '<div class="alert alert-success small">' + (res.result||'').replace(/\n/g,'<br>') + '</div>';
+      if (res.result) document.getElementById('email-body').value = res.result;
+    } else {
+      output.innerHTML = '<div class="alert alert-warning small">' + (res.error||'AI生成失败') + '</div>';
+    }
+  } catch(e) {
+    output.innerHTML = '<div class="alert alert-danger small">AI服务不可用，<a href="/settings">前往设置配置AI</a></div>';
+  }
+}
+
+async function addSequence() {
+  const form = document.getElementById('sequence-form');
+  const data = Object.fromEntries(new FormData(form));
+  try {
+    data.steps = JSON.parse(data.steps || '[]');
+  } catch {
+    toast('步骤格式错误，请使用JSON数组', 'danger');
+    return;
+  }
+  const res = await api('/api/marketing/sequences', 'POST', data);
+  if (res.success) { toast('序列已创建'); reloadKeepTab(); }
+}
+
+// ==================== AI群发功能 ====================
+
+async function loadCampaignCustomers() {
+  const search = document.getElementById('campaign-search').value;
+  const country = document.getElementById('campaign-country').value;
+  const industry = document.getElementById('campaign-industry').value;
+  const stage = document.getElementById('campaign-stage').value;
+  
+  const params = new URLSearchParams();
+  if (search) params.set('search', search);
+  if (country) params.set('country', country);
+  if (industry) params.set('industry', industry);
+  if (stage) params.set('stage', stage);
+  
+  try {
+    const customers = await api('/api/marketing/campaign/customers?' + params.toString(), 'GET');
+    const list = document.getElementById('campaign-customer-list');
+    
+    if (!customers.length) {
+      list.innerHTML = '<div class="text-center text-muted py-3">未找到符合条件的客户</div>';
+      return;
+    }
+    
+    list.innerHTML = '<table class="table table-sm table-hover mb-0"><thead><tr><th style="width:30px"><input type="checkbox" id="campaign-check-all" onchange="toggleAllCampaignCustomers(this)"></th><th>公司</th><th>联系人</th><th>邮箱</th><th>国家</th><th>行业</th><th>评分</th></tr></thead><tbody>' +
+      customers.map(c => `<tr>
+        <td><input type="checkbox" class="campaign-customer-check" value="${c.id}" data-email="${c.email}" onchange="updateCampaignCount()"></td>
+        <td>${c.company || '-'}</td>
+        <td>${c.contact_name || '-'}</td>
+        <td><small>${c.email}</small></td>
+        <td>${c.country || '-'}</td>
+        <td>${c.tags || '-'}</td>
+        <td>${c.lead_score || 0}</td>
+      </tr>`).join('') +
+      '</tbody></table>';
+    
+    updateCampaignCount();
+    updateCampaignEstimate();
+  } catch(e) {
+    toast('加载客户列表失败', 'danger');
+  }
+}
+
+function selectAllCampaignCustomers() {
+  document.querySelectorAll('.campaign-customer-check').forEach(cb => cb.checked = true);
+  const checkAll = document.getElementById('campaign-check-all');
+  if (checkAll) checkAll.checked = true;
+  updateCampaignCount();
+  updateCampaignEstimate();
+}
+
+function deselectAllCampaignCustomers() {
+  document.querySelectorAll('.campaign-customer-check').forEach(cb => cb.checked = false);
+  const checkAll = document.getElementById('campaign-check-all');
+  if (checkAll) checkAll.checked = false;
+  updateCampaignCount();
+  updateCampaignEstimate();
+}
+
+function toggleAllCampaignCustomers(checkbox) {
+  document.querySelectorAll('.campaign-customer-check').forEach(cb => cb.checked = checkbox.checked);
+  updateCampaignCount();
+  updateCampaignEstimate();
+}
+
+function updateCampaignCount() {
+  const count = document.querySelectorAll('.campaign-customer-check:checked').length;
+  document.getElementById('campaign-selected-count').textContent = count;
+}
+
+function updateCampaignEstimate() {
+  const count = document.querySelectorAll('.campaign-customer-check:checked').length;
+  const est = document.getElementById('campaign-estimate');
+  if (!count) {
+    est.innerHTML = '<p class="text-muted">选择客户后显示预估</p>';
+    return;
+  }
+  const minTime = Math.ceil(count * 3);
+  const maxTime = Math.ceil(count * 8);
+  est.innerHTML = `
+    <p>📧 将发送 <strong>${count}</strong> 封个性化邮件</p>
+    <p>⏱️ 预计耗时 <strong>${minTime}-${maxTime}</strong> 分钟</p>
+    <p>🤖 AI生成约需 <strong>${Math.ceil(count/5) * 10}-${Math.ceil(count/5) * 20}</strong> 秒</p>
+    <p class="mb-0 text-success">✅ 每封邮件内容独一无二</p>
+  `;
+}
+
+async function startCampaign() {
+  const topic = document.getElementById('campaign-topic').value.trim();
+  if (!topic) { toast('请输入营销主题/卖点', 'warning'); return; }
+  
+  const checked = document.querySelectorAll('.campaign-customer-check:checked');
+  if (!checked.length) { toast('请选择至少一个客户', 'warning'); return; }
+  
+  const customer_ids = Array.from(checked).map(cb => parseInt(cb.value));
+  const email_type = document.getElementById('campaign-type').value;
+  const language = document.getElementById('campaign-language').value;
+  const account_id = document.getElementById('campaign-account').value || undefined;
+  
+  if (!confirm(`确定要向 ${customer_ids.length} 个客户发送AI个性化邮件吗？\n\n主题: ${topic}\n类型: ${email_type}\n语言: ${language}`)) return;
+  
+  const btn = document.querySelector('[onclick="startCampaign()"]');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> AI正在生成个性化邮件...';
+  
+  const progress = document.getElementById('campaign-progress');
+  progress.style.display = 'block';
+  document.getElementById('campaign-progress-bar').style.width = '30%';
+  document.getElementById('campaign-progress-text').textContent = `正在为 ${customer_ids.length} 个客户生成个性化邮件...`;
+  
+  try {
+    const result = await api('/api/marketing/campaign/ai-send', 'POST', {
+      customer_ids, topic, email_type, language, account_id: account_id ? parseInt(account_id) : undefined
+    });
+    
+    document.getElementById('campaign-progress-bar').style.width = '100%';
+    
+    if (result.success) {
+      document.getElementById('campaign-result').innerHTML = `
+        <div class="alert alert-success">
+          <h6>✅ 群发任务已启动</h6>
+          <p class="mb-1">📧 生成邮件: ${result.generated} 封</p>
+          <p class="mb-1">📤 加入队列: ${result.queued} 封</p>
+          ${result.errors?.length ? '<p class="mb-1 text-warning">⚠️ 错误: ' + result.errors.join('; ') + '</p>' : ''}
+          <p class="mb-0"><small>邮件将以3-8分钟间隔自动发送，可在"发送记录"中查看进度</small></p>
+        </div>
+      `;
+      btn.disabled = false;
+      btn.innerHTML = '🚀 开始AI群发';
+    } else {
+      toast(result.error || '群发失败', 'danger');
+      btn.disabled = false;
+      btn.innerHTML = '🚀 开始AI群发';
+    }
+  } catch(e) {
+    toast('群发任务出错: ' + e.message, 'danger');
+    btn.disabled = false;
+    btn.innerHTML = '🚀 开始AI群发';
+  }
+}
+</script>
+<%- include('partials/footer') %>

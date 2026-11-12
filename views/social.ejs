@@ -1,0 +1,1643 @@
+<%- include('partials/header') %>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="mb-0">📱 社媒获客中心</h4><small class="text-muted">TikTok + Facebook + LinkedIn + 数据分析</small></div>
+    <button class="btn btn-purple" data-bs-toggle="modal" data-bs-target="#addPostModal">➕ 创建内容</button>
+  </div>
+
+  <ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-whatsapp">💬 WhatsApp</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-tiktok">🎵 TikTok</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-facebook">📘 Facebook</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-linkedin">🔗 LinkedIn</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-leads">📊 线索管理</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-accounts">📱 账号管理</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- WhatsApp -->
+    <div class="tab-pane fade show active" id="tab-whatsapp">
+      <!-- 连接状态栏 -->
+      <div class="card mb-3" id="wa-status-card">
+        <div class="card-body py-2 d-flex align-items-center justify-content-between">
+          <div>
+            <span id="wa-status-dot" class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background:#dc3545"></span>
+            <span id="wa-status-text">未连接</span>
+            <small class="text-muted ms-2" id="wa-account-info"></small>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-success" id="wa-connect-btn" onclick="waConnect()">🔗 连接 WhatsApp</button>
+            <button class="btn btn-sm btn-danger d-none" id="wa-disconnect-btn" onclick="waDisconnect()">断开</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR码弹窗 -->
+      <div class="modal fade" id="waQrModal" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+          <div class="modal-content text-center">
+            <div class="modal-header"><h6 class="modal-title">📱 扫描二维码连接 WhatsApp</h6><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+              <div id="wa-qr-container">
+                <div class="spinner-border text-primary mb-3"></div>
+                <p class="small text-muted">等待二维码生成...</p>
+              </div>
+              <p class="small text-muted mt-2">打开手机 WhatsApp → 设置 → 关联设备 → 扫描</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 统计卡片 -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-2"><div class="card text-center p-2"><div class="h5 mb-0" id="wa-stat-conversations">0</div><small class="text-muted">总对话</small></div></div>
+        <div class="col-md-2"><div class="card text-center p-2"><div class="h5 mb-0 text-danger" id="wa-stat-unread">0</div><small class="text-muted">未读</small></div></div>
+        <div class="col-md-2"><div class="card text-center p-2"><div class="h5 mb-0 text-primary" id="wa-stat-today">0</div><small class="text-muted">今日消息</small></div></div>
+        <div class="col-md-2"><div class="card text-center p-2"><div class="h5 mb-0 text-success" id="wa-stat-sent">0</div><small class="text-muted">已发送</small></div></div>
+        <div class="col-md-2"><div class="card text-center p-2"><div class="h5 mb-0 text-info" id="wa-stat-received">0</div><small class="text-muted">已接收</small></div></div>
+        <div class="col-md-2"><div class="card text-center p-2"><div class="h5 mb-0 text-warning" id="wa-stat-auto">0</div><small class="text-muted">自动回复</small></div></div>
+      </div>
+
+      <!-- 主体区域：左侧对话列表 + 右侧聊天窗 -->
+      <div class="row g-3">
+        <!-- 对话列表 -->
+        <div class="col-md-4">
+          <div class="card" style="height:600px;display:flex;flex-direction:column">
+            <div class="card-header py-2">
+              <input type="text" class="form-control form-control-sm" id="wa-search" placeholder="🔍 搜索对话..." oninput="waSearchConversations()">
+            </div>
+            <div class="card-header py-1 d-flex gap-1 flex-wrap" style="border-top:0">
+              <button class="btn btn-xs btn-outline-secondary wa-label-filter active" data-label="" onclick="waFilterLabel(this,'')">全部</button>
+              <button class="btn btn-xs btn-outline-danger wa-label-filter" data-label="new" onclick="waFilterLabel(this,'new')">🔴 新询盘</button>
+              <button class="btn btn-xs btn-outline-warning wa-label-filter" data-label="quoting" onclick="waFilterLabel(this,'quoting')">🟡 报价中</button>
+              <button class="btn btn-xs btn-outline-info wa-label-filter" data-label="sample" onclick="waFilterLabel(this,'sample')">🔵 样品</button>
+              <button class="btn btn-xs btn-outline-success wa-label-filter" data-label="deal" onclick="waFilterLabel(this,'deal')">🟢 成交</button>
+              <button class="btn btn-xs btn-outline-secondary wa-label-filter" data-label="support" onclick="waFilterLabel(this,'support')">⚪ 售后</button>
+            </div>
+            <div class="card-body p-0" style="overflow-y:auto;flex:1" id="wa-conversation-list">
+              <div class="text-center text-muted py-5">
+                <p>💬 连接 WhatsApp 后显示对话</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 聊天窗口 -->
+        <div class="col-md-5">
+          <div class="card" style="height:600px;display:flex;flex-direction:column">
+            <!-- 聊天头部 -->
+            <div class="card-header py-2 d-flex align-items-center justify-content-between" id="wa-chat-header">
+              <div>
+                <strong id="wa-chat-name">选择一个对话</strong>
+                <small class="text-muted ms-2" id="wa-chat-phone"></small>
+              </div>
+              <div>
+                <button class="btn btn-xs btn-outline-primary d-none" id="wa-btn-product" onclick="waShowProducts()" title="发送产品"><i>📦</i></button>
+                <button class="btn btn-xs btn-outline-info d-none" id="wa-btn-link-crm" onclick="waLinkCRM()" title="关联CRM">🔗</button>
+                <div class="btn-group d-none" id="wa-label-dropdown">
+                  <button class="btn btn-xs btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">🏷️</button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" onclick="waSetLabel('new')">🔴 新询盘</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="waSetLabel('quoting')">🟡 报价中</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="waSetLabel('sample')">🔵 样品阶段</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="waSetLabel('deal')">🟢 成交</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="waSetLabel('support')">⚪ 售后</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="waSetLabel('')">清除标签</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <!-- 消息区域 -->
+            <div class="card-body p-2" style="overflow-y:auto;flex:1;background:#0b141a" id="wa-messages-area">
+              <div class="text-center text-muted py-5"><p>👈 选择左侧对话开始聊天</p></div>
+            </div>
+            <!-- 输入区域 -->
+            <div class="card-footer p-2">
+              <div class="d-flex gap-2 mb-1" id="wa-quick-reply-bar" style="display:none!important">
+                <!-- 动态加载快捷回复按钮 -->
+              </div>
+              <div class="input-group">
+                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="wa-quick-btn" title="快捷回复">⚡</button>
+                <ul class="dropdown-menu" id="wa-quick-menu">
+                  <li><a class="dropdown-item small" href="#" onclick="waUseQuick('greeting')">👋 问候</a></li>
+                  <li><a class="dropdown-item small" href="#" onclick="waUseQuick('catalog')">📦 产品目录</a></li>
+                  <li><a class="dropdown-item small" href="#" onclick="waUseQuick('price')">💰 询问需求</a></li>
+                  <li><a class="dropdown-item small" href="#" onclick="waUseQuick('followup')">🔄 跟进</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item small" href="#" onclick="waManageQuickReplies()">⚙️ 管理快捷回复</a></li>
+                </ul>
+                <textarea class="form-control form-control-sm" id="wa-input" rows="1" placeholder="输入消息..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();waSend()}"></textarea>
+                <button class="btn btn-success btn-sm" onclick="waSend()">发送</button>
+                <button class="btn btn-outline-primary btn-sm" onclick="waAiReply()" title="AI生成回复">🤖</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧信息面板 -->
+        <div class="col-md-3">
+          <div class="card" style="height:600px;overflow-y:auto">
+            <div class="card-header py-2"><strong>📋 客户信息</strong></div>
+            <div class="card-body p-2" id="wa-customer-panel">
+              <p class="text-muted small text-center py-3">选择对话查看客户信息</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 下方功能区 -->
+      <div class="row g-3 mt-2">
+        <!-- 广播管理 -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+              <strong>📢 广播列表</strong>
+              <button class="btn btn-xs btn-purple" onclick="waAddBroadcastList()">➕</button>
+            </div>
+            <div class="card-body p-0" style="max-height:250px;overflow-y:auto" id="wa-broadcast-lists">
+              <p class="text-muted text-center small py-3">暂无广播列表</p>
+            </div>
+          </div>
+        </div>
+        <!-- 自动回复规则 -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+              <strong>🤖 自动回复规则</strong>
+              <button class="btn btn-xs btn-purple" onclick="waAddAutoReply()">➕</button>
+            </div>
+            <div class="card-body p-0" style="max-height:250px;overflow-y:auto" id="wa-auto-replies">
+              <p class="text-muted text-center small py-3">暂无规则</p>
+            </div>
+          </div>
+        </div>
+        <!-- 快捷回复管理 -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+              <strong>⚡ 快捷回复</strong>
+              <button class="btn btn-xs btn-purple" onclick="waAddQuickReply()">➕</button>
+            </div>
+            <div class="card-body p-0" style="max-height:250px;overflow-y:auto" id="wa-quick-replies-list">
+              <p class="text-muted text-center small py-3">暂无快捷回复</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TikTok -->
+    <div class="tab-pane fade" id="tab-tiktok">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">📹 内容模板</div>
+            <div class="card-body p-0">
+              <div class="list-group list-group-flush">
+                <a href="#" class="list-group-item list-group-item-action" onclick="useTikTokTemplate('factory')">🏭 工厂实拍 — 展示生产线、质检流程</a>
+                <a href="#" class="list-group-item list-group-item-action" onclick="useTikTokTemplate('product')">📦 产品展示 — 特写、功能演示</a>
+                <a href="#" class="list-group-item list-group-item-action" onclick="useTikTokTemplate('install')">🔧 安装教程 — 电表/断路器安装步骤</a>
+                <a href="#" class="list-group-item list-group-item-action" onclick="useTikTokTemplate('comparison')">⚖️ 产品对比 — 我们vs竞品</a>
+                <a href="#" class="list-group-item list-group-item-action" onclick="useTikTokTemplate('packing')">📦 打包发货 — 满足感+信任感</a>
+                <a href="#" class="list-group-item list-group-item-action" onclick="useTikTokTemplate('testimonial')">⭐ 客户反馈 — 真实case展示</a>
+                <a href="#" class="list-group-item list-group-item-action" onclick="useTikTokTemplate('behind')">👷 幕后花絮 — 团队、办公室、日常</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">🔥 热门标签推荐</div>
+            <div class="card-body">
+              <div class="d-flex flex-wrap gap-1">
+                <span class="badge bg-danger">#SmartMeter</span>
+                <span class="badge bg-danger">#CircuitBreaker</span>
+                <span class="badge bg-info">#ElectricalEngineering</span>
+                <span class="badge bg-info">#PowerDistribution</span>
+                <span class="badge bg-warning text-dark">#MadeInChina</span>
+                <span class="badge bg-warning text-dark">#FactoryTour</span>
+                <span class="badge bg-success">#B2B</span>
+                <span class="badge bg-success">#Manufacturing</span>
+                <span class="badge bg-primary">#EnergyMeter</span>
+                <span class="badge bg-primary">#Prepaid</span>
+                <span class="badge bg-secondary">#DLMS</span>
+                <span class="badge bg-secondary">#STS</span>
+              </div>
+              <div class="alert alert-info small mt-3 mb-0">
+                <strong>发布建议:</strong> 每周3-5条 | 黄金时间: 目标市场当地19:00-21:00 | 前3秒必须抓眼球
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">📊 已发布内容</div>
+            <div class="card-body p-0" style="max-height:400px;overflow-y:auto">
+              <% const tkPosts = posts.filter(p => p.platform==='tiktok'); %>
+              <% tkPosts.forEach(p => { %>
+              <div class="p-2 border-bottom"><small><%= (p.content||'').substring(0,80) %></small><br><span class="badge bg-secondary"><%= p.status %></span> <small class="text-muted"><%= p.created_at %></small></div>
+              <% }) %>
+              <% if(!tkPosts.length) { %><p class="text-muted text-center py-3">暂无TikTok内容</p><% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Facebook -->
+    <div class="tab-pane fade" id="tab-facebook">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">📘 Facebook营销</div>
+            <div class="card-body">
+              <h6>群组搜索</h6>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" id="fb-group-search" placeholder="搜索关键词: smart meter, energy, electrical">
+                <button class="btn btn-purple" onclick="searchFBGroups()">🔍 搜索</button>
+              </div>
+              <div id="fb-group-results"></div>
+              <hr>
+              <h6>推荐群组类型</h6>
+              <ul class="small">
+                <li><strong>行业群组:</strong> Electrical Engineers, Power Distribution</li>
+                <li><strong>采购群组:</strong> B2B Buyers, Import/Export</li>
+                <li><strong>地区群组:</strong> Africa Energy, Middle East Electrical</li>
+                <li><strong>项目群组:</strong> Smart Grid, AMI Projects</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">📊 Facebook内容</div>
+            <div class="card-body p-0" style="max-height:400px;overflow-y:auto">
+              <% const fbPosts = posts.filter(p => p.platform==='facebook'); %>
+              <% fbPosts.forEach(p => { %>
+              <div class="p-2 border-bottom"><small><%= (p.content||'').substring(0,100) %></small><br><span class="badge bg-secondary"><%= p.status %></span></div>
+              <% }) %>
+              <% if(!fbPosts.length) { %><p class="text-muted text-center py-3">暂无Facebook内容</p><% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LinkedIn -->
+    <div class="tab-pane fade" id="tab-linkedin">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">🔗 LinkedIn获客</div>
+            <div class="card-body">
+              <h6>目标客户搜索</h6>
+              <div class="row g-2 mb-3">
+                <div class="col-6"><input type="text" class="form-control form-control-sm" id="li-title" placeholder="职位: Procurement Manager"></div>
+                <div class="col-6"><input type="text" class="form-control form-control-sm" id="li-industry" placeholder="行业: Energy / Utilities"></div>
+                <div class="col-6"><input type="text" class="form-control form-control-sm" id="li-country" placeholder="国家/地区"></div>
+                <div class="col-6"><button class="btn btn-sm btn-purple w-100" onclick="searchLinkedIn()">🔍 搜索</button></div>
+              </div>
+              <div id="li-results"></div>
+              <hr>
+              <h6>InMail模板</h6>
+              <div class="list-group list-group-flush">
+                <a href="#" class="list-group-item list-group-item-action small" onclick="useInMailTemplate('intro')">👋 自我介绍 — 首次连接请求</a>
+                <a href="#" class="list-group-item list-group-item-action small" onclick="useInMailTemplate('value')">💡 价值提供 — 分享行业洞察</a>
+                <a href="#" class="list-group-item list-group-item-action small" onclick="useInMailTemplate('meeting')">📅 约会面谈 — 邀请线上会议</a>
+                <a href="#" class="list-group-item list-group-item-action small" onclick="useInMailTemplate('case')">📋 案例分享 — 成功项目介绍</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">📊 LinkedIn内容</div>
+            <div class="card-body p-0" style="max-height:400px;overflow-y:auto">
+              <% const liPosts = posts.filter(p => p.platform==='linkedin'); %>
+              <% liPosts.forEach(p => { %>
+              <div class="p-2 border-bottom"><small><%= (p.content||'').substring(0,100) %></small><br><span class="badge bg-secondary"><%= p.status %></span></div>
+              <% }) %>
+              <% if(!liPosts.length) { %><p class="text-muted text-center py-3">暂无LinkedIn内容</p><% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 线索管理 -->
+    <div class="tab-pane fade" id="tab-leads">
+      <div class="table-container">
+        <table class="table table-hover">
+          <thead><tr><th>平台</th><th>用户名</th><th>消息</th><th>状态</th><th>时间</th></tr></thead>
+          <tbody>
+            <% leads.forEach(l => { %>
+            <tr><td><%= l.platform %></td><td><%= l.username %></td><td><%= (l.message||'').substring(0,50) %></td><td><span class="badge badge-stage badge-new"><%= l.status %></span></td><td><small><%= l.created_at %></small></td></tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 账号管理 -->
+    <div class="tab-pane fade" id="tab-accounts">
+      <!-- 顶部统计卡片 -->
+      <div class="row g-3 mb-3" id="sa-stats-row">
+        <div class="col"><div class="card text-center p-3 border-0 shadow-sm" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:12px"><div class="h3 mb-0 fw-bold" id="sa-stat-total">0</div><small>总账号</small></div></div>
+        <div class="col"><div class="card text-center p-3 border-0 shadow-sm" style="background:linear-gradient(135deg,#43e97b,#38f9d7);color:#fff;border-radius:12px"><div class="h3 mb-0 fw-bold" id="sa-stat-online">0</div><small>在线</small></div></div>
+        <div class="col"><div class="card text-center p-3 border-0 shadow-sm" style="background:linear-gradient(135deg,#f6d365,#fda085);color:#fff;border-radius:12px"><div class="h3 mb-0 fw-bold" id="sa-stat-warming">0</div><small>养号中</small></div></div>
+        <div class="col"><div class="card text-center p-3 border-0 shadow-sm" style="background:linear-gradient(135deg,#f78ca0,#f85032);color:#fff;border-radius:12px"><div class="h3 mb-0 fw-bold" id="sa-stat-abnormal">0</div><small>异常</small></div></div>
+        <div class="col"><div class="card text-center p-3 border-0 shadow-sm" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb);color:#fff;border-radius:12px"><div class="h3 mb-0 fw-bold" id="sa-stat-ops">0</div><small>今日操作</small></div></div>
+      </div>
+
+      <!-- 平台筛选 + 搜索 -->
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="btn-group" id="sa-platform-filter">
+          <button class="btn btn-sm btn-purple active" onclick="saFilterPlatform(this,'all')">全部</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="saFilterPlatform(this,'whatsapp')">💬 WhatsApp</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="saFilterPlatform(this,'tiktok')">🎵 TikTok</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="saFilterPlatform(this,'facebook')">📘 Facebook</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="saFilterPlatform(this,'linkedin')">🔗 LinkedIn</button>
+        </div>
+        <div class="d-flex gap-2">
+          <input class="form-control form-control-sm" style="width:200px" placeholder="🔍 搜索账号..." id="sa-search-all" oninput="saLoadCards()">
+          <button class="btn btn-sm btn-success" onclick="tkOAuthConnect()" title="通过TikTok官方API授权">🎵 TikTok授权</button>
+          <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#tiktokPublishModal">📤 发布TikTok视频</button>
+          <button class="btn btn-sm btn-purple" onclick="saShowAddModal()">➕ 添加账号</button>
+          <button class="btn btn-sm btn-outline-primary" onclick="saShowAddModal('batch')">📋 批量添加</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="saLoadCards()">🔄</button>
+        </div>
+      </div>
+
+      <!-- 批量操作栏（选中时出现） -->
+      <div class="alert alert-info py-2 d-none" id="sa-batch-bar">
+        <span id="sa-batch-count">0</span> 个账号已选中 —
+        <button class="btn btn-xs btn-outline-primary" onclick="saBatchChangeIP()">🔄 批量改IP</button>
+        <button class="btn btn-xs btn-outline-danger" onclick="saBatchDeleteSelected()">🗑️ 批量删除</button>
+        <button class="btn btn-xs btn-outline-secondary ms-2" onclick="saClearSelection()">取消选择</button>
+      </div>
+
+      <!-- 账号卡片列表 -->
+      <div id="sa-cards-container" style="max-height:520px;overflow-y:auto">
+        <div class="text-center text-muted py-5">加载中...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TikTok视频发布Modal -->
+<div class="modal fade" id="tiktokPublishModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">📤 发布TikTok视频</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="tiktok-publish-form">
+          <div class="mb-3">
+            <label class="form-label">授权状态:</label>
+            <span id="tiktok-auth-status" class="badge bg-secondary">加载中...</span>
+            <span id="tiktok-display-name" class="ms-2 text-muted"></span>
+          </div>
+          <div class="mb-3">
+            <label for="tiktok-video-file" class="form-label">选择视频文件 (MP4/WebM, 最大287MB)</label>
+            <input class="form-control" type="file" id="tiktok-video-file" name="video" accept="video/mp4,video/webm,video/quicktime">
+          </div>
+          <div class="mb-3">
+            <label for="tiktok-video-title" class="form-label">视频标题 (最多150字符)</label>
+            <input type="text" class="form-control" id="tiktok-video-title" name="title" maxlength="150">
+          </div>
+          <div class="mb-3">
+            <label for="tiktok-privacy-level" class="form-label">隐私设置</label>
+            <select class="form-select" id="tiktok-privacy-level" name="privacyLevel">
+              <option value="PUBLIC_TO_EVERYONE">所有人可见</option>
+              <option value="MUTUAL_FOLLOW_FRIENDS">互关朋友可见</option>
+              <option value="FOLLOWER_OF_CREATOR">粉丝可见</option>
+              <option value="SELF_ONLY">仅自己可见</option>
+            </select>
+          </div>
+          <div class="progress mb-3 d-none" id="tiktok-upload-progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+          </div>
+          <button type="submit" class="btn btn-purple" id="tiktok-publish-btn">发布视频</button>
+        </form>
+        <hr>
+        <h6>发布历史</h6>
+        <div id="tiktok-publish-history" style="max-height: 200px; overflow-y: auto;">
+          <p class="text-muted text-center">暂无发布记录</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// TikTok发布视频相关的JS
+document.addEventListener('DOMContentLoaded', () => {
+  const tiktokPublishModal = document.getElementById('tiktokPublishModal');
+  if (tiktokPublishModal) {
+    tiktokPublishModal.addEventListener('show.bs.modal', async () => {
+      await loadTikTokAuthStatus();
+      await loadTikTokPublishHistory();
+    });
+  }
+
+  const tiktokPublishForm = document.getElementById('tiktok-publish-form');
+  if (tiktokPublishForm) {
+    tiktokPublishForm.addEventListener('submit', handleTikTokPublish);
+  }
+});
+
+async function loadTikTokAuthStatus() {
+  const statusEl = document.getElementById('tiktok-auth-status');
+  const nameEl = document.getElementById('tiktok-display-name');
+  statusEl.className = 'badge bg-secondary';
+  statusEl.textContent = '加载中...';
+  nameEl.textContent = '';
+
+  const res = await api('/api/tiktok/auth-status');
+  if (res.success) {
+    if (res.authorized) {
+      statusEl.className = 'badge bg-success';
+      statusEl.textContent = '已授权';
+      nameEl.textContent = `(${res.displayName})`;
+      document.getElementById('tiktok-publish-btn').disabled = false;
+    } else {
+      statusEl.className = 'badge bg-danger';
+      statusEl.textContent = '未授权或授权过期';
+      nameEl.textContent = res.message || '';
+      document.getElementById('tiktok-publish-btn').disabled = true;
+      toast('TikTok未授权或授权过期，请先授权', 'danger');
+    }
+  } else {
+    statusEl.className = 'badge bg-danger';
+    statusEl.textContent = '获取授权状态失败';
+    nameEl.textContent = res.error || '';
+    document.getElementById('tiktok-publish-btn').disabled = true;
+    toast(`获取TikTok授权状态失败: ${res.error}`, 'danger');
+  }
+}
+
+async function loadTikTokPublishHistory() {
+  const historyContainer = document.getElementById('tiktok-publish-history');
+  historyContainer.innerHTML = '<p class="text-muted text-center">加载中...</p>';
+
+  const res = await api('/api/tiktok/videos');
+  if (res.success && res.videos.length > 0) {
+    historyContainer.innerHTML = '';
+    res.videos.forEach(video => {
+      const item = document.createElement('div');
+      item.className = 'd-flex align-items-center mb-2';
+      item.innerHTML = `
+        <i class="fas fa-video me-2"></i>
+        <div>
+          <strong class="text-white">${video.title}</strong>
+          <small class="text-muted d-block">${new Date(video.publishedAt).toLocaleString()} - ${video.status}</small>
+        </div>
+      `;
+      historyContainer.appendChild(item);
+    });
+  } else {
+    historyContainer.innerHTML = '<p class="text-muted text-center">暂无发布记录</p>';
+  }
+}
+
+async function handleTikTokPublish(event) {
+  event.preventDefault();
+
+  const form = event.target;
+  const formData = new FormData(form);
+  const videoFile = document.getElementById('tiktok-video-file').files[0];
+
+  if (!videoFile) {
+    toast('请选择一个视频文件', 'warning');
+    return;
+  }
+  if (!formData.get('title').trim()) {
+    toast('请输入视频标题', 'warning');
+    return;
+  }
+
+  const publishBtn = document.getElementById('tiktok-publish-btn');
+  const progressContainer = document.getElementById('tiktok-upload-progress');
+  const progressBar = progressContainer.querySelector('.progress-bar');
+
+  publishBtn.disabled = true;
+  publishBtn.textContent = '发布中...';
+  progressContainer.classList.remove('d-none');
+  progressBar.style.width = '0%';
+  progressBar.textContent = '0%';
+
+  try {
+    const res = await fetch('/api/tiktok/publish', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // 假设你的API需要认证
+      },
+      body: formData
+    });
+    
+    // Check if the response is JSON
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.indexOf('application/json') !== -1) {
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast('视频发布成功!', 'success');
+        form.reset();
+        loadTikTokPublishHistory();
+        $('#tiktokPublishModal').modal('hide'); // 关闭模态框
+      } else {
+        toast(`发布失败: ${data.error || data.message || res.statusText}`, 'danger');
+      }
+    } else {
+      // Handle non-JSON response (e.g., HTML error page)
+      const errorText = await res.text();
+      toast(`发布失败: ${res.status} ${res.statusText}. 错误详情: ${errorText.substring(0, 100)}...`, 'danger');
+    }
+
+  } catch (error) {
+    console.error('TikTok发布失败:', error);
+    toast(`发布异常: ${error.message}`, 'danger');
+  } finally {
+    publishBtn.disabled = false;
+    publishBtn.textContent = '发布视频';
+    progressContainer.classList.add('d-none');
+  }
+}
+</script>
+<div class="modal fade" id="addPostModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">➕ 创建社媒内容</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <form id="post-form">
+        <div class="mb-3"><label class="form-label">平台</label><select class="form-select" name="platform" id="post-platform"><option value="tiktok">TikTok</option><option value="facebook">Facebook</option><option value="linkedin">LinkedIn</option></select></div>
+        <div class="mb-3"><label class="form-label">内容类型</label><select class="form-select" name="content_type" id="post-type">
+          <option value="general">通用</option>
+          <option value="factory">🏭 工厂实拍</option>
+          <option value="product">📦 产品展示</option>
+          <option value="install">🔧 安装教程</option>
+          <option value="testimonial">⭐ 客户案例</option>
+        </select></div>
+        <div class="mb-3"><label class="form-label">内容</label><textarea class="form-control" name="content" id="post-content" rows="5"></textarea></div>
+        <div class="mb-3"><label class="form-label">状态</label><select class="form-select" name="status"><option value="draft">草稿</option><option value="scheduled">定时发布</option></select></div>
+      </form>
+      <button class="btn btn-outline-primary" onclick="aiGenerateContent()">🤖 AI生成内容</button>
+      <div id="ai-content-output" class="mt-2"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-purple" onclick="addPost()">保存</button></div>
+  </div></div>
+</div>
+
+<script>
+const tiktokTemplates = {
+  factory: '🏭 [工厂实拍]\n\n拍摄要点:\n1. 生产线全景 → 特写设备 → 产品下线\n2. 质检流程展示\n3. 加上BGM和字幕\n\n脚本:\n"Take a look inside our smart meter factory..."\n\n#SmartMeter #FactoryTour #MadeInChina #B2B',
+  product: '📦 [产品展示]\n\n拍摄要点:\n1. 产品360度展示\n2. 功能演示（安装、接线、操作）\n3. 参数对比图\n\n脚本:\n"This is our latest prepaid smart meter..."\n\n#SmartMeter #EnergyMeter #Prepaid #STS',
+  install: '🔧 [安装教程]\n\n拍摄要点:\n1. 工具准备\n2. 逐步安装\n3. 通电测试\n\n脚本:\n"How to install a smart meter in 5 minutes..."\n\n#Installation #Tutorial #HowTo #ElectricalEngineering',
+  comparison: '⚖️ [产品对比]\n\n拍摄要点:\n1. 两个产品并排\n2. 逐项对比（精度、功能、价格）\n3. 总结优势\n\n#Comparison #SmartMeter #Quality',
+  packing: '📦 [打包发货]\n\n拍摄要点:\n1. 订单准备\n2. 装箱过程\n3. 集装箱装柜\n\n#Packing #Shipping #Export #B2B',
+  testimonial: '⭐ [客户反馈]\n\n拍摄要点:\n1. 项目照片/视频\n2. 客户好评截图\n3. 安装现场\n\n#CustomerReview #CaseStudy #TrustUs',
+  behind: '👷 [幕后花絮]\n\n拍摄要点:\n1. 团队日常\n2. 办公环境\n3. 团建活动\n\n#TeamWork #BehindTheScenes #CompanyCulture'
+};
+
+function useTikTokTemplate(type) {
+  document.getElementById('post-platform').value = 'tiktok';
+  document.getElementById('post-content').value = tiktokTemplates[type] || '';
+  new bootstrap.Modal(document.getElementById('addPostModal')).show();
+}
+
+function searchFBGroups() {
+  const q = document.getElementById('fb-group-search').value;
+  document.getElementById('fb-group-results').innerHTML = `<div class="alert alert-info small">搜索 "${q}" — 此功能需要Facebook Graph API集成。可手动搜索: <a href="https://www.facebook.com/search/groups/?q=${encodeURIComponent(q)}" target="_blank">打开Facebook搜索</a></div>`;
+}
+
+function searchLinkedIn() {
+  const title = document.getElementById('li-title').value;
+  const industry = document.getElementById('li-industry').value;
+  const country = document.getElementById('li-country').value;
+  const q = [title, industry, country].filter(Boolean).join(' ');
+  document.getElementById('li-results').innerHTML = `<div class="alert alert-info small">搜索 "${q}" — 可在LinkedIn Sales Navigator中搜索: <a href="https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(q)}" target="_blank">打开LinkedIn搜索</a></div>`;
+}
+
+const inmailTemplates = {
+  intro: 'Subject: Partnership Opportunity - Smart Meters & Circuit Breakers\n\nHi [Name],\n\nI noticed your work in the energy/utilities sector and would love to connect.\n\nWe are [Company], a manufacturer of smart meters and circuit breakers with IEC/CE/KEMA certifications. We serve 30+ countries across Africa, Middle East, and Southeast Asia.\n\nWould you be open to a brief discussion about potential collaboration?\n\nBest regards',
+  value: 'Subject: Smart Meter Market Insights - [Region] 2026\n\nHi [Name],\n\nI recently compiled a market analysis on smart meter adoption trends in [Region]. Key findings:\n\n• Prepaid meter demand growing 25% YoY\n• STS/DLMS compliance becoming mandatory\n• AMI infrastructure investment accelerating\n\nHappy to share the full report. Would that be of interest?\n\nBest regards',
+  meeting: 'Subject: Quick Chat About Your Smart Metering Needs?\n\nHi [Name],\n\nI\'d love to schedule a 15-minute call to understand your current smart metering requirements and see how we might help.\n\nWe offer:\n✅ Competitive pricing (MOQ from 100 units)\n✅ Full certification support (IEC/CE/KEMA/STS)\n✅ Customized solutions\n\nWould [Day] at [Time] work for you?\n\nBest regards',
+  case: 'Subject: Case Study: 50,000 Smart Meters Deployed in [Country]\n\nHi [Name],\n\nI wanted to share a recent project where we deployed 50,000 prepaid smart meters for [Utility Company] in [Country].\n\nResults:\n• 30% reduction in non-technical losses\n• 99.8% uptime over 12 months\n• Full DLMS/COSEM compliance\n\nWould you like to discuss a similar solution for your organization?\n\nBest regards'
+};
+
+function useInMailTemplate(type) {
+  const content = inmailTemplates[type] || '';
+  document.getElementById('post-platform').value = 'linkedin';
+  document.getElementById('post-content').value = content;
+  new bootstrap.Modal(document.getElementById('addPostModal')).show();
+}
+
+async function addPost() {
+  const data = Object.fromEntries(new FormData(document.getElementById('post-form')));
+  const res = await api('/api/social/posts', 'POST', data);
+  if (res.success) { toast('内容已创建'); reloadKeepTab(); }
+}
+async function aiGenerateContent() {
+  const platform = document.getElementById('post-platform').value;
+  const contentType = document.getElementById('post-type').value;
+  const out = document.getElementById('ai-content-output');
+  out.innerHTML = '<div class="spinner-border spinner-border-sm"></div>';
+  const topic = contentType !== 'general' ? `${contentType} content for Smart Meters/Circuit Breakers` : 'Smart Meters B2B';
+  const res = await api('/api/ai/generate-content', 'POST', { platform, topic });
+  if (res.success) {
+    document.getElementById('post-content').value = res.result;
+    out.innerHTML = '<span class="text-success">✅ 已生成</span>';
+  } else out.innerHTML = `<span class="text-danger">${res.error}</span>`;
+}
+
+// ========== WhatsApp 功能 ==========
+let waCurrentChat = null;
+let waCurrentLabel = '';
+let waQrModal = null;
+let waPolling = null;
+
+// 页面加载时初始化
+document.addEventListener('DOMContentLoaded', async () => {
+  waQrModal = new bootstrap.Modal(document.getElementById('waQrModal'));
+  
+  // 先检查WhatsApp模块是否启用
+  try {
+    const modRes = await fetch('/api/settings/modules/whatsapp');
+    const modData = await modRes.json();
+    if (!modData.enabled) {
+      // 模块未启用，显示提示，不发无效请求
+      const waPane = document.getElementById('tab-whatsapp');
+      if (waPane) {
+        waPane.innerHTML = '<div class="text-center py-5"><div style="font-size:48px;margin-bottom:16px">💬</div><h5 class="text-muted">WhatsApp 模块未启用</h5><p class="text-muted">请到 <a href="/settings#tab-modules">设置 → 模块管理</a> 中开启 WhatsApp 模块</p></div>';
+      }
+      return; // 不继续初始化WhatsApp
+    }
+  } catch(e) { /* 检查失败则继续正常加载 */ }
+
+  waLoadStatus();
+  waLoadStats();
+  waLoadQuickReplies();
+  waLoadAutoReplies();
+  waLoadBroadcastLists();
+
+  // Socket.IO 实时监听
+  if (typeof io !== 'undefined') {
+    const socket = io();
+    socket.on('whatsapp:status', (data) => waUpdateStatus(data));
+    socket.on('whatsapp:qr', (data) => {
+      if (data.qr) {
+        document.getElementById('wa-qr-container').innerHTML = `<img src="${data.qr}" style="max-width:250px;border-radius:8px">`;
+        waQrModal.show();
+      }
+    });
+    socket.on('whatsapp:message', (data) => {
+      waLoadConversations();
+      waLoadStats();
+      if (waCurrentChat && data.chat_id === waCurrentChat) {
+        waLoadMessages(waCurrentChat);
+      }
+      // Toast 通知
+      if (data.direction === 'inbound') {
+        toast(`💬 ${data.contact_name}: ${(data.content||'').substring(0,50)}`);
+      }
+    });
+  }
+});
+
+async function waConnect() {
+  const res = await api('/api/whatsapp/connect', 'POST');
+  if (res.success) {
+    toast('正在连接 WhatsApp...');
+    document.getElementById('wa-connect-btn').disabled = true;
+    document.getElementById('wa-connect-btn').innerHTML = '<span class="spinner-border spinner-border-sm"></span> 连接中...';
+    // 开始轮询状态
+    waPolling = setInterval(waLoadStatus, 2000);
+  }
+}
+
+async function waDisconnect() {
+  if (!confirm('确定断开 WhatsApp？')) return;
+  await api('/api/whatsapp/disconnect', 'POST');
+  waUpdateStatus({ status: 'disconnected' });
+  if (waPolling) { clearInterval(waPolling); waPolling = null; }
+}
+
+async function waLoadStatus() {
+  const data = await api('/api/whatsapp/status');
+  waUpdateStatus(data);
+  if (data.status === 'ready') {
+    if (waPolling) { clearInterval(waPolling); waPolling = null; }
+    waQrModal.hide();
+    waLoadConversations();
+  }
+}
+
+function waUpdateStatus(data) {
+  const dot = document.getElementById('wa-status-dot');
+  const text = document.getElementById('wa-status-text');
+  const info = document.getElementById('wa-account-info');
+  const connectBtn = document.getElementById('wa-connect-btn');
+  const disconnectBtn = document.getElementById('wa-disconnect-btn');
+
+  const statusMap = {
+    disconnected: { color: '#dc3545', text: '❌ 未连接', showConnect: true },
+    qr_pending: { color: '#ffc107', text: '📱 等待扫码...', showConnect: false },
+    authenticated: { color: '#17a2b8', text: '🔄 认证中...', showConnect: false },
+    ready: { color: '#28a745', text: '🟢 已连接', showConnect: false },
+    error: { color: '#dc3545', text: '❌ 连接错误', showConnect: true },
+    not_initialized: { color: '#6c757d', text: '未初始化', showConnect: true }
+  };
+
+  const s = statusMap[data.status] || statusMap.disconnected;
+  dot.style.background = s.color;
+  text.textContent = s.text;
+  connectBtn.classList.toggle('d-none', !s.showConnect);
+  connectBtn.disabled = false;
+  connectBtn.innerHTML = '🔗 连接 WhatsApp';
+  disconnectBtn.classList.toggle('d-none', data.status !== 'ready');
+
+  if (data.info) {
+    info.textContent = `${data.info.pushname || ''} (${data.info.phone || ''})`;
+  } else {
+    info.textContent = '';
+  }
+}
+
+async function waLoadStats() {
+  try {
+    const s = await api('/api/whatsapp/stats');
+    document.getElementById('wa-stat-conversations').textContent = s.totalConversations || 0;
+    document.getElementById('wa-stat-unread').textContent = s.unreadCount || 0;
+    document.getElementById('wa-stat-today').textContent = s.todayMessages || 0;
+    document.getElementById('wa-stat-sent').textContent = s.todaySent || 0;
+    document.getElementById('wa-stat-received').textContent = s.todayReceived || 0;
+    document.getElementById('wa-stat-auto').textContent = s.autoRepliesActive || 0;
+  } catch(e) {}
+}
+
+async function waLoadConversations() {
+  const search = document.getElementById('wa-search')?.value || '';
+  const params = new URLSearchParams();
+  if (search) params.set('search', search);
+  if (waCurrentLabel) params.set('label', waCurrentLabel);
+
+  try {
+    const convs = await api(`/api/whatsapp/conversations?${params}`);
+    const list = document.getElementById('wa-conversation-list');
+
+    if (!convs.length) {
+      list.innerHTML = '<p class="text-muted text-center small py-3">暂无对话</p>';
+      return;
+    }
+
+    list.innerHTML = convs.map(c => {
+      const labels = JSON.parse(c.labels || '[]');
+      const labelBadge = labels.length ? labels.map(l => {
+        const colors = { new:'danger', quoting:'warning', sample:'info', deal:'success', support:'secondary' };
+        return `<span class="badge bg-${colors[l]||'secondary'} badge-sm">${l}</span>`;
+      }).join(' ') : '';
+
+      const active = waCurrentChat === c.chat_id ? 'active' : '';
+      const unread = c.unread_count > 0 ? `<span class="badge bg-success rounded-pill">${c.unread_count}</span>` : '';
+      const pinIcon = c.is_pinned ? '📌 ' : '';
+      const time = c.last_message_at ? new Date(c.last_message_at).toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}) : '';
+
+      return `<a href="#" class="list-group-item list-group-item-action p-2 ${active}" onclick="waOpenChat('${c.chat_id}')">
+        <div class="d-flex justify-content-between">
+          <strong class="small">${pinIcon}${c.contact_name || c.contact_phone || '未知'}</strong>
+          <span class="small text-muted">${time} ${unread}</span>
+        </div>
+        <div class="small text-muted text-truncate" style="max-width:280px">${c.last_message || ''}</div>
+        <div>${labelBadge}</div>
+      </a>`;
+    }).join('');
+  } catch(e) {
+    console.error('加载对话失败:', e);
+  }
+}
+
+let waSearchTimeout;
+function waSearchConversations() {
+  clearTimeout(waSearchTimeout);
+  waSearchTimeout = setTimeout(waLoadConversations, 300);
+}
+
+function waFilterLabel(btn, label) {
+  document.querySelectorAll('.wa-label-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  waCurrentLabel = label;
+  waLoadConversations();
+}
+
+async function waOpenChat(chatId) {
+  waCurrentChat = chatId;
+
+  // 高亮当前对话
+  document.querySelectorAll('#wa-conversation-list .list-group-item').forEach(el => el.classList.remove('active'));
+  event?.target?.closest('.list-group-item')?.classList.add('active');
+
+  // 显示操作按钮
+  document.getElementById('wa-btn-product').classList.remove('d-none');
+  document.getElementById('wa-btn-link-crm').classList.remove('d-none');
+  document.getElementById('wa-label-dropdown').classList.remove('d-none');
+
+  try {
+    const data = await api(`/api/whatsapp/conversations/${encodeURIComponent(chatId)}`);
+    const conv = data.conversation;
+    const msgs = data.messages;
+
+    // 更新头部
+    document.getElementById('wa-chat-name').textContent = conv.contact_name || '未知';
+    document.getElementById('wa-chat-phone').textContent = conv.contact_phone || '';
+
+    // 渲染消息
+    const area = document.getElementById('wa-messages-area');
+    if (!msgs.length) {
+      area.innerHTML = '<p class="text-muted text-center py-3 small">暂无消息记录</p>';
+    } else {
+      area.innerHTML = msgs.map(m => {
+        const isOut = m.direction === 'outbound';
+        const align = isOut ? 'text-end' : 'text-start';
+        const bgColor = isOut ? '#005c4b' : '#202c33';
+        const time = new Date(m.created_at).toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'});
+        const statusIcon = isOut ? (m.status === 'read' ? '✓✓' : m.status === 'delivered' ? '✓✓' : '✓') : '';
+        const statusColor = m.status === 'read' ? '#53bdeb' : '#8696a0';
+
+        return `<div class="${align} mb-2">
+          <div class="d-inline-block p-2 rounded-3" style="background:${bgColor};max-width:80%;text-align:left">
+            <div class="small" style="white-space:pre-wrap;word-break:break-word;color:#e9edef">${escapeHtml(m.content || '')}</div>
+            <div class="text-end"><small style="color:#8696a0;font-size:0.7em">${time} <span style="color:${statusColor}">${statusIcon}</span></small></div>
+          </div>
+        </div>`;
+      }).join('');
+      area.scrollTop = area.scrollHeight;
+    }
+
+    // 客户信息面板
+    const panel = document.getElementById('wa-customer-panel');
+    if (data.customer) {
+      const c = data.customer;
+      panel.innerHTML = `
+        <div class="small">
+          <p><strong>🏢 ${c.company || '未知公司'}</strong></p>
+          <p>👤 ${c.contact_name || ''}</p>
+          <p>📧 ${c.email || '-'}</p>
+          <p>📱 ${c.phone || '-'}</p>
+          <p>🌍 ${c.country || '-'}</p>
+          <p>📊 阶段: <span class="badge bg-primary">${c.stage || 'new'}</span></p>
+          <p>⭐ 评分: ${c.lead_score || 0}</p>
+          <p>🏷️ 来源: ${c.source || '-'}</p>
+          ${c.ai_summary ? `<hr><p class="text-muted">🤖 ${c.ai_summary}</p>` : ''}
+        </div>
+        <hr>
+        <h6 class="small">📝 对话备注</h6>
+        <textarea class="form-control form-control-sm" rows="3" id="wa-conv-notes" onchange="waSaveNotes()">${conv.notes || ''}</textarea>
+      `;
+    } else {
+      panel.innerHTML = `
+        <div class="small text-center py-2">
+          <p>📱 ${conv.contact_name || ''}</p>
+          <p>${conv.contact_phone || ''}</p>
+          <p class="text-muted">未关联CRM客户</p>
+          <button class="btn btn-sm btn-outline-primary" onclick="waLinkCRM()">🔗 关联客户</button>
+          <button class="btn btn-sm btn-outline-success mt-1" onclick="waCreateCustomer()">➕ 新建客户</button>
+        </div>
+        <hr>
+        <h6 class="small">📝 对话备注</h6>
+        <textarea class="form-control form-control-sm" rows="3" id="wa-conv-notes" onchange="waSaveNotes()">${conv.notes || ''}</textarea>
+      `;
+    }
+
+    // 刷新左侧列表（更新未读数）
+    waLoadConversations();
+  } catch(e) {
+    console.error('打开对话失败:', e);
+  }
+}
+
+async function waSend() {
+  if (!waCurrentChat) return toast('请先选择对话');
+  const input = document.getElementById('wa-input');
+  const content = input.value.trim();
+  if (!content) return;
+
+  input.value = '';
+  try {
+    await api('/api/whatsapp/send', 'POST', { chat_id: waCurrentChat, content });
+    waLoadMessages(waCurrentChat);
+    waLoadConversations();
+  } catch(e) {
+    toast('发送失败: ' + e.message);
+  }
+}
+
+async function waLoadMessages(chatId) {
+  try {
+    const data = await api(`/api/whatsapp/conversations/${encodeURIComponent(chatId)}`);
+    const area = document.getElementById('wa-messages-area');
+    const msgs = data.messages;
+    area.innerHTML = msgs.map(m => {
+      const isOut = m.direction === 'outbound';
+      const bgColor = isOut ? '#005c4b' : '#202c33';
+      const time = new Date(m.created_at).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+      const statusIcon = isOut ? (m.status==='read'?'✓✓':m.status==='delivered'?'✓✓':'✓') : '';
+      const statusColor = m.status==='read'?'#53bdeb':'#8696a0';
+      return `<div class="${isOut?'text-end':'text-start'} mb-2">
+        <div class="d-inline-block p-2 rounded-3" style="background:${bgColor};max-width:80%;text-align:left">
+          <div class="small" style="white-space:pre-wrap;word-break:break-word;color:#e9edef">${escapeHtml(m.content||'')}</div>
+          <div class="text-end"><small style="color:#8696a0;font-size:0.7em">${time} <span style="color:${statusColor}">${statusIcon}</span></small></div>
+        </div>
+      </div>`;
+    }).join('');
+    area.scrollTop = area.scrollHeight;
+  } catch(e) {}
+}
+
+async function waSetLabel(label) {
+  if (!waCurrentChat) return;
+  const conv = await api(`/api/whatsapp/conversations/${encodeURIComponent(waCurrentChat)}`);
+  let labels = [];
+  try { labels = JSON.parse(conv.conversation?.labels || '[]'); } catch(e) { labels = []; }
+  if (label) { labels = [label]; } else { labels = []; }
+  await api(`/api/whatsapp/conversations/${encodeURIComponent(waCurrentChat)}`, 'PUT', { labels });
+  toast(label ? `标签设为: ${label}` : '标签已清除');
+  waLoadConversations();
+}
+
+async function waSaveNotes() {
+  if (!waCurrentChat) return;
+  const notes = document.getElementById('wa-conv-notes')?.value || '';
+  await api(`/api/whatsapp/conversations/${encodeURIComponent(waCurrentChat)}`, 'PUT', { notes });
+}
+
+async function waAiReply() {
+  if (!waCurrentChat) return toast('请先选择对话');
+  const input = document.getElementById('wa-input');
+  input.value = '🤖 AI正在生成回复...';
+  input.disabled = true;
+
+  try {
+    const data = await api(`/api/whatsapp/conversations/${encodeURIComponent(waCurrentChat)}`);
+    const msgs = data.messages.slice(-10);
+    const context = msgs.map(m => `${m.direction==='inbound'?'Customer':'Sales'}: ${m.content}`).join('\n');
+    const lastMsg = msgs.filter(m => m.direction==='inbound').pop();
+
+    const aiRes = await api('/api/ai/chat', 'POST', {
+      message: `Based on this WhatsApp conversation with a B2B customer, generate a professional reply in the customer's language:\n\n${context}\n\nGenerate ONLY the reply text, no explanation.`,
+      agent: 'sales'
+    });
+
+    input.disabled = false;
+    input.value = aiRes.result || aiRes.content || 'AI生成失败';
+    input.focus();
+  } catch(e) {
+    input.disabled = false;
+    input.value = '';
+    toast('AI回复生成失败');
+  }
+}
+
+async function waShowProducts() {
+  if (!waCurrentChat) return;
+  try {
+    const products = await api('/api/products');
+    const list = (Array.isArray(products) ? products : products.data || []).slice(0, 10);
+    const html = list.map(p => 
+      `<a href="#" class="list-group-item list-group-item-action small p-2" onclick="waSendProduct(${p.id})">
+        📦 ${p.name} (${p.model||''}) — $${p.price_100||'?'}/台
+      </a>`
+    ).join('');
+    
+    const area = document.getElementById('wa-customer-panel');
+    area.innerHTML = `<h6 class="small">📦 选择产品发送</h6><div class="list-group list-group-flush">${html || '<p class="small text-muted">暂无产品</p>'}</div>
+      <button class="btn btn-sm btn-outline-secondary mt-2" onclick="waOpenChat('${waCurrentChat}')">返回</button>`;
+  } catch(e) { toast('加载产品失败'); }
+}
+
+async function waSendProduct(productId) {
+  try {
+    await api('/api/whatsapp/send-product', 'POST', { chat_id: waCurrentChat, product_id: productId });
+    toast('产品卡片已发送');
+    waOpenChat(waCurrentChat);
+  } catch(e) { toast('发送失败'); }
+}
+
+function waLinkCRM() {
+  const customerId = prompt('输入要关联的CRM客户ID:');
+  if (!customerId) return;
+  api(`/api/whatsapp/conversations/${encodeURIComponent(waCurrentChat)}`, 'PUT', { customer_id: parseInt(customerId) })
+    .then(() => { toast('已关联'); waOpenChat(waCurrentChat); });
+}
+
+async function waCreateCustomer() {
+  if (!waCurrentChat) return;
+  const data = await api(`/api/whatsapp/conversations/${encodeURIComponent(waCurrentChat)}`);
+  const conv = data.conversation;
+  const res = await api('/api/customers', 'POST', {
+    contact_name: conv.contact_name || '',
+    phone: conv.contact_phone || '',
+    source: 'whatsapp'
+  });
+  if (res.success || res.id) {
+    await api(`/api/whatsapp/conversations/${encodeURIComponent(waCurrentChat)}`, 'PUT', { customer_id: res.id });
+    toast('客户已创建并关联');
+    waOpenChat(waCurrentChat);
+  }
+}
+
+// 快捷回复
+const defaultQuickReplies = {
+  greeting: "Hello! 👋\n\nThank you for reaching out. I'm from [Company], a manufacturer of smart meters and circuit breakers.\n\nHow can I help you today?",
+  catalog: "Here are our main product categories:\n\n📊 Smart Meters:\n• Single Phase Prepaid (STS)\n• Three Phase Prepaid (STS)\n• Single Phase Postpaid (DLMS)\n• Three Phase Postpaid (DLMS)\n\n⚡ Circuit Breakers:\n• MCB (Miniature Circuit Breaker)\n• MCCB (Molded Case Circuit Breaker)\n• RCCB (Residual Current Circuit Breaker)\n\nWhich products are you interested in?",
+  price: "To prepare a quotation for you, could you please share:\n\n1️⃣ Product model/type?\n2️⃣ Quantity needed?\n3️⃣ Destination country?\n4️⃣ Any special requirements (certifications, features)?\n\nWe'll get back to you with the best price!",
+  followup: "Hi! 👋\n\nJust following up on our previous conversation. Have you had a chance to review our proposal?\n\nPlease let me know if you have any questions or need any modifications.\n\nLooking forward to hearing from you!"
+};
+
+function waUseQuick(key) {
+  const input = document.getElementById('wa-input');
+  input.value = defaultQuickReplies[key] || '';
+  input.focus();
+}
+
+// 广播列表管理
+async function waLoadBroadcastLists() {
+  try {
+    const lists = await api('/api/whatsapp/broadcast-lists');
+    const el = document.getElementById('wa-broadcast-lists');
+    if (!lists.length) { el.innerHTML = '<p class="text-muted text-center small py-3">暂无广播列表</p>'; return; }
+    el.innerHTML = lists.map(l => {
+      const contacts = JSON.parse(l.contacts || '[]');
+      return `<div class="p-2 border-bottom d-flex justify-content-between align-items-center">
+        <div><strong class="small">${l.name}</strong><br><small class="text-muted">${contacts.length} 个联系人</small></div>
+        <div>
+          <button class="btn btn-xs btn-outline-success" onclick="waBroadcast(${l.id})" title="群发">📢</button>
+          <button class="btn btn-xs btn-outline-danger" onclick="waDeleteBroadcastList(${l.id})">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+async function waAddBroadcastList() {
+  const name = prompt('广播列表名称:');
+  if (!name) return;
+  const contactsStr = prompt('输入联系人号码（逗号分隔，含国际区号）:\n例如: 2348012345678,971501234567');
+  if (!contactsStr) return;
+  const contacts = contactsStr.split(',').map(s => s.trim()).filter(Boolean);
+  await api('/api/whatsapp/broadcast-lists', 'POST', { name, contacts });
+  toast('广播列表已创建');
+  waLoadBroadcastLists();
+}
+
+async function waDeleteBroadcastList(id) {
+  if (!confirm('确定删除？')) return;
+  await api(`/api/whatsapp/broadcast-lists/${id}`, 'DELETE');
+  waLoadBroadcastLists();
+}
+
+async function waBroadcast(listId) {
+  const content = prompt('输入广播消息内容:');
+  if (!content) return;
+  if (!confirm('确定发送广播？')) return;
+  const res = await api('/api/whatsapp/broadcast', 'POST', { broadcast_list_id: listId, content });
+  if (res.success) toast(`广播已开始: ${res.total} 个联系人`);
+}
+
+// 自动回复管理
+async function waLoadAutoReplies() {
+  try {
+    const rules = await api('/api/whatsapp/auto-replies');
+    const el = document.getElementById('wa-auto-replies');
+    if (!rules.length) { el.innerHTML = '<p class="text-muted text-center small py-3">暂无规则</p>'; return; }
+    el.innerHTML = rules.map(r => {
+      const typeLabel = { keyword:'关键词', regex:'正则', first_message:'首次消息', off_hours:'非工作时间', all:'所有消息' };
+      const icon = r.is_ai ? '🤖' : '📝';
+      return `<div class="p-2 border-bottom d-flex justify-content-between align-items-center">
+        <div>
+          <strong class="small">${icon} ${r.name}</strong><br>
+          <small class="text-muted">${typeLabel[r.trigger_type]||r.trigger_type}: ${r.trigger_value||'*'} | 触发${r.match_count}次</small>
+        </div>
+        <div>
+          <button class="btn btn-xs ${r.is_active?'btn-success':'btn-outline-secondary'}" onclick="waToggleAutoReply(${r.id},${r.is_active?0:1})">${r.is_active?'✅':'⏸️'}</button>
+          <button class="btn btn-xs btn-outline-danger" onclick="waDeleteAutoReply(${r.id})">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+async function waAddAutoReply() {
+  const name = prompt('规则名称:');
+  if (!name) return;
+  const triggerType = prompt('触发类型 (keyword/first_message/off_hours/all):', 'keyword');
+  const triggerValue = triggerType === 'keyword' ? prompt('关键词（逗号分隔）:', 'price,quote,catalog') : '';
+  const isAi = confirm('使用AI自动回复？（确定=AI，取消=固定模板）');
+  let replyContent = '';
+  if (!isAi) {
+    replyContent = prompt('回复内容 (可用 {name} 代替客户名):', 'Hello {name}! Thanks for your interest. We will get back to you shortly.');
+  }
+  await api('/api/whatsapp/auto-replies', 'POST', {
+    name, trigger_type: triggerType, trigger_value: triggerValue,
+    reply_content: replyContent, is_ai: isAi, ai_agent: isAi ? 'sales' : ''
+  });
+  toast('规则已创建');
+  waLoadAutoReplies();
+}
+
+async function waToggleAutoReply(id, active) {
+  await api(`/api/whatsapp/auto-replies/${id}`, 'PUT', { is_active: !!active });
+  waLoadAutoReplies();
+}
+
+async function waDeleteAutoReply(id) {
+  if (!confirm('确定删除？')) return;
+  await api(`/api/whatsapp/auto-replies/${id}`, 'DELETE');
+  waLoadAutoReplies();
+}
+
+// 快捷回复管理
+async function waLoadQuickReplies() {
+  try {
+    const replies = await api('/api/whatsapp/quick-replies');
+    const el = document.getElementById('wa-quick-replies-list');
+    if (!replies.length) { el.innerHTML = '<p class="text-muted text-center small py-3">暂无自定义快捷回复</p>'; return; }
+    el.innerHTML = replies.map(r =>
+      `<div class="p-2 border-bottom d-flex justify-content-between align-items-center">
+        <div><code class="small">/${r.shortcut}</code> <span class="small">${r.title}</span><br><small class="text-muted">使用${r.use_count}次</small></div>
+        <button class="btn btn-xs btn-outline-danger" onclick="waDeleteQuickReply(${r.id})">🗑️</button>
+      </div>`
+    ).join('');
+    // 更新快捷回复菜单
+    const menu = document.getElementById('wa-quick-menu');
+    const customItems = replies.map(r =>
+      `<li><a class="dropdown-item small" href="#" onclick="document.getElementById('wa-input').value='${r.content.replace(/'/g,"\\'")}'">${r.shortcut}: ${r.title}</a></li>`
+    ).join('');
+    menu.innerHTML = `
+      <li><a class="dropdown-item small" href="#" onclick="waUseQuick('greeting')">👋 问候</a></li>
+      <li><a class="dropdown-item small" href="#" onclick="waUseQuick('catalog')">📦 产品目录</a></li>
+      <li><a class="dropdown-item small" href="#" onclick="waUseQuick('price')">💰 询问需求</a></li>
+      <li><a class="dropdown-item small" href="#" onclick="waUseQuick('followup')">🔄 跟进</a></li>
+      ${customItems ? '<li><hr class="dropdown-divider"></li>' + customItems : ''}
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item small" href="#" onclick="waAddQuickReply()">⚙️ 添加快捷回复</a></li>
+    `;
+  } catch(e) {}
+}
+
+async function waAddQuickReply() {
+  const shortcut = prompt('快捷键（如 hello）:');
+  if (!shortcut) return;
+  const title = prompt('标题:');
+  const content = prompt('内容:');
+  if (!content) return;
+  await api('/api/whatsapp/quick-replies', 'POST', { shortcut, title, content });
+  toast('快捷回复已添加');
+  waLoadQuickReplies();
+}
+
+async function waDeleteQuickReply(id) {
+  if (!confirm('确定删除？')) return;
+  await api(`/api/whatsapp/quick-replies/${id}`, 'DELETE');
+  waLoadQuickReplies();
+}
+
+function waManageQuickReplies() {
+  // 滚动到快捷回复管理区域
+  document.getElementById('wa-quick-replies-list').scrollIntoView({ behavior: 'smooth' });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ========== 社媒账号管理（矩阵面板） ==========
+let saCurrentPlatform = 'all';
+let saSelectedIds = new Set();
+const saIcons = { whatsapp:'💬', tiktok:'🎵', facebook:'📘', linkedin:'🔗' };
+const saStatusDot = {
+  connected:    '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#28a745" title="在线"></span>',
+  warming:      '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ffc107" title="养号中"></span>',
+  error:        '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#dc3545" title="异常"></span>',
+  disconnected: '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#adb5bd" title="离线"></span>',
+  banned:       '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#6f42c1" title="封号"></span>',
+  paused:       '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#17a2b8" title="暂停"></span>'
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('[href="#tab-accounts"]')?.addEventListener('shown.bs.tab', () => saLoadCards());
+});
+
+async function saLoadStats() {
+  try {
+    const s = await api('/api/dispatcher/stats');
+    document.getElementById('sa-stat-total').textContent = s.total || 0;
+    document.getElementById('sa-stat-online').textContent = s.online || 0;
+    document.getElementById('sa-stat-warming').textContent = s.warming || 0;
+    document.getElementById('sa-stat-abnormal').textContent = s.abnormal || 0;
+    document.getElementById('sa-stat-ops').textContent = s.todayOps || 0;
+  } catch(e) {}
+}
+
+function saFilterPlatform(btn, platform) {
+  saCurrentPlatform = platform;
+  document.querySelectorAll('#sa-platform-filter .btn').forEach(b => {
+    b.classList.remove('btn-purple','active');
+    b.classList.add('btn-outline-secondary');
+  });
+  btn.classList.remove('btn-outline-secondary');
+  btn.classList.add('btn-purple','active');
+  saLoadCards();
+}
+
+async function saLoadCards() {
+  saLoadStats();
+  const search = document.getElementById('sa-search-all')?.value || '';
+  const params = new URLSearchParams();
+  if (saCurrentPlatform !== 'all') params.set('platform', saCurrentPlatform);
+  if (search) params.set('search', search);
+
+  // 缓存环境资源
+  if (!window._envCache) {
+    try {
+      const [proxies, profiles, phones, chains] = await Promise.all([
+        api('/api/env/proxies'), api('/api/env/profiles'), api('/api/env/phones'), api('/api/env/chains')
+      ]);
+      window._envCache = { proxies: proxies || [], profiles: profiles || [], phones: phones || [], chains: chains || [] };
+    } catch(e) { window._envCache = { proxies: [], profiles: [], phones: [], chains: [] }; }
+  }
+  const ec = window._envCache;
+
+  function proxyOpts(selectedId) {
+    return ec.proxies.map(p => `<option value="${p.id}" ${p.id==selectedId?'selected':''}>${p.type||'http'} | ${p.host}:${p.port} | ${p.country||'-'} | ${p.is_alive?'✅':'❌'}</option>`).join('');
+  }
+  function profileOpts(selectedId) {
+    return ec.profiles.map(p => `<option value="${p.id}" ${p.id==selectedId?'selected':''}>${p.name} | ${p.platform||'-'} | ${p.health_score??'-'}分</option>`).join('');
+  }
+  function phoneOpts(selectedId) {
+    return ec.phones.map(p => `<option value="${p.id}" ${p.id==selectedId?'selected':''}>${p.number} | ${p.country||'-'} | ${p.status||'-'}</option>`).join('');
+  }
+  function chainOpts(selectedId) {
+    return ec.chains.map(c => `<option value="${c.id}" ${c.id==selectedId?'selected':''}>${c.name || '链路#'+c.id}</option>`).join('');
+  }
+
+  try {
+    const accounts = await api('/api/social-accounts?' + params);
+    const container = document.getElementById('sa-cards-container');
+    if (!accounts.length) {
+      container.innerHTML = '<div class="text-center text-muted py-5">暂无账号，点击 ➕ 添加</div>';
+      return;
+    }
+
+    container.innerHTML = accounts.map(a => {
+      const icon = saIcons[a.platform] || '📱';
+      const dot = saStatusDot[a.status] || saStatusDot.disconnected;
+      const pct = a.daily_limit > 0 ? Math.min(100, Math.round((a.today_sent||0)/(a.daily_limit)*100)) : 0;
+      const pctColor = pct > 80 ? 'danger' : pct > 50 ? 'warning' : 'success';
+      const lastActive = a.last_active_at ? new Date(a.last_active_at).toLocaleString('zh-CN') : '从未';
+      const checked = saSelectedIds.has(a.id) ? 'checked' : '';
+
+      const proxyLabel = a.proxy_info ? `${a.proxy_info.type}://${a.proxy_info.host}:${a.proxy_info.port}` : (a.proxy || '无代理');
+
+      return `<div class="card mb-2 shadow-sm" style="border-radius:10px;border-left:4px solid ${a.status==='connected'?'#28a745':a.status==='banned'?'#6f42c1':a.status==='warming'?'#ffc107':'#dee2e6'}" id="sa-card-${a.id}">
+        <div class="card-body py-2 px-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <input type="checkbox" ${checked} onchange="saToggleSelect(${a.id}, this)" class="sa-select-chk">
+              <span style="font-size:1.4em">${icon}</span>
+              <div>
+                <strong>${a.display_name || a.account_id}</strong> ${dot}
+                <div class="text-muted" style="font-size:0.75em">${a.account_id} · <span class="badge bg-${a.account_type==='business'?'primary':'secondary'}" style="font-size:0.7em">${a.account_type==='business'?'企业':'个人'}</span></div>
+              </div>
+            </div>
+            <div class="d-flex gap-1">
+              <button class="btn btn-xs btn-outline-success" onclick="saDispatch(${a.id},'connect')" title="连接">🔗</button>
+              <button class="btn btn-xs btn-outline-warning" onclick="saQuickProxy(${a.id})" title="换IP">🔄</button>
+              <button class="btn btn-xs btn-outline-primary" onclick="saToggleDetail(${a.id})" title="编辑">✏️</button>
+              <button class="btn btn-xs btn-outline-danger" onclick="saDel(${a.id})" title="删除">🗑️</button>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3 mt-1" style="font-size:0.82em">
+            <span>🌐 <code class="sa-proxy-display" style="cursor:pointer" onclick="saQuickProxy(${a.id})" title="点击修改">${proxyLabel}</code></span>
+            <span>📅 养号${a.warmup_days||0}天</span>
+            <span style="min-width:140px">
+              ${a.daily_limit > 0 ? `<span>${a.today_sent||0}/${a.daily_limit}</span>
+              <div class="progress" style="height:5px;width:80px;display:inline-block;vertical-align:middle">
+                <div class="progress-bar bg-${pctColor}" style="width:${pct}%"></div>
+              </div>` : '<span class="text-muted">无限额</span>'}
+            </span>
+            <span class="text-muted">🕐 ${lastActive}</span>
+          </div>
+          <!-- 环境绑定区 -->
+          <div class="border-top pt-2 mt-2">
+            <div class="row g-2 small">
+              <div class="col-12 mb-1">
+                <label class="text-muted d-block">🔗 网络链路</label>
+                <select class="form-select form-select-sm" onchange="saBindChain(${a.id}, this.value)">
+                  <option value="">未绑定（使用独立代理配置）</option>${chainOpts(a.chain_id)}
+                </select>
+                <small class="text-muted">选择链路后，前置/VPN/落地自动配置</small>
+              </div>
+              <div class="col-4">
+                <label class="text-muted d-block">🌐 代理IP</label>
+                <select class="form-select form-select-sm ${a.chain_id ? 'opacity-50' : ''}" onchange="saBindProxy(${a.id}, this.value)" ${a.chain_id ? 'disabled' : ''}>
+                  <option value="">未绑定</option>${proxyOpts(a.proxy_id)}
+                </select>
+              </div>
+              <div class="col-4">
+                <label class="text-muted d-block">🖥️ 浏览器环境</label>
+                <select class="form-select form-select-sm" onchange="saBindProfile(${a.id}, this.value)">
+                  <option value="">未绑定</option>${profileOpts(a.profile_id)}
+                </select>
+              </div>
+              <div class="col-4">
+                <label class="text-muted d-block">📱 接码号码</label>
+                <select class="form-select form-select-sm" onchange="saBindPhone(${a.id}, this.value)">
+                  <option value="">未绑定</option>${phoneOpts(a.phone_id)}
+                </select>
+              </div>
+            </div>
+          </div>
+          <!-- 展开详情 -->
+          <div class="d-none mt-2 pt-2 border-top" id="sa-detail-${a.id}">
+            <div class="row g-2">
+              <div class="col-md-4"><label class="form-label mb-0" style="font-size:0.8em">代理IP</label><input class="form-control form-control-sm" value="${a.proxy||''}" id="sa-ed-proxy-${a.id}"></div>
+              <div class="col-md-2"><label class="form-label mb-0" style="font-size:0.8em">代理类型</label><select class="form-select form-select-sm" id="sa-ed-proxytype-${a.id}"><option value="http" ${(a.proxy_type||'http')==='http'?'selected':''}>HTTP</option><option value="socks5" ${a.proxy_type==='socks5'?'selected':''}>SOCKS5</option><option value="none" ${a.proxy_type==='none'?'selected':''}>无代理</option></select></div>
+              <div class="col-md-3"><label class="form-label mb-0" style="font-size:0.8em">Access Token</label><input class="form-control form-control-sm" value="${a.access_token||''}" id="sa-ed-token-${a.id}"></div>
+              <div class="col-md-3"><label class="form-label mb-0" style="font-size:0.8em">账号类型</label><select class="form-select form-select-sm" id="sa-ed-type-${a.id}"><option value="personal" ${a.account_type==='personal'?'selected':''}>个人</option><option value="business" ${a.account_type==='business'?'selected':''}>企业</option></select></div>
+              <div class="col-md-6"><label class="form-label mb-0" style="font-size:0.8em">Cookies</label><textarea class="form-control form-control-sm" rows="2" id="sa-ed-cookies-${a.id}">${a.cookies||''}</textarea></div>
+              <div class="col-md-6"><label class="form-label mb-0" style="font-size:0.8em">备注</label><textarea class="form-control form-control-sm" rows="2" id="sa-ed-notes-${a.id}">${a.notes||''}</textarea></div>
+              <div class="col-12"><button class="btn btn-sm btn-purple" onclick="saSaveDetail(${a.id},'${a.platform}')">💾 保存</button></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { console.error(e); }
+}
+
+function saToggleDetail(id) {
+  document.getElementById('sa-detail-' + id)?.classList.toggle('d-none');
+}
+
+function saToggleSelect(id, el) {
+  if (el.checked) saSelectedIds.add(id); else saSelectedIds.delete(id);
+  const bar = document.getElementById('sa-batch-bar');
+  document.getElementById('sa-batch-count').textContent = saSelectedIds.size;
+  bar.classList.toggle('d-none', saSelectedIds.size === 0);
+}
+
+function saClearSelection() {
+  saSelectedIds.clear();
+  document.querySelectorAll('.sa-select-chk').forEach(cb => cb.checked = false);
+  document.getElementById('sa-batch-bar').classList.add('d-none');
+}
+
+async function saQuickProxy(id) {
+  if (!window._envCache) {
+    try {
+      const [proxies, profiles, phones] = await Promise.all([
+        api('/api/env/proxies'), api('/api/env/profiles'), api('/api/env/phones')
+      ]);
+      window._envCache = { proxies: proxies || [], profiles: profiles || [], phones: phones || [] };
+    } catch(e) { window._envCache = { proxies: [], profiles: [], phones: [] }; }
+  }
+  const proxies = window._envCache.proxies;
+  if (!proxies.length) { toast('代理池为空，请先在环境管理中添加代理', 'warning'); return; }
+  const opts = proxies.map((p,i) => `${i+1}. ${p.type||'http'}://${p.host}:${p.port} (${p.country||'-'}) ${p.is_alive?'✅':'❌'}`).join('\n');
+  const choice = prompt('选择代理（输入序号）:\n' + opts);
+  if (!choice) return;
+  const idx = parseInt(choice) - 1;
+  if (idx < 0 || idx >= proxies.length) { toast('无效选择', 'warning'); return; }
+  const proxy = proxies[idx];
+  await api(`/api/social-accounts/${id}/bindProxy`, 'PUT', { proxy_id: proxy.id });
+  // 同时更新旧的proxy文本字段
+  await api(`/api/dispatcher/switch-proxy`, 'POST', { accountId: id, proxy: `${proxy.type||'http'}://${proxy.host}:${proxy.port}` });
+  toast('代理已绑定');
+  window._envCache = null;
+  saLoadCards();
+}
+
+async function saBindChain(id, val) {
+  await api('/api/social-accounts/' + id, 'PUT', { chain_id: val ? parseInt(val) : null });
+  toast(val ? '链路已绑定' : '链路已解绑');
+  window._envCache = null;
+  saLoadCards();
+}
+async function saBindProxy(id, val) {
+  await api(`/api/social-accounts/${id}/bindProxy`, 'PUT', { proxy_id: val ? parseInt(val) : null });
+  toast(val ? '代理已绑定' : '代理已解绑');
+}
+async function saBindProfile(id, val) {
+  await api(`/api/social-accounts/${id}/bindProfile`, 'PUT', { profile_id: val ? parseInt(val) : null });
+  toast(val ? '浏览器环境已绑定' : '浏览器环境已解绑');
+}
+async function saBindPhone(id, val) {
+  await api(`/api/social-accounts/${id}/bindPhone`, 'PUT', { phone_id: val ? parseInt(val) : null });
+  toast(val ? '接码号码已绑定' : '接码号码已解绑');
+}
+
+async function saDispatch(id, action) {
+  const res = await api('/api/dispatcher/execute', 'POST', { accountId: id, action });
+  toast(res.success ? '操作成功' : (res.error || '操作失败'), res.success ? 'success' : 'warning');
+  saLoadCards();
+}
+
+async function saDel(id) {
+  if (!confirm('确定删除此账号？')) return;
+  await api('/api/social-accounts/' + id, 'DELETE');
+  toast('已删除');
+  saLoadCards();
+}
+
+async function saSaveDetail(id, platform) {
+  const data = {
+    proxy: document.getElementById('sa-ed-proxy-' + id)?.value || '',
+    proxy_type: document.getElementById('sa-ed-proxytype-' + id)?.value || 'http',
+    cookies: document.getElementById('sa-ed-cookies-' + id)?.value || '',
+    access_token: document.getElementById('sa-ed-token-' + id)?.value || '',
+    account_type: document.getElementById('sa-ed-type-' + id)?.value || 'personal',
+    notes: document.getElementById('sa-ed-notes-' + id)?.value || ''
+  };
+  await api('/api/social-accounts/' + id, 'PUT', data);
+  toast('已保存');
+  saLoadCards();
+}
+
+async function saBatchChangeIP() {
+  if (!window._envCache) {
+    try {
+      const [proxies, profiles, phones] = await Promise.all([
+        api('/api/env/proxies'), api('/api/env/profiles'), api('/api/env/phones')
+      ]);
+      window._envCache = { proxies: proxies || [], profiles: profiles || [], phones: phones || [] };
+    } catch(e) { window._envCache = { proxies: [], profiles: [], phones: [] }; }
+  }
+  const proxies = window._envCache.proxies;
+  if (!proxies.length) { toast('代理池为空', 'warning'); return; }
+  const opts = proxies.map((p,i) => `${i+1}. ${p.type||'http'}://${p.host}:${p.port} (${p.country||'-'}) ${p.is_alive?'✅':'❌'}`).join('\n');
+  const choice = prompt('选择代理（输入序号）:\n' + opts);
+  if (!choice) return;
+  const idx = parseInt(choice) - 1;
+  if (idx < 0 || idx >= proxies.length) { toast('无效选择', 'warning'); return; }
+  const proxy = proxies[idx];
+  for (const id of saSelectedIds) {
+    await api(`/api/social-accounts/${id}/bindProxy`, 'PUT', { proxy_id: proxy.id });
+  }
+  toast(`已为 ${saSelectedIds.size} 个账号绑定代理`);
+  saClearSelection();
+  window._envCache = null;
+  saLoadCards();
+}
+
+async function saBatchDeleteSelected() {
+  if (!confirm(`确定删除选中的 ${saSelectedIds.size} 个账号？`)) return;
+  await api('/api/social-accounts/batch-delete', 'POST', { ids: [...saSelectedIds] });
+  toast(`已删除 ${saSelectedIds.size} 个账号`);
+  saClearSelection();
+  saLoadCards();
+}
+
+function saShowAddModal(mode) {
+  const isB = mode === 'batch';
+  let html = `<div class="modal fade" id="saAddModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">${isB ? '📋 批量添加账号' : '➕ 添加账号'}</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <div class="mb-3"><label class="form-label">平台</label><select class="form-select" id="sa-add-platform">
+        <option value="whatsapp">💬 WhatsApp</option><option value="tiktok">🎵 TikTok</option>
+        <option value="facebook">📘 Facebook</option><option value="linkedin">🔗 LinkedIn</option></select></div>`;
+
+  if (isB) {
+    html += `<div class="mb-3"><label class="form-label">批量数据（每行一个）</label>
+      <textarea class="form-control" rows="6" id="sa-add-batch" placeholder="账号ID|密码|代理IP|备注&#10;每行一个，支持 | , Tab 分隔"></textarea></div>`;
+  } else {
+    html += `<div class="mb-3"><label class="form-label">账号ID / 手机号</label><input class="form-control" id="sa-add-id"></div>
+      <div class="mb-3"><label class="form-label">显示名称</label><input class="form-control" id="sa-add-name"></div>
+      <div class="mb-3"><label class="form-label">密码</label><input class="form-control" type="password" id="sa-add-pass"></div>
+      <div class="mb-3"><label class="form-label">代理IP（可选）</label><input class="form-control" id="sa-add-proxy" placeholder="http://user:pass@ip:port"></div>
+      <div class="mb-3"><label class="form-label">类型</label><select class="form-select" id="sa-add-type"><option value="personal">个人</option><option value="business">企业</option></select></div>
+      <hr><h6>🔗 环境绑定（可选）</h6>
+      <div class="mb-3">
+        <label class="form-label">🔒 指纹浏览器</label>
+        <select class="form-select" id="sa-add-browser-type">
+          <option value="builtin">🖥️ 自研引擎（内置）</option>
+          <option value="adspower">🛡️ AdsPower</option>
+          <option value="multilogin">🔐 Multilogin</option>
+          <option value="geelark">📱 GeeLark（云手机）</option>
+        </select>
+      </div>
+      <div class="mb-3"><label class="form-label">🔗 网络链路</label><select class="form-select" id="sa-add-chain-id"><option value="">不绑定</option></select></div>
+      <div class="mb-3"><label class="form-label">🌐 代理IP（从代理池选择）</label><select class="form-select" id="sa-add-proxy-id"><option value="">不绑定</option></select></div>
+      <div class="mb-3"><label class="form-label">🖥️ 浏览器环境</label><select class="form-select" id="sa-add-profile-id"><option value="">不绑定</option></select></div>
+      <div class="mb-3"><label class="form-label">📱 接码号码</label><select class="form-select" id="sa-add-phone-id"><option value="">不绑定</option></select></div>`;
+  }
+
+  html += `</div><div class="modal-footer"><button class="btn btn-purple" onclick="saDoAddModal(${isB})">${isB?'批量添加':'添加'}</button></div></div></div></div>`;
+
+  document.getElementById('saAddModal')?.remove();
+  document.body.insertAdjacentHTML('beforeend', html);
+  new bootstrap.Modal(document.getElementById('saAddModal')).show();
+
+  // 填充环境下拉框
+  if (!isB) {
+    (async () => {
+      if (!window._envCache) {
+        try {
+          const [proxies, profiles, phones, chains] = await Promise.all([
+            api('/api/env/proxies'), api('/api/env/profiles'), api('/api/env/phones'), api('/api/env/chains')
+          ]);
+          window._envCache = { proxies: proxies || [], profiles: profiles || [], phones: phones || [], chains: chains || [] };
+        } catch(e) { window._envCache = { proxies: [], profiles: [], phones: [], chains: [] }; }
+      }
+      const ec = window._envCache;
+      const pSel = document.getElementById('sa-add-proxy-id');
+      const bSel = document.getElementById('sa-add-profile-id');
+      const phSel = document.getElementById('sa-add-phone-id');
+      const chSel = document.getElementById('sa-add-chain-id');
+      if (pSel) ec.proxies.forEach(p => { pSel.insertAdjacentHTML('beforeend', `<option value="${p.id}">${p.type||'http'} | ${p.host}:${p.port} | ${p.country||'-'} | ${p.is_alive?'✅':'❌'}</option>`); });
+      if (bSel) ec.profiles.forEach(p => { bSel.insertAdjacentHTML('beforeend', `<option value="${p.id}">${p.name} | ${p.platform||'-'} | ${p.health_score??'-'}分</option>`); });
+      if (phSel) ec.phones.forEach(p => { phSel.insertAdjacentHTML('beforeend', `<option value="${p.id}">${p.number} | ${p.country||'-'} | ${p.status||'-'}</option>`); });
+      if (chSel) ec.chains.forEach(c => { chSel.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name || '链路#'+c.id}</option>`); });
+    })();
+  }
+}
+
+async function saDoAddModal(isBatch) {
+  const platform = document.getElementById('sa-add-platform').value;
+  if (isBatch) {
+    const input = document.getElementById('sa-add-batch').value.trim();
+    if (!input) { toast('请输入数据','warning'); return; }
+    const lines = input.split('\n').filter(l=>l.trim());
+    const accounts = lines.map(line => {
+      const p = line.trim().split(/[|,\t]/);
+      return { 
+        account_id: p[0]?.trim(), 
+        password: (p[1]||'').trim(), 
+        proxy: (p[2]||'').trim(), 
+        display_name: (p[3]||'').trim(),
+        browser_type: 'builtin'  // 批量添加默认使用内置浏览器
+      };
+    }).filter(a => a.account_id);
+    const res = await api('/api/social-accounts/batch', 'POST', { platform, accounts });
+    toast(`批量添加: ${res.added||0}个成功, ${res.skipped||0}个跳过`);
+  } else {
+    const id = document.getElementById('sa-add-id').value.trim();
+    if (!id) { toast('请填写账号ID','warning'); return; }
+    await api('/api/social-accounts', 'POST', {
+      platform, account_id: id,
+      display_name: document.getElementById('sa-add-name').value.trim(),
+      password: document.getElementById('sa-add-pass').value,
+      proxy: document.getElementById('sa-add-proxy').value.trim(),
+      account_type: document.getElementById('sa-add-type').value,
+      phone: platform==='whatsapp'? id : '',
+      email: ['tiktok','facebook','linkedin'].includes(platform)? id : '',
+      browser_type: document.getElementById('sa-add-browser-type')?.value || 'builtin'
+    });
+    // 绑定环境（如果选了）
+    // 需要先获取刚添加的账号ID - 通过重新加载列表来间接处理
+    const proxyId = document.getElementById('sa-add-proxy-id')?.value;
+    const profileId = document.getElementById('sa-add-profile-id')?.value;
+    const phoneId = document.getElementById('sa-add-phone-id')?.value;
+    const chainId = document.getElementById('sa-add-chain-id')?.value;
+    // 获取最新添加的账号
+    if (proxyId || profileId || phoneId || chainId) {
+      const all = await api('/api/social-accounts?platform=' + platform);
+      const newest = all[0]; // 按created_at DESC排序，第一个是最新的
+      if (newest) {
+        if (proxyId) await api(`/api/social-accounts/${newest.id}/bindProxy`, 'PUT', { proxy_id: parseInt(proxyId) });
+        if (profileId) await api(`/api/social-accounts/${newest.id}/bindProfile`, 'PUT', { profile_id: parseInt(profileId) });
+        if (phoneId) await api(`/api/social-accounts/${newest.id}/bindPhone`, 'PUT', { phone_id: parseInt(phoneId) });
+        if (chainId) await api(`/api/social-accounts/${newest.id}`, 'PUT', { chain_id: parseInt(chainId) });
+      }
+    }
+    toast('账号已添加');
+  }
+  bootstrap.Modal.getInstance(document.getElementById('saAddModal'))?.hide();
+  saLoadCards();
+}
+
+// ==================== TikTok OAuth 授权 ====================
+async function tkOAuthConnect() {
+  try {
+    // 先检查是否配置了TikTok API密钥
+    const config = await api('/api/settings/tiktok-api');
+    if (!config || !config.data || !config.data.clientKey) {
+      toast('请先在 设置 → TikTok API 中配置 Client Key 和 Client Secret', 'warning');
+      return;
+    }
+    const clientKey = config.data.clientKey;
+    const redirectUri = config.data.redirectUri || 'http://localhost:3001/oauth/tiktok/callback';
+    const scope = 'user.info.basic,video.publish,video.upload,video.list';
+    const csrfState = 'tk_' + Math.random().toString(36).substring(2, 15);
+    const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${clientKey}&scope=${scope}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&state=${csrfState}`;
+    window.open(authUrl, 'TikTok授权', 'width=600,height=700');
+    toast('TikTok授权窗口已打开，请在弹出窗口中完成授权');
+  } catch (e) {
+    toast('TikTok授权失败: ' + e.message, 'danger');
+  }
+}
+</script>
+<%- include('partials/footer') %>

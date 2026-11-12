@@ -1,0 +1,40 @@
+{
+  "group_members": {
+    "members_tab": "a[href*='/members']",
+    "member_card": "div[data-visualcompletion='ignore-dynamic'] > div > div > div > a[role='link']",
+    "member_name": "span > a[role='link']",
+    "member_profile_link": "a[role='link'][href*='/user/'], a[role='link'][href*='facebook.com/']",
+    "member_subtitle": "span.x1lliihq",
+    "see_more_members": "div[role='button']:has(span)"
+  },
+  "page_followers": {
+    "followers_tab": "a[href*='/followers']",
+    "follower_card": "div[data-visualcompletion='ignore-dynamic'] a[role='link']",
+    "follower_name": "span a[role='link']",
+    "follower_profile_link": "a[role='link']"
+  },
+  "post_commenters": {
+    "comment_block": "div[aria-label*='comment'], div[aria-label*='Comment'], ul > li",
+    "commenter_name": "a[role='link'] span",
+    "commenter_profile_link": "a[role='link']",
+    "comment_text": "div[dir='auto']",
+    "view_more_comments": "div[role='button'] span",
+    "reply_expander": "div[role='button']"
+  },
+  "actions": {
+    "message_button": "div[aria-label='Message'], a[href*='/messages/'], div[role='button']:has(span:text('Message'))",
+    "message_input": "div[role='textbox'][aria-label*='message'], div[contenteditable='true']",
+    "send_button": "div[aria-label='Press enter to send'], div[role='button'][aria-label='Send']",
+    "like_button": "div[aria-label='Like'], div[role='button'][aria-label='Like']",
+    "comment_input": "div[role='textbox'][aria-label*='comment'], div[contenteditable='true']",
+    "comment_submit": "div[aria-label='Comment'], div[role='button'][aria-label='Post']",
+    "follow_button": "div[aria-label='Follow'], div[role='button']:has(span:text('Follow'))",
+    "add_friend_button": "div[aria-label='Add friend'], div[role='button']:has(span:text('Add Friend'))"
+  },
+  "common": {
+    "scroll_container": "div[role='main']",
+    "loading_spinner": "svg[aria-label*='Loading']",
+    "error_dialog": "div[role='dialog']",
+    "close_dialog": "div[aria-label='Close']"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "pins": {
+    "pin_card": "div[data-test-id='pin'], div[role='listitem'], div[data-grid-item='true']",
+    "pin_link": "a[href*='/pin/']",
+    "pin_image": "img[src*='pinimg.com'], img[loading='auto']",
+    "pin_title": "div[data-test-id='pin-description'], h3, span[style*='font-weight']"
+  },
+  "board_followers": {
+    "followers_link": "a[href*='/followers/']",
+    "follower_card": "div[data-test-id='user-card'], div[role='listitem']",
+    "follower_name": "span[style*='font-weight: 600'], a[href*='/'] span",
+    "follower_username": "a[href*='/'][data-test-id='user-rep']",
+    "follower_profile_link": "a[href*='/'][data-test-id='user-rep']"
+  },
+  "actions": {
+    "follow_button": "button[data-test-id='follow-button'], button:has(span:text('Follow'))",
+    "following_button": "button[data-test-id='unfollow-button'], button:has(span:text('Following'))",
+    "save_button": "button[data-test-id='save-button'], button:has(span:text('Save'))",
+    "like_button": "button[data-test-id='reaction-button'], button[aria-label='React']",
+    "comment_input": "div[data-test-id='comment-box'] textarea, textarea[placeholder*='Add a comment'], div[role='textbox']",
+    "comment_submit": "button[data-test-id='comment-submit'], button[aria-label='Submit']",
+    "pin_create_button": "button[data-test-id='create-pin-button'], div[data-test-id='create-pin']"
+  },
+  "search": {
+    "search_input": "input[name='searchBoxInput'], input[placeholder*='Search']",
+    "search_results": "div[data-test-id='search-feed'], div[role='list']"
+  },
+  "common": {
+    "scroll_container": "div[data-test-id='search-feed'], div[role='list'], main",
+    "loading_spinner": "div[data-test-id='spinner'], div[aria-label='Loading']",
+    "login_required": "input[name='id'], div[data-test-id='login-button']"
+  }
+}

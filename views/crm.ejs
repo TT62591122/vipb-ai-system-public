@@ -1,0 +1,354 @@
+<%- include('partials/header') %>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="mb-0">📋 CRM 客户关系管理</h4><small class="text-muted">客户 + 询盘 + 评分 + 爬虫导入</small></div>
+    <div>
+      <button class="btn btn-purple" data-bs-toggle="modal" data-bs-target="#addCustomerModal">➕ 新增客户</button>
+      <button class="btn btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#addInquiryModal">📋 新建询盘</button>
+    </div>
+  </div>
+
+  <!-- 线索评分概览 -->
+  <div class="row g-2 mb-3" id="scoring-overview">
+    <div class="col"><div class="card text-center p-2"><div class="h5 mb-0" id="score-hot" style="color:#dc3545">0</div><small>🔥 热线索</small></div></div>
+    <div class="col"><div class="card text-center p-2"><div class="h5 mb-0" id="score-sql" style="color:#fd7e14">0</div><small>🟠 SQL</small></div></div>
+    <div class="col"><div class="card text-center p-2"><div class="h5 mb-0" id="score-mql" style="color:#17a2b8">0</div><small>🔵 MQL</small></div></div>
+    <div class="col"><div class="card text-center p-2"><div class="h5 mb-0" id="score-warm" style="color:#ffc107">0</div><small>🟡 温线索</small></div></div>
+    <div class="col"><div class="card text-center p-2"><div class="h5 mb-0" id="score-cold" style="color:#6c757d">0</div><small>⚪ 冷线索</small></div></div>
+  </div>
+
+  <!-- 搜索和筛选栏 -->
+  <div class="row g-2 mb-3">
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="search-customers" placeholder="🔍 搜索客户（公司/联系人/邮箱）" oninput="filterCustomers()">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" id="filter-stage" onchange="filterCustomers()">
+        <option value="">全部阶段</option>
+        <option value="new">新线索</option>
+        <option value="contacted">已联系</option>
+        <option value="qualified">已认证</option>
+        <option value="proposal">报价中</option>
+        <option value="won">已成交</option>
+        <option value="lost">已流失</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" id="filter-country" onchange="filterCustomers()">
+        <option value="">全部国家</option>
+        <% const countries = [...new Set(customers.map(c => c.country).filter(Boolean))].sort(); %>
+        <% countries.forEach(co => { %>
+        <option value="<%= co %>"><%= co %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" id="filter-source" onchange="filterCustomers()">
+        <option value="">全部来源</option>
+        <option value="manual">手动录入</option>
+        <option value="email">邮件询盘</option>
+        <option value="social">社媒获客</option>
+        <option value="website">网站表单</option>
+        <option value="scraper">爬虫导入</option>
+        <option value="referral">推荐</option>
+        <option value="exhibition">展会</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-outline-secondary w-100" onclick="clearCustomerFilters()">🔄 清除筛选</button>
+    </div>
+  </div>
+  <div id="filter-count" class="mb-2 text-muted small" style="display:none"></div>
+
+  <div class="row g-3">
+    <!-- 左侧客户列表 -->
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between">
+          <span>客户列表 (<span id="customer-visible-count"><%= customers.length %></span>/<%= customers.length %>)</span>
+        </div>
+        <div class="card-body p-0" style="max-height:70vh;overflow-y:auto">
+          <table class="table table-hover mb-0" id="customers-table">
+            <thead><tr><th>公司</th><th>国家</th><th>评分</th><th>阶段</th></tr></thead>
+            <tbody>
+              <% customers.forEach(c => { %>
+              <tr style="cursor:pointer" onclick="loadCustomerDetail(<%= c.id %>)" data-stage="<%= c.stage||'' %>" data-country="<%= c.country||'' %>" data-source="<%= c.source||'' %>">
+                <td><strong><%= c.company||c.contact_name||c.email %></strong><br><small class="text-muted"><%= c.email||'' %></small></td>
+                <td><%= c.country||'-' %></td>
+                <td><span class="badge bg-primary"><%= c.lead_score||0 %></span></td>
+                <td><span class="badge badge-stage badge-new"><%= c.stage %></span></td>
+              </tr>
+              <% }) %>
+              <% if(!customers.length) { %><tr><td colspan="4" class="text-center text-muted py-4">暂无客户，点击上方添加</td></tr><% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- CRM分页 -->
+      <nav class="d-flex justify-content-between align-items-center mt-2">
+        <small class="text-muted">共 <%= pagination.customerTotal %> 条，第 <%= pagination.customerPage %>/<%= pagination.customerTotalPages || 1 %> 页</small>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item <%= pagination.customerPage <= 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="/crm?page=<%= pagination.customerPage - 1 %>">‹</a>
+          </li>
+          <li class="page-item active"><a class="page-link"><%= pagination.customerPage %></a></li>
+          <li class="page-item <%= pagination.customerPage >= pagination.customerTotalPages ? 'disabled' : '' %>">
+            <a class="page-link" href="/crm?page=<%= pagination.customerPage + 1 %>">›</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- 右侧详情 -->
+    <div class="col-md-7">
+      <div class="card">
+        <div class="card-header">客户详情</div>
+        <div class="card-body" id="customer-detail">
+          <div class="text-center text-muted py-5">← 点击左侧客户查看详情</div>
+        </div>
+      </div>
+
+      <!-- AI助手 -->
+      <div class="card mt-3">
+        <div class="card-header">🤖 AI助手</div>
+        <div class="card-body">
+          <div class="input-group">
+            <input type="text" class="form-control" id="ai-input" placeholder="问AI任何关于客户的问题...">
+            <button class="btn btn-purple" onclick="aiChat('sales')">🧑‍💼 销售专家</button>
+            <button class="btn btn-outline-primary" onclick="aiChat('email')">📧 邮件专家</button>
+            <button class="btn btn-outline-success" onclick="aiChat('research')">🔍 市场调研</button>
+            <button class="btn btn-outline-danger" onclick="aiChat('risk')">🛡️ 风控专家</button>
+          </div>
+          <div id="ai-output" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 新增客户Modal -->
+<div class="modal fade" id="addCustomerModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">➕ 新增客户</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <form id="customer-form">
+        <div class="mb-3"><label class="form-label">公司名称 <span class="text-danger">*</span></label><input type="text" class="form-control" name="company" required placeholder="例如：深圳华为技术有限公司"></div>
+        <div class="mb-3"><label class="form-label">联系人 <span class="text-danger">*</span></label><input type="text" class="form-control" name="contact_name" placeholder="例如：张三"></div>
+        <div class="mb-3"><label class="form-label">邮箱 <span class="text-danger">*</span></label><input type="email" class="form-control" name="email" placeholder="例如：contact@company.com"></div>
+        <div class="mb-3"><label class="form-label">电话</label><input type="text" class="form-control" name="phone" placeholder="例如：+86 138 0000 0000"></div>
+        <div class="mb-3"><label class="form-label">国家</label><input type="text" class="form-control" name="country" placeholder="例如：China"></div>
+        <div class="mb-3"><label class="form-label">来源</label><select class="form-select" name="source"><option value="manual">手动添加</option><option value="scraper">爬虫导入</option><option value="social">社媒</option><option value="referral">推荐</option><option value="exhibition">展会</option></select></div>
+        <div class="mb-3"><label class="form-label">备注</label><textarea class="form-control" name="notes" rows="2"></textarea></div>
+      </form>
+    </div>
+    <div class="modal-footer"><button class="btn btn-purple" onclick="addCustomer()">保存</button></div>
+  </div></div>
+</div>
+
+<!-- 新建询盘Modal -->
+<div class="modal fade" id="addInquiryModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">📋 新建询盘</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <form id="inquiry-form">
+        <div class="mb-3"><label class="form-label">客户</label><select class="form-select" name="customer_id"><% customers.forEach(c => { %><option value="<%= c.id %>"><%= c.company||c.email %></option><% }) %></select></div>
+        <div class="mb-3"><label class="form-label">主题</label><input type="text" class="form-control" name="subject" required></div>
+        <div class="mb-3"><label class="form-label">产品</label><input type="text" class="form-control" name="product" placeholder="Smart Meter / Circuit Breaker"></div>
+        <div class="mb-3"><label class="form-label">数量</label><input type="text" class="form-control" name="quantity"></div>
+        <div class="mb-3"><label class="form-label">内容</label><textarea class="form-control" name="content" rows="3"></textarea></div>
+        <div class="mb-3"><label class="form-label">优先级</label><select class="form-select" name="priority"><option value="normal">普通</option><option value="high">高</option><option value="urgent">紧急</option></select></div>
+      </form>
+    </div>
+    <div class="modal-footer"><button class="btn btn-purple" onclick="addInquiry()">保存</button></div>
+  </div></div>
+</div>
+
+<script>
+// ========== 搜索和筛选 ==========
+function filterCustomers() {
+  const search = document.getElementById('search-customers').value.toLowerCase();
+  const stage = document.getElementById('filter-stage').value;
+  const country = document.getElementById('filter-country').value;
+  const source = document.getElementById('filter-source').value;
+  let visible = 0;
+  
+  document.querySelectorAll('#customers-table tbody tr').forEach(row => {
+    if (!row.dataset.stage && row.dataset.stage !== '') return; // skip empty row
+    const text = row.textContent.toLowerCase();
+    const rowStage = row.dataset.stage;
+    const rowCountry = row.dataset.country;
+    const rowSource = row.dataset.source;
+    
+    const matchSearch = !search || text.includes(search);
+    const matchStage = !stage || rowStage === stage;
+    const matchCountry = !country || rowCountry === country;
+    const matchSource = !source || rowSource === source;
+    
+    const show = matchSearch && matchStage && matchCountry && matchSource;
+    row.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  
+  document.getElementById('customer-visible-count').textContent = visible;
+  const info = document.getElementById('filter-count');
+  if (search || stage || country || source) {
+    info.style.display = '';
+    info.textContent = `筛选结果：${visible} 条匹配`;
+  } else {
+    info.style.display = 'none';
+  }
+}
+
+function clearCustomerFilters() {
+  document.getElementById('search-customers').value = '';
+  document.getElementById('filter-stage').value = '';
+  document.getElementById('filter-country').value = '';
+  document.getElementById('filter-source').value = '';
+  filterCustomers();
+}
+
+async function addInquiry() {
+  const form = document.getElementById('inquiry-form');
+  const data = Object.fromEntries(new FormData(form));
+  const res = await api('/api/inquiries', 'POST', data);
+  if (res.success) { toast('询盘已创建'); location.reload(); }
+}
+
+// 线索评分
+document.addEventListener('DOMContentLoaded', loadScoreStats);
+async function loadScoreStats() {
+  try {
+    const stats = await api('/api/scoring/stats');
+    document.getElementById('score-hot').textContent = stats.hot?.count || 0;
+    document.getElementById('score-sql').textContent = stats.sql?.count || 0;
+    document.getElementById('score-mql').textContent = stats.mql?.count || 0;
+    document.getElementById('score-warm').textContent = stats.warm?.count || 0;
+    document.getElementById('score-cold').textContent = stats.cold?.count || 0;
+  } catch(e) {}
+}
+
+// ========== 新增客户 ==========
+async function addCustomer() {
+  const form = document.getElementById('customer-form');
+  const data = Object.fromEntries(new FormData(form));
+  if (!data.company) { toast('请填写公司名称', 'danger'); return; }
+  if (!data.email) { toast('请填写邮箱', 'danger'); return; }
+  try {
+    const res = await api('/api/customers', 'POST', data);
+    if (res.success || res.id) {
+      toast('客户已添加');
+      bootstrap.Modal.getInstance(document.getElementById('addCustomerModal'))?.hide();
+      location.reload();
+    } else { toast(res.error || '添加失败', 'danger'); }
+  } catch(e) { toast('请求失败: ' + e.message, 'danger'); }
+}
+
+// ========== 客户详情 ==========
+async function loadCustomerDetail(id) {
+  // 预加载邮箱账号列表（缓存）
+  if (!window._emailAccountsCache) {
+    try { window._emailAccountsCache = await api('/api/email-accounts'); } catch(e) { window._emailAccountsCache = []; }
+  }
+  try {
+    const c = await api('/api/customers/' + id);
+    if (!c || c.error) { toast('加载失败', 'danger'); return; }
+    // 构建详情内容
+    const html = `
+      <div class="mb-3"><strong>公司:</strong> ${c.company || '-'}</div>
+      <div class="mb-3"><strong>联系人:</strong> ${c.contact_name || '-'}</div>
+      <div class="mb-3"><strong>邮箱:</strong> ${c.email || '-'}</div>
+      <div class="mb-3"><strong>电话:</strong> ${c.phone || '-'}</div>
+      <div class="mb-3"><strong>国家:</strong> ${c.country || '-'}</div>
+      <div class="mb-3"><strong>阶段:</strong> ${c.stage || '-'}</div>
+      <div class="mb-3"><strong>来源:</strong> ${c.source || '-'}</div>
+      <div class="mb-3"><strong>评分:</strong> ${c.lead_score || 0}</div>
+      <div class="mb-3"><strong>标签:</strong> ${(c.tags ? (typeof c.tags === 'string' ? c.tags : JSON.stringify(c.tags)) : '-')}</div>
+      <div class="mb-3"><strong>备注:</strong> ${c.notes || '-'}</div>
+      <div class="mb-3"><strong>创建时间:</strong> ${c.created_at || '-'}</div>
+      <div class="mb-3"><strong>绑定发件邮箱:</strong> 
+        <select class="form-select form-select-sm d-inline-block" style="width:auto;min-width:180px" onchange="updatePreferredEmail(${c.id}, this.value)">
+          <option value="">自动选择</option>
+          ${(window._emailAccountsCache||[]).map(a => '<option value="'+a.id+'" '+(c.preferred_email_account_id==a.id?'selected':'')+'>'+a.email+'</option>').join('')}
+        </select>
+      </div>
+    `;
+    // 使用动态Modal展示
+    let modal = document.getElementById('customerDetailModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'customerDetailModal';
+      modal.className = 'modal fade';
+      modal.tabIndex = -1;
+      modal.innerHTML = '<div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">📋 客户详情</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" id="customerDetailBody"></div><div class="modal-footer"><a id="customerEditLink" class="btn btn-outline-primary btn-sm" href="#">✏️ 编辑</a><button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">关闭</button></div></div></div>';
+      document.body.appendChild(modal);
+    }
+    document.getElementById('customerDetailBody').innerHTML = html;
+    document.getElementById('customerEditLink').href = '/customers/' + id + '/edit';
+    new bootstrap.Modal(modal).show();
+  } catch(e) { toast('加载详情失败', 'danger'); }
+}
+
+// ========== AI助手对话 ==========
+async function updatePreferredEmail(customerId, accountId) {
+  try {
+    const res = await api('/api/customers/' + customerId, 'PUT', { preferred_email_account_id: accountId || null });
+    if (res.success) toast('绑定发件邮箱已更新', 'success');
+    else toast('更新失败: ' + (res.error||''), 'danger');
+  } catch(e) { toast('更新失败', 'danger'); }
+}
+
+function aiChat(role) {
+  const roleNames = { sales: '销售专家', email: '邮件专家', research: '市场调研', risk: '风控专家' };
+  const roleName = roleNames[role] || role;
+  // 构建AI对话Modal
+  let modal = document.getElementById('aiChatModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'aiChatModal';
+    modal.className = 'modal fade';
+    modal.tabIndex = -1;
+    modal.innerHTML = `<div class="modal-dialog modal-lg"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title" id="aiChatTitle">🤖 AI助手</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div id="aiChatHistory" style="height:300px;overflow-y:auto;background:#1a1a2e;border-radius:8px;padding:12px;margin-bottom:12px;font-size:14px"></div>
+        <div class="input-group">
+          <input type="text" class="form-control" id="aiChatInput" placeholder="输入问题...">
+          <button class="btn btn-purple" onclick="sendAiChat()">发送</button>
+        </div>
+      </div>
+    </div></div>`;
+    document.body.appendChild(modal);
+    document.getElementById('aiChatInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') sendAiChat(); });
+  }
+  document.getElementById('aiChatTitle').textContent = '🤖 ' + roleName;
+  document.getElementById('aiChatHistory').innerHTML = '<div class="text-muted text-center small py-3">你好，我是' + roleName + '助手，请输入你的问题</div>';
+  document.getElementById('aiChatModal').dataset.role = role;
+  new bootstrap.Modal(modal).show();
+  document.getElementById('aiChatInput').focus();
+}
+
+async function sendAiChat() {
+  const input = document.getElementById('aiChatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  const history = document.getElementById('aiChatHistory');
+  const role = document.getElementById('aiChatModal').dataset.role;
+  history.innerHTML += '<div class="mb-2"><span class="badge bg-primary">你</span> ' + msg + '</div>';
+  history.innerHTML += '<div class="mb-2 text-muted" id="ai-typing"><span class="badge bg-secondary">AI</span> 思考中...</div>';
+  history.scrollTop = history.scrollHeight;
+  try {
+    const res = await api('/api/ai/chat', 'POST', { message: msg, context: role });
+    const typing = document.getElementById('ai-typing');
+    if (typing) typing.remove();
+    const reply = res.reply || res.message || res.response || JSON.stringify(res);
+    history.innerHTML += '<div class="mb-2"><span class="badge bg-success">AI</span> ' + reply.replace(/\n/g, '<br>') + '</div>';
+  } catch(e) {
+    const typing = document.getElementById('ai-typing');
+    if (typing) typing.remove();
+    history.innerHTML += '<div class="mb-2 text-danger"><span class="badge bg-danger">错误</span> ' + e.message + '</div>';
+  }
+  history.scrollTop = history.scrollHeight;
+}
+</script>
+<%- include('partials/footer') %>

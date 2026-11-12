@@ -1,0 +1,205 @@
+{
+  "routeFiles": [
+    {
+      "file": "advanced-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "ai-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "ai-command-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "analytics-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "antiban-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "calendar-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "crud-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "customer-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "customer-import-export.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "digital-human-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "dispatcher-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "email-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "email-receiver-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "emergency-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "env-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "esim-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "followup-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "human-behavior-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "inbox-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "journey-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "lead-scoring-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "linkedin-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "marketing-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "matrix-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "pages.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "products-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "restream-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "seo-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "settings-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "social-accounts-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "social-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "stats-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "tracking-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "trade-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "video-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "wa-checker-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "whatsapp-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "widget-api.js",
+      "status": "OK",
+      "error": ""
+    },
+    {
+      "file": "workflow-api.js",
+      "status": "OK",
+      "error": ""
+    }
+  ],
+  "timestamp": "2026-03-15T01:50:55.209Z"
+}

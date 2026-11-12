@@ -1,0 +1,8 @@
+﻿"Test","Result","Details"
+"GET Providers","PASS","Found 8 providers"
+"POST Provider","PASS","Created provider ID: 17"
+"POST Phone","FAIL","远程服务器返回错误: (400) 错误的请求。"
+"GET Phones","PASS","Found 0 phones"
+"GET Master Phone","PASS","Retrieved master phone"
+"GET Logs","PASS","Found 0 logs"
+"DELETE Provider","PASS","Deleted test provider"

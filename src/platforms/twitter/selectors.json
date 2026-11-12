@@ -1,0 +1,40 @@
+{
+  "followers": {
+    "follower_card": "div[data-testid='cellInnerDiv'] div[data-testid='UserCell']",
+    "follower_name": "div[dir='ltr'] span",
+    "follower_username": "div[dir='ltr'] span:has(text('@'))",
+    "follower_link": "a[role='link'][href*='/']",
+    "follower_bio": "div[dir='auto'][data-testid='tweetText']"
+  },
+  "tweet_repliers": {
+    "reply_block": "article[data-testid='tweet']",
+    "replier_name": "div[data-testid='User-Name'] a span",
+    "replier_link": "div[data-testid='User-Name'] a[role='link']",
+    "reply_text": "div[data-testid='tweetText']",
+    "show_more_replies": "div[data-testid='cellInnerDiv'] span"
+  },
+  "hashtag": {
+    "tweet_card": "article[data-testid='tweet']",
+    "user_name": "div[data-testid='User-Name'] a span",
+    "user_link": "div[data-testid='User-Name'] a[role='link']"
+  },
+  "actions": {
+    "follow_button": "div[data-testid='placementTracking'] div[role='button'][data-testid*='follow'], div[role='button'][data-testid='follow']",
+    "like_button": "div[data-testid='like'], button[data-testid='like']",
+    "retweet_button": "div[data-testid='retweet'], button[data-testid='retweet']",
+    "retweet_confirm": "div[data-testid='retweetConfirm']",
+    "reply_button": "div[data-testid='reply'], button[data-testid='reply']",
+    "reply_input": "div[data-testid='tweetTextarea_0'], div[role='textbox'][data-testid='tweetTextarea_0']",
+    "reply_submit": "div[data-testid='tweetButtonInline'], button[data-testid='tweetButtonInline']",
+    "dm_button": "div[data-testid='sendDMFromProfile']",
+    "dm_input": "div[data-testid='dmComposerTextInput'], div[role='textbox']",
+    "dm_send": "div[data-testid='dmComposerSendButton'], button[data-testid='dmComposerSendButton']",
+    "new_dm": "a[data-testid='NewDM_Button']",
+    "dm_search_input": "input[data-testid='searchPeople']"
+  },
+  "common": {
+    "scroll_container": "main[role='main']",
+    "loading_spinner": "div[role='progressbar']",
+    "login_wall": "div[data-testid='loginButton']"
+  }
+}

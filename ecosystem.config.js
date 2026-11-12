@@ -1,0 +1,25 @@
+module.exports = {
+  apps: [{
+    name: 'vipb-system',
+    script: 'server.js',
+    cwd: 'D:\\VIPB-AI-System',
+    instances: 1,
+    autorestart: true,
+    watch: false,
+    max_memory_restart: '1G',
+    restart_delay: 3000,
+    max_restarts: 10,
+    min_uptime: '10s',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 3001
+    },
+    // 日志配置
+    error_file: 'D:\\VIPB-AI-System\\logs\\pm2-error.log',
+    out_file: 'D:\\VIPB-AI-System\\logs\\pm2-out.log',
+    log_date_format: 'YYYY-MM-DD HH:mm:ss',
+    merge_logs: true,
+    // 崩溃后自动重启
+    exp_backoff_restart_delay: 1000
+  }]
+};

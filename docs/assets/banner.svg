@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320">
+  <rect width="1280" height="320" fill="#ffffff"/>
+  <rect width="1280" height="10" fill="#009E4D"/>
+  <text x="640" y="128" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="bold" fill="#009E4D">VIPB AI System</text>
+  <text x="640" y="182" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" fill="#222222">Foreign Trade Automation System V2</text>
+  <text x="640" y="232" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#555555">CRM &#183; Email Marketing &#183; Social Matrix &#183; AI Command Center</text>
+  <text x="640" y="282" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="19" fill="#888888">by VIPB &#183; Wenzhou Xingyuan Holding Co., Ltd.</text>
+</svg>

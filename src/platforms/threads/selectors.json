@@ -1,0 +1,32 @@
+{
+  "followers": {
+    "followers_link": "a[href*='/followers']",
+    "dialog": "div[role='dialog']",
+    "follower_card": "div[role='dialog'] div[class] > div > div",
+    "follower_name": "span[dir='auto']",
+    "follower_username": "a[role='link'][href*='/@']",
+    "follower_profile_link": "a[role='link'][href*='/@']",
+    "close_dialog": "div[role='dialog'] button[aria-label='Close'], div[role='dialog'] svg[aria-label='Close']"
+  },
+  "post_repliers": {
+    "reply_card": "div[data-pressable-container='true'], article > div > div",
+    "replier_name": "span[dir='auto'] a, a[role='link'] span",
+    "replier_username": "a[role='link'][href*='/@']",
+    "replier_profile_link": "a[role='link'][href*='/@']"
+  },
+  "actions": {
+    "follow_button": "div[role='button']:not([aria-label='Like']):not([aria-label='Reply']):not([aria-label='Repost'])",
+    "following_button": "div[role='button'][aria-label*='Following']",
+    "like_button": "div[role='button'][aria-label='Like'], svg[aria-label='Like']",
+    "unlike_button": "div[role='button'][aria-label='Unlike'], svg[aria-label='Unlike']",
+    "reply_input": "div[role='textbox'], div[contenteditable='true']",
+    "reply_submit": "div[role='button']:has(span:text('Post')), div[role='button']:has(span:text('Reply'))",
+    "repost_button": "div[role='button'][aria-label='Repost'], svg[aria-label='Repost']"
+  },
+  "common": {
+    "scroll_container": "main, div[role='dialog']",
+    "loading_spinner": "svg[aria-label='Loading']",
+    "not_found": "div:text('Sorry, this page'), span:text('Page not available')",
+    "login_required": "input[autocomplete='username']"
+  }
+}

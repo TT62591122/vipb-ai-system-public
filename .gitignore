@@ -1,0 +1,13 @@
+node_modules/
+.env
+*.log
+data/
+backups/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+crash.log
+logs/*
+uploads/*
+*.bak
+*-backup

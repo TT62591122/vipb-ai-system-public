@@ -1,0 +1,219 @@
+<%- include('partials/header') %>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="mb-0">🎬 视频工坊</h4><small class="text-muted">AI脚本生成 · 批量变体 · 数字人管理</small></div>
+    <div>
+      <button class="btn btn-purple" onclick="showScriptModal()">🤖 AI生成脚本</button>
+      <button class="btn btn-outline-primary ms-2" onclick="showBatchModal()">📦 批量生成变体</button>
+    </div>
+  </div>
+
+  <!-- 统计 -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="stat-card text-center"><div class="stat-number" id="vTotal">0</div><div class="stat-label">总视频</div></div></div>
+    <div class="col-md-3"><div class="stat-card text-center"><div class="stat-number" id="vProcessing">0</div><div class="stat-label">处理中</div></div></div>
+    <div class="col-md-3"><div class="stat-card text-center"><div class="stat-number" id="vCompleted">0</div><div class="stat-label">已完成</div></div></div>
+    <div class="col-md-3"><div class="stat-card text-center"><div class="stat-number" id="vAvatars">0</div><div class="stat-label">数字人</div></div></div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabVideos">🎬 视频列表</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabAvatars">👤 数字人管理</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="tabVideos">
+      <div class="card">
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead><tr><th style="width:80px">缩略图</th><th>标题</th><th>时长</th><th>语言</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+            <tbody id="videoList"><tr><td colspan="7" class="text-center text-muted py-4">加载中...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="tabAvatars">
+      <div class="d-flex justify-content-end mb-3"><button class="btn btn-purple btn-sm" onclick="showAvatarModal()">➕ 添加数字人</button></div>
+      <div class="row g-3" id="avatarList"><div class="col-12 text-center text-muted py-4">加载中...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI脚本模态框 -->
+<div class="modal fade" id="scriptModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header"><h5>🤖 AI生成视频脚本</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">主题/产品</label><input class="form-control" id="scriptTopic" placeholder="如：智能电表产品介绍"></div>
+        <div class="row g-3">
+          <div class="col-md-4"><label class="form-label">风格</label><select class="form-select" id="scriptStyle"><option value="professional">专业</option><option value="casual">轻松</option><option value="storytelling">故事化</option><option value="educational">教育</option></select></div>
+          <div class="col-md-4"><label class="form-label">时长</label><select class="form-select" id="scriptDuration"><option value="30">30秒</option><option value="60">1分钟</option><option value="120">2分钟</option><option value="300">5分钟</option></select></div>
+          <div class="col-md-4"><label class="form-label">语言</label><select class="form-select" id="scriptLang"><option value="zh">中文</option><option value="en">English</option><option value="es">Español</option><option value="ar">العربية</option></select></div>
+        </div>
+        <div class="mb-3 mt-3"><label class="form-label">补充要求</label><textarea class="form-control" id="scriptNotes" rows="2" placeholder="可选：特殊要求或卖点"></textarea></div>
+        <div id="scriptResult" style="display:none" class="mt-3"><label class="form-label">生成结果</label><textarea class="form-control" id="scriptOutput" rows="8" readonly></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+        <button class="btn btn-purple" id="genScriptBtn" onclick="generateScript()">🤖 生成脚本</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 批量变体模态框 -->
+<div class="modal fade" id="batchModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5>📦 批量生成变体</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">源视频ID</label><input class="form-control" id="batchSourceId" placeholder="输入视频ID"></div>
+        <div class="mb-3"><label class="form-label">目标语言</label>
+          <div class="form-check"><input class="form-check-input" type="checkbox" id="langEn" value="en" checked><label class="form-check-label" for="langEn">English</label></div>
+          <div class="form-check"><input class="form-check-input" type="checkbox" id="langEs" value="es"><label class="form-check-label" for="langEs">Español</label></div>
+          <div class="form-check"><input class="form-check-input" type="checkbox" id="langAr" value="ar"><label class="form-check-label" for="langAr">العربية</label></div>
+          <div class="form-check"><input class="form-check-input" type="checkbox" id="langFr" value="fr"><label class="form-check-label" for="langFr">Français</label></div>
+        </div>
+        <div class="mb-3"><label class="form-label">变体数量</label><input type="number" class="form-control" id="batchCount" value="3" min="1" max="20"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-purple" onclick="createBatchVariants()">🚀 开始生成</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 数字人模态框 -->
+<div class="modal fade" id="avatarModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5>👤 添加数字人</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">名称</label><input class="form-control" id="avatarName" placeholder="数字人名称"></div>
+        <div class="mb-3"><label class="form-label">类型</label><select class="form-select" id="avatarType"><option value="heygen">HeyGen</option><option value="d-id">D-ID</option><option value="custom">自定义</option></select></div>
+        <div class="mb-3"><label class="form-label">Avatar ID</label><input class="form-control" id="avatarExternalId" placeholder="平台Avatar ID"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-purple" onclick="saveAvatar()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showScriptModal() { document.getElementById('scriptResult').style.display='none'; new bootstrap.Modal(document.getElementById('scriptModal')).show(); }
+function showBatchModal() { new bootstrap.Modal(document.getElementById('batchModal')).show(); }
+function showAvatarModal() { new bootstrap.Modal(document.getElementById('avatarModal')).show(); }
+
+async function loadVideos() {
+  try {
+    const res = await fetch('/api/videos');
+    const data = await res.json();
+    const videos = data.videos || data.data || [];
+    const tbody = document.getElementById('videoList');
+    let processing=0, completed=0;
+    if (!videos.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">暂无视频，点击"AI生成脚本"开始创作</td></tr>'; return; }
+    tbody.innerHTML = videos.map(v => {
+      if(v.status==='processing') processing++;
+      if(v.status==='completed') completed++;
+      const statusMap = { completed:'<span class="badge bg-success">完成</span>', processing:'<span class="badge bg-primary">处理中</span>', draft:'<span class="badge bg-secondary">草稿</span>', failed:'<span class="badge bg-danger">失败</span>' };
+      return `<tr>
+        <td><div style="width:60px;height:40px;background:#eee;border-radius:4px;display:flex;align-items:center;justify-content:center">${v.thumbnail ? '<img src="'+v.thumbnail+'" style="width:100%;height:100%;object-fit:cover;border-radius:4px">' : '🎬'}</div></td>
+        <td>${v.title || '未命名'}</td><td>${v.duration || '-'}s</td><td>${v.language || '-'}</td>
+        <td>${statusMap[v.status] || v.status}</td>
+        <td><small>${new Date(v.created_at).toLocaleString('zh-CN')}</small></td>
+        <td><button class="btn btn-sm btn-outline-danger" onclick="deleteVideo(${v.id})">🗑</button></td>
+      </tr>`;
+    }).join('');
+    document.getElementById('vTotal').textContent = videos.length;
+    document.getElementById('vProcessing').textContent = processing;
+    document.getElementById('vCompleted').textContent = completed;
+  } catch(e) {
+    document.getElementById('videoList').innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">暂无视频，点击"AI生成脚本"开始创作</td></tr>';
+  }
+}
+
+async function loadAvatars() {
+  try {
+    const res = await fetch('/api/videos/avatars');
+    const data = await res.json();
+    const avatars = data.avatars || data.data || [];
+    document.getElementById('vAvatars').textContent = avatars.length;
+    if (!avatars.length) { document.getElementById('avatarList').innerHTML = '<div class="col-12 text-center text-muted py-4">暂无数字人，点击"添加数字人"开始</div>'; return; }
+    document.getElementById('avatarList').innerHTML = avatars.map(a => `
+      <div class="col-md-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <div style="width:80px;height:80px;border-radius:50%;background:#e8e0f0;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:36px">👤</div>
+            <h6 class="mt-2 mb-0">${a.name}</h6>
+            <small class="text-muted">${a.type || 'heygen'}</small>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) {
+    document.getElementById('avatarList').innerHTML = '<div class="col-12 text-center text-muted py-4">暂无数字人</div>';
+  }
+}
+
+async function generateScript() {
+  const btn = document.getElementById('genScriptBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 生成中...';
+  try {
+    const res = await fetch('/api/videos/generate-script', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+      topic: document.getElementById('scriptTopic').value,
+      style: document.getElementById('scriptStyle').value,
+      duration: parseInt(document.getElementById('scriptDuration').value),
+      language: document.getElementById('scriptLang').value,
+      notes: document.getElementById('scriptNotes').value
+    })});
+    const data = await res.json();
+    document.getElementById('scriptOutput').value = data.script || data.content || JSON.stringify(data);
+    document.getElementById('scriptResult').style.display = '';
+  } catch(e) { alert('生成失败: ' + e.message); }
+  btn.disabled = false; btn.innerHTML = '🤖 生成脚本';
+}
+
+async function createBatchVariants() {
+  const langs = [];
+  document.querySelectorAll('#batchModal .form-check-input:checked').forEach(cb => langs.push(cb.value));
+  try {
+    const res = await fetch('/api/videos/batch-variants', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+      source_id: document.getElementById('batchSourceId').value,
+      languages: langs,
+      count: parseInt(document.getElementById('batchCount').value)
+    })});
+    const data = await res.json();
+    alert(data.success ? '批量任务已创建！' : '失败: ' + (data.error||''));
+    bootstrap.Modal.getInstance(document.getElementById('batchModal')).hide();
+    loadVideos();
+  } catch(e) { alert('失败: ' + e.message); }
+}
+
+async function saveAvatar() {
+  try {
+    const res = await fetch('/api/videos/avatars', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+      name: document.getElementById('avatarName').value,
+      type: document.getElementById('avatarType').value,
+      external_id: document.getElementById('avatarExternalId').value
+    })});
+    const data = await res.json();
+    if(data.success) { bootstrap.Modal.getInstance(document.getElementById('avatarModal')).hide(); loadAvatars(); }
+    else alert('保存失败: ' + (data.error||''));
+  } catch(e) { alert('失败: ' + e.message); }
+}
+
+async function deleteVideo(id) {
+  if (!confirm('确定删除？')) return;
+  await fetch(`/api/videos/${id}`, { method:'DELETE' });
+  loadVideos();
+}
+
+loadVideos();
+loadAvatars();
+</script>
+<%- include('partials/footer') %>

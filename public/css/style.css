@@ -1,0 +1,160 @@
+:root {
+  --purple-start: #7c3aed;
+  --purple-end: #a855f7;
+  --sidebar-width: 240px;
+}
+
+body { background: #f0f0f5; font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; }
+
+/* 侧边栏 */
+.sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--purple-start), var(--purple-end));
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 100;
+}
+.sidebar .nav-link {
+  color: rgba(255,255,255,0.75);
+  border-radius: 8px;
+  margin: 2px 0;
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.sidebar .nav-link:hover { color: #fff; background: rgba(255,255,255,0.15); }
+.sidebar .nav-link.active { color: #fff; background: rgba(255,255,255,0.25); font-weight: 600; }
+
+/* 主内容 */
+.main-content {
+  margin-left: var(--sidebar-width);
+  padding: 24px;
+  flex: 1;
+  width: calc(100% - var(--sidebar-width));
+}
+
+/* 卡片 */
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card .stat-number { font-size: 28px; font-weight: 700; color: var(--purple-start); }
+.stat-card .stat-label { font-size: 13px; color: #888; }
+
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.card-header {
+  background: linear-gradient(135deg, var(--purple-start), var(--purple-end));
+  color: #fff;
+  border-radius: 12px 12px 0 0 !important;
+  font-weight: 600;
+}
+
+/* 看板 */
+.kanban-board { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 20px; }
+.kanban-column {
+  min-width: 260px;
+  max-width: 300px;
+  background: #f8f8fc;
+  border-radius: 12px;
+  padding: 12px;
+}
+.kanban-column h6 { font-size: 13px; font-weight: 600; color: #666; text-transform: uppercase; }
+.kanban-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  cursor: grab;
+  border-left: 3px solid var(--purple-start);
+}
+.kanban-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.12); }
+
+/* 表格 */
+.table-container { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.table th { font-size: 13px; color: #888; font-weight: 600; border-bottom: 2px solid #eee; }
+.table td { font-size: 14px; vertical-align: middle; }
+
+/* Badge */
+.badge-stage { font-size: 11px; padding: 4px 8px; border-radius: 20px; }
+.badge-new { background: #dbeafe; color: #1d4ed8; }
+.badge-hot { background: #fef3c7; color: #d97706; }
+.badge-won { background: #d1fae5; color: #059669; }
+.badge-lost { background: #fee2e2; color: #dc2626; }
+
+/* Tab */
+.nav-tabs .nav-link { color: #666; font-weight: 500; }
+.nav-tabs .nav-link.active { color: var(--purple-start); font-weight: 600; border-bottom: 2px solid var(--purple-start); }
+
+/* AI Chat */
+.ai-chat-box {
+  background: linear-gradient(135deg, #f3e8ff, #ede9fe);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #c4b5fd;
+}
+.ai-chat-box .ai-result-content {
+  line-height: 1.7;
+  font-size: 14px;
+}
+.ai-chat-box .ai-result-content h4,
+.ai-chat-box .ai-result-content h5,
+.ai-chat-box .ai-result-content h6 {
+  color: var(--purple-start);
+}
+.ai-chat-box .ai-result-content li {
+  margin-bottom: 4px;
+}
+.ai-chat-box .ai-result-content pre {
+  font-size: 12px;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.ai-chat-box .ai-result-content code {
+  font-size: 12px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 按钮 */
+.btn-purple {
+  background: linear-gradient(135deg, var(--purple-start), var(--purple-end));
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-weight: 500;
+}
+.btn-purple:hover { color: #fff; opacity: 0.9; transform: translateY(-1px); }
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .sidebar { width: 60px; }
+  .sidebar .nav-link span, .sidebar-brand small { display: none; }
+  .main-content { margin-left: 60px; width: calc(100% - 60px); }
+}
+
+/* 模态框 */
+.modal-header { background: linear-gradient(135deg, var(--purple-start), var(--purple-end)); color: #fff; }
+.modal-content { border-radius: 12px; border: none; }
+
+
+/* WhatsApp UI Styles */
+.btn-xs { padding: 2px 6px; font-size: 11px; line-height: 1.5; border-radius: 3px; }
+#wa-messages-area { scrollbar-width: thin; scrollbar-color: #374045 #0b141a; }
+#wa-messages-area::-webkit-scrollbar { width: 6px; }
+#wa-messages-area::-webkit-scrollbar-track { background: #0b141a; }
+#wa-messages-area::-webkit-scrollbar-thumb { background: #374045; border-radius: 3px; }

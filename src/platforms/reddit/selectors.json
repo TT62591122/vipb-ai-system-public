@@ -1,0 +1,30 @@
+{
+  "subreddit_posters": {
+    "post_card": "shreddit-post, div[data-testid='post-container'], .Post",
+    "poster_name": "a[data-testid='post_author_link'], shreddit-post [slot='authorName'], a.author",
+    "poster_link": "a[data-testid='post_author_link'], a.author",
+    "post_title": "a[data-testid='post-title-line'] span, h3._eYtD2XCVieq6emjKBH3m",
+    "post_link": "a[data-testid='post-title-line'], a.SQnoC3ObvgnGjWt90zD9Z"
+  },
+  "post_commenters": {
+    "comment_block": "shreddit-comment, div[data-testid='comment'], .Comment",
+    "commenter_name": "a[data-testid='comment_author_link'], a.author",
+    "commenter_link": "a[data-testid='comment_author_link'], a.author",
+    "comment_text": "div[data-testid='comment'] p, .RichTextJSON-root, div[slot='comment'] p",
+    "show_more_comments": "button[data-testid='show-more-comments'], .morecomments a"
+  },
+  "actions": {
+    "upvote_button": "button[aria-label='upvote'], shreddit-post button[upvote], button.voteButton[aria-label*='Upvote']",
+    "comment_input": "div[contenteditable='true'], .public-DraftEditor-content, shreddit-composer div[role='textbox']",
+    "comment_submit": "button[type='submit'], button[slot='submit-button']",
+    "dm_compose_link": "a[href*='/message/compose']",
+    "dm_subject": "input[name='subject'], #subject",
+    "dm_body": "textarea[name='message'], #message, div[contenteditable='true']",
+    "dm_send": "button[type='submit']"
+  },
+  "common": {
+    "scroll_container": "shreddit-app, #AppRouter-main-content",
+    "loading_spinner": "shreddit-loading, .loading-spinner",
+    "nsfw_gate": "button[data-testid='content-gate-yes'], .ContentGate button"
+  }
+}

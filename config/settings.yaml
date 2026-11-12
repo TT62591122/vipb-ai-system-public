@@ -1,0 +1,32 @@
+port: 3001
+ai:
+  providers: []
+  defaultModel: claude-sonnet
+  dailyBudget: 20
+  monthlyBudget: 500
+  costMultiplier: 0.45
+  routing:
+    sonnet: 70
+    opus: 25
+    haiku: 5
+email:
+  warmup:
+    week1: 3
+    week2: 8
+    week3: 15
+    week4: 25
+    week5plus: 40
+  maxPerDay: 40
+  intervalMinSec: 180
+  intervalMaxSec: 480
+  bounceThreshold: 0.08
+  complaintThreshold: 0.003
+whatsapp:
+  personalLimit: 30
+  businessLimit: 80
+  intervalMinSec: 45
+  intervalMaxSec: 180
+company:
+  name: ''
+  products: Smart Meters, Circuit Breakers
+  markets: 中东, 东南亚, 非洲, 南美

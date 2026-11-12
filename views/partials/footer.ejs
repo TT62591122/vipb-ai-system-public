@@ -1,0 +1,179 @@
+  </div>
+
+  <!-- 通知容器 (Toast) -->
+  <div id="notification-container" style="position:fixed;top:16px;right:16px;z-index:9999;max-width:380px;pointer-events:none;"></div>
+
+  <!-- 通知铃铛 -->
+  <div id="notification-bell" style="position:fixed;top:12px;right:20px;z-index:9998;">
+    <button class="btn btn-sm btn-outline-light position-relative" onclick="toggleNotificationPanel()" style="background:rgba(102,51,153,0.8);border:none;border-radius:50%;width:40px;height:40px;">
+      🔔
+      <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill" id="notification-count" style="display:none;font-size:10px;">0</span>
+    </button>
+  </div>
+
+  <!-- 通知面板 -->
+  <div id="notification-panel" style="position:fixed;top:58px;right:16px;width:360px;max-height:500px;overflow-y:auto;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:9997;display:none;">
+    <div style="padding:12px 16px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
+      <strong>🔔 通知</strong>
+      <button class="btn btn-sm btn-link text-decoration-none" onclick="clearAllNotifications()">清除全部</button>
+    </div>
+    <div id="notification-list" style="padding:8px;">
+      <div class="text-center text-muted py-3">暂无通知</div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes notifSlideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .toast-notif {
+      pointer-events: auto;
+      animation: notifSlideIn 0.3s ease;
+    }
+    #notification-panel .notif-item {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 13px;
+    }
+    #notification-panel .notif-item:last-child { border-bottom: none; }
+    #notification-panel .notif-item:hover { background: #f8f9fa; }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/app.js?v=<%= Date.now() %>"></script>
+
+  <script>
+  // ========== 实时通知系统 ==========
+  const socket = io();
+  let notifications = [];
+  let unreadCount = 0;
+
+  socket.on('connect', () => {
+    console.log('[WS] 已连�?', socket.id);
+  });
+
+  socket.on('notification', (data) => {
+    showToastNotification(data);
+    addToNotificationList(data);
+    updateUnreadCount(++unreadCount);
+  });
+
+  const notifIcons = {
+    deal_created: '💰', deal_updated: '📝', deal_deleted: '🗑�?,
+    customer_created: '👤', inquiry_created: '📋',
+    email_sent: '📧', email_failed: '�?,
+    ai_completed: '🤖',
+    backup_completed: '💾',
+    system: 'ℹ️'
+  };
+  const notifTitles = {
+    deal_created: '新交�?, deal_updated: '交易更新', deal_deleted: '交易删除',
+    customer_created: '新客�?, inquiry_created: '新询�?,
+    email_sent: '邮件发送成�?, email_failed: '邮件发送失�?,
+    ai_completed: 'AI处理完成',
+    backup_completed: '备份完成',
+    system: '系统通知'
+  };
+
+  function formatNotifMessage(data) {
+    const d = data.data || {};
+    switch(data.type) {
+      case 'deal_created': return `"${d.title || '未命�?}" - $${(d.amount||0).toLocaleString()}`;
+      case 'deal_updated': return `交易 #${d.id} 阶段变更�? ${d.stage || '未知'}`;
+      case 'deal_deleted': return `交易 #${d.id} 已删除`;
+      case 'customer_created': return `新客�? ${d.company || '未知'}`;
+      case 'inquiry_created': return `主题: ${d.subject || '-'} | 产品: ${d.product || '-'}`;
+      case 'email_sent': return `发送至: ${d.to || '-'}`;
+      case 'email_failed': return `发送失�? ${d.to || '-'} - ${d.error || ''}`;
+      case 'ai_completed': return `${d.agent || 'AI'}: ${d.task || ''}`;
+      case 'backup_completed': return `${d.filename || ''} (${d.size || ''})`;
+      case 'system': return d.message || JSON.stringify(d);
+      default: return JSON.stringify(d);
+    }
+  }
+
+  function showToastNotification(data) {
+    const container = document.getElementById('notification-container');
+    const icon = notifIcons[data.type] || 'ℹ️';
+    const title = notifTitles[data.type] || '通知';
+    const message = formatNotifMessage(data);
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-notif';
+    toast.innerHTML = `
+      <div style="background:#fff;border-radius:10px;padding:12px 16px;margin-bottom:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-left:4px solid #663399;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <strong>${icon} ${title}</strong>
+          <small style="color:#999">${new Date().toLocaleTimeString('zh-CN')}</small>
+        </div>
+        <div style="font-size:13px;color:#666;margin-top:4px;">${message}</div>
+      </div>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transition = 'opacity 0.3s';
+      setTimeout(() => toast.remove(), 300);
+    }, 5000);
+  }
+
+  function addToNotificationList(data) {
+    notifications.unshift(data);
+    if (notifications.length > 50) notifications.pop();
+    renderNotificationList();
+  }
+
+  function renderNotificationList() {
+    const list = document.getElementById('notification-list');
+    if (!notifications.length) {
+      list.innerHTML = '<div class="text-center text-muted py-3">暂无通知</div>';
+      return;
+    }
+    list.innerHTML = notifications.map(n => {
+      const icon = notifIcons[n.type] || 'ℹ️';
+      const title = notifTitles[n.type] || '通知';
+      const msg = formatNotifMessage(n);
+      const time = n.timestamp ? new Date(n.timestamp).toLocaleTimeString('zh-CN') : '';
+      return `<div class="notif-item"><strong>${icon} ${title}</strong> <small style="color:#999;float:right">${time}</small><br><span style="color:#666">${msg}</span></div>`;
+    }).join('');
+  }
+
+  function updateUnreadCount(count) {
+    const badge = document.getElementById('notification-count');
+    if (count > 0) {
+      badge.style.display = '';
+      badge.textContent = count > 99 ? '99+' : count;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  function toggleNotificationPanel() {
+    const panel = document.getElementById('notification-panel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    if (panel.style.display === 'block') {
+      unreadCount = 0;
+      updateUnreadCount(0);
+    }
+  }
+
+  function clearAllNotifications() {
+    notifications = [];
+    unreadCount = 0;
+    updateUnreadCount(0);
+    renderNotificationList();
+  }
+
+  // 点击其他地方关闭通知面板
+  document.addEventListener('click', (e) => {
+    const panel = document.getElementById('notification-panel');
+    const bell = document.getElementById('notification-bell');
+    if (panel.style.display === 'block' && !panel.contains(e.target) && !bell.contains(e.target)) {
+      panel.style.display = 'none';
+    }
+  });
+  </script>
+</body>
+</html>

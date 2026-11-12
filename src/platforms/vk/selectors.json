@@ -1,0 +1,30 @@
+{
+  "group_members": {
+    "member_card": ".members_list .fans_fan_row, .group_members .page_list_row",
+    "member_name": ".fans_fan_name a, .linked_top",
+    "member_link": ".fans_fan_name a, a.simple_fit_item",
+    "member_subtitle": ".fans_fan_info, .info",
+    "show_more": "#fans_load_more, .show_more_link"
+  },
+  "post_commenters": {
+    "comment_block": ".reply, .wall_reply_text_wrap",
+    "commenter_name": ".reply_author a, .author",
+    "commenter_link": ".reply_author a, .reply_image a",
+    "comment_text": ".reply_text, .wall_reply_text",
+    "show_more_comments": ".replies_next_label, .js-replies-next-label"
+  },
+  "actions": {
+    "friend_button": "#friend_status button, .profile_action_btn, button.FriendButton",
+    "like_button": ".PostButtonReactions, .like_btn, .PostBottomAction--react",
+    "comment_input": ".reply_field, #reply_field, div[contenteditable='true'].reply_field",
+    "comment_submit": ".reply_send_button",
+    "dm_button": ".profile_msg_btn, a[href*='im?sel=']",
+    "dm_input": ".im_editable, div[contenteditable='true'].im_editable, ._im_text",
+    "dm_send": ".im-send-btn button, ._im_send"
+  },
+  "common": {
+    "scroll_container": "#content",
+    "loading_spinner": ".progress, .pr",
+    "page_block": "div.page_block"
+  }
+}
