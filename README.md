@@ -6,6 +6,8 @@
 
 An all-in-one foreign-trade marketing and customer management platform: CRM, email marketing, a 14-platform social matrix, an AI command center and workflow automation in a single self-hosted Node.js application.
 
+🌐 **Official website:** [www.chinavipb.com](https://www.chinavipb.com)
+
 > **Project status**: This repository is the archived V2 codebase of VIPB's internal foreign-trade automation system, published for the record. The parts that genuinely ran in day-to-day use were the **account-environment manager** (proxy nodes with a full NekoBox-style feature set, fingerprint-browser profiles, per-account egress), the **email pipeline**, and the **AI command center**; other modules passed page/API-level tests but were not all proven end-to-end. The codebase is provided as-is (see [License](#license)). **Per-module status with the evidence for each claim is listed in [docs/FEATURE-STATUS.md](docs/FEATURE-STATUS.md).**
 
 ## Screenshots
